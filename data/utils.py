@@ -40,6 +40,7 @@ class help_text:
     operon_name = 'The name for this operon'
     operon_function = 'The function for this operon'
     operon_genes = 'The identifiers for the genes associated with this operon'
+    kegg_pathways = 'A list of KEGG pathway identifiers associated with this pathway'
 
 
 # noinspection PyPep8Naming

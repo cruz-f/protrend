@@ -5,7 +5,7 @@ from .relationships import REL_TYPE, SourceRelationship
 from .utils import help_text
 
 
-class Gene(BaseNode, PositionMixIn):
+class Operon(BaseNode, PositionMixIn):
     # base
     entity = 'OPN'
 
