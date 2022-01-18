@@ -9,6 +9,9 @@ SMALL_RNA = 'SMALL RNA (sRNA)'
 ACTIVATION = 'ACTIVATION'
 REPRESSION = 'REPRESSION'
 DUAL = 'DUAL'
+LITERATURE = 'LITERATURE'
+DATABASE = 'DATABASE'
+CURATION = 'CURATION'
 
 
 # noinspection PyPep8Naming
@@ -56,6 +59,9 @@ class help_text:
     tfbs_id = 'The TFBS ProTReND identifier'
     effector_id = 'The effector ProTReND identifier'
     regulatory_effect = 'The regulatory effect (eg activation, repression, dual and unknown) of this regulatory interaction'
+    source_author = 'The authors of this data source'
+    url = 'The web address for this data source'
+    data_source_type = 'The type of this data source'
 
 
 # noinspection PyPep8Naming
@@ -65,6 +71,7 @@ class choices:
                  TRANSCRIPTION_TERMINATOR: 'transcription terminator', SIGMA_FACTOR: 'sigma factor',
                  SMALL_RNA: 'small RNA (sRNA)', UNKNOWN: 'unknown'}
     regulatory_effect = {ACTIVATION: 'activation', REPRESSION: 'repression', DUAL: 'dual', UNKNOWN: 'unknown'}
+    data_source_type = {LITERATURE: 'literature', DATABASE: 'database', CURATION: 'curation'}
 
 
 # noinspection PyPep8Naming
@@ -72,3 +79,4 @@ class default:
     strand = 'unknown'
     mechanism = 'unknown'
     regulatory_effect = 'unknown'
+    data_source_type = 'database'
