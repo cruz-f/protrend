@@ -17,3 +17,7 @@ class Effector(BaseNode, RequiredNameMixIn):
     gene = RelationshipTo('.gene.Gene', REL_TYPE)
     tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE)
+
+    class Meta(BaseNode.Meta):
+        fields = ['protrend_id', 'created', 'updated', 'name', 'description',
+                  'regulator', 'operon', 'gene', 'tfbs', 'regulatory_interaction']
