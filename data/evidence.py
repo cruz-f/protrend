@@ -5,7 +5,7 @@ from .relationships import REL_TYPE
 from .utils import help_text
 
 
-class Effector(BaseNode, RequiredNameMixIn):
+class Evidence(BaseNode, RequiredNameMixIn):
     entity = 'EVI'
 
     # properties
