@@ -41,6 +41,11 @@ class help_text:
     operon_function = 'The function for this operon'
     operon_genes = 'The identifiers for the genes associated with this operon'
     kegg_pathways = 'A list of KEGG pathway identifiers associated with this pathway'
+    pmid = 'The PubMed identifier for this publication'
+    doi = 'The Digital Object Identifier (DOI) for this publication'
+    title = 'The title of this publication'
+    author = 'The main author of this publication'
+    year = 'The year of this publication'
 
 
 # noinspection PyPep8Naming
