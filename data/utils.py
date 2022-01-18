@@ -8,7 +8,7 @@ class help_text:
     synonyms = 'A list of synonyms for this gene'
     locus_tag = 'The locus tag for this gene'
     uniprot_accession = 'The UniProt accession for this protein'
-    gene_name = 'The name for this gene/protrein'
+    gene_name = 'The name for this gene/protein'
     function = 'The function for this protein'
     description = 'The description for this protein'
     ncbi_gene = 'The NCBI gene identifier'
@@ -19,6 +19,7 @@ class help_text:
     strand = 'The strand where the gene is located'
     start = 'The start position where the gene is located'
     stop = 'The stop position where the gene is located'
+    required_name = 'The name for this item which will be used as main identifier'
 
 
 # noinspection PyPep8Naming
