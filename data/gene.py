@@ -1,38 +1,29 @@
-from neomodel import StringProperty, IntegerProperty, DateTimeProperty, ArrayProperty, RelationshipTo
-from neomodel import UniqueIdProperty
+from neomodel import RelationshipTo, One
 
-from .base import BaseNode
-from .relationships import REL_TYPE
+from .base import BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn
+from .relationships import REL_TYPE, SourceRelationship
 
 
-class Gene(BaseNode):
+class Gene(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
+    # base
+    entity = 'GEN'
 
-    uid = UniqueIdProperty()
-    protrend_id = StringProperty(required=True)
-    created = DateTimeProperty(default_now=True)
-    updated = DateTimeProperty(default_now=True)
-
-    # specific properties
-    locus_tag = StringProperty(required=True)
-    uniprot_accession = StringProperty()
-    name = StringProperty()
-    synonyms = ArrayProperty(StringProperty())
-    function = StringProperty()
-    description = StringProperty()
-    ncbi_gene = IntegerProperty()
-    ncbi_protein = IntegerProperty()
-    genbank_accession = StringProperty()
-    refseq_accession = StringProperty()
-    sequence = StringProperty()
-    strand = StringProperty()
-    start = IntegerProperty()
-    stop = IntegerProperty()
+    # properties inherited from GeneMixIn, SequenceMixIn, PositionMixIn
 
     # relationships
-    organism = RelationshipTo('.organism.Organism', REL_TYPE)
+    data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
+    evidence = RelationshipTo('.evidence.Evidence', REL_TYPE)
+    publication = RelationshipTo('.publication.Publication', REL_TYPE)
+    pathway = RelationshipTo('.pathway.Pathway', REL_TYPE)
+    operon = RelationshipTo('.operon.Operon', REL_TYPE)
+    organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One)
+    regulator = RelationshipTo('.regulator.Regulator', REL_TYPE)
+    tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE)
+    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE)
 
     class Meta(BaseNode.Meta):
         fields = ['protrend_id', 'created', 'updated', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
                   'function', 'description', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession',
                   'sequence', 'strand', 'start', 'stop',
-                  'organism']
+                  'data_source', 'evidence', 'publication', 'pathway', 'operon', 'organism', 'regulator',
+                  'tfbs', 'regulatory_interaction']
