@@ -62,6 +62,7 @@ class help_text:
     source_author = 'The authors of this data source'
     url = 'The web address for this data source'
     data_source_type = 'The type of this data source'
+    length = 'The length of the TFBS sequence'
 
 
 # noinspection PyPep8Naming
