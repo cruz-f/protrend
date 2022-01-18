@@ -23,7 +23,7 @@ class help_text:
 
 # noinspection PyPep8Naming
 class choices:
-    strand = ((FORWARD, 'forward'), (REVERSE, 'reverse'), (UNKNOWN, 'unknown'))
+    strand = {FORWARD: 'forward', REVERSE: 'reverse', UNKNOWN: 'unknown'}
 
 
 # noinspection PyPep8Naming
