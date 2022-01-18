@@ -1,6 +1,11 @@
 FORWARD = 'FORWARD'
 REVERSE = 'REVERSE'
 UNKNOWN = 'UNKNOWN'
+TRANSCRIPTION_FACTOR = 'TRANSCRIPTION FACTOR'
+TRANSCRIPTION_ATTENUATOR = 'TRANSCRIPTION ATTENUATOR'
+TRANSCRIPTION_TERMINATOR = 'TRANSCRIPTION TERMINATOR'
+SIGMA_FACTOR = 'SIGMA FACTOR'
+SMALL_RNA = 'SMALL RNA (sRNA)'
 
 
 # noinspection PyPep8Naming
@@ -20,13 +25,18 @@ class help_text:
     start = 'The start position where the gene is located'
     stop = 'The stop position where the gene is located'
     required_name = 'The name for this item which will be used as main identifier'
+    mechanism = 'The regulatory mechanism associated to this regulator'
 
 
 # noinspection PyPep8Naming
 class choices:
     strand = {FORWARD: 'forward', REVERSE: 'reverse', UNKNOWN: 'unknown'}
+    mechanism = {TRANSCRIPTION_FACTOR: 'transcription factor', TRANSCRIPTION_ATTENUATOR: 'transcription attenuator',
+                 TRANSCRIPTION_TERMINATOR: 'transcription terminator', SIGMA_FACTOR: 'sigma factor',
+                 SMALL_RNA: 'small RNA (sRNA)', UNKNOWN: 'unknown'}
 
 
 # noinspection PyPep8Naming
 class default:
     strand = 'unknown'
+    mechanism = 'unknown'
