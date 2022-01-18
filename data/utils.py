@@ -21,9 +21,9 @@ class help_text:
     genbank_accession = 'The NCBI GenBank accession'
     refseq_accession = 'The NCBI RefSeq accession'
     sequence = 'The protein sequence for this protein'
-    strand = 'The strand where the gene is located'
-    start = 'The start position where the gene is located'
-    stop = 'The stop position where the gene is located'
+    strand = 'The strand corresponds to the genomic coordinate forward or reverse'
+    start = 'The start corresponds to the genomic coordinate of the item position in the genome sequence'
+    stop = 'The stop corresponds to the genomic coordinate of the item position in the genome sequence'
     required_name = 'The name for this item which will be used as main identifier'
     mechanism = 'The regulatory mechanism associated to this regulator'
     organism_name = 'The scientific name for this organism including strain name whenever possible'
@@ -36,6 +36,10 @@ class help_text:
     assembly_accession = 'The NCBI Assembly accession for the organism genome sequence'
     kegg_compounds = 'A list of KEGG compound identifiers associated with this effector'
     generic_description = 'The description for this item'
+    operon_db_id = 'The OperonDB identifier for this operon'
+    operon_name = 'The name for this operon'
+    operon_function = 'The function for this operon'
+    operon_genes = 'The identifiers for the genes associated with this operon'
 
 
 # noinspection PyPep8Naming
