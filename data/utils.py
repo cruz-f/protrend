@@ -34,6 +34,7 @@ class help_text:
     genbank_ftp = 'The NCBI GenBank ftp address for this accession'
     ncbi_assembly = 'The NCBI Assembly identifier for the organism genome sequence'
     assembly_accession = 'The NCBI Assembly accession for the organism genome sequence'
+    kegg_compounds = 'A list of KEGG compound identifiers associated with this effector'
 
 
 # noinspection PyPep8Naming
