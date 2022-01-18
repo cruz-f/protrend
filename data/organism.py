@@ -1,33 +1,36 @@
-from neomodel import StringProperty, IntegerProperty, DateTimeProperty, RelationshipTo
-from neomodel import UniqueIdProperty
+from neomodel import StringProperty, IntegerProperty, RelationshipTo
 
 from .base import BaseNode
-from .relationships import REL_TYPE
+from .relationships import REL_TYPE, SourceRelationship
+from .utils import help_text
 
 
 class Organism(BaseNode):
-    uid = UniqueIdProperty()
-    protrend_id = StringProperty(required=True)
-    created = DateTimeProperty(default_now=True)
-    updated = DateTimeProperty(default_now=True)
+    # base
+    entity = 'ORG'
 
-    # specific properties
-    name = StringProperty(required=True)
-    ncbi_taxonomy = IntegerProperty()
-    species = StringProperty()
-    strain = StringProperty()
-    refseq_accession = StringProperty()
-    refseq_ftp = StringProperty()
-    genbank_accession = StringProperty()
-    genbank_ftp = StringProperty()
-    ncbi_assembly = IntegerProperty()
-    assembly_accession = StringProperty()
+    # properties
+    name = StringProperty(required=True, max_length=200, help_text=help_text.organism_name)
+    ncbi_taxonomy = IntegerProperty(help_text=help_text.ncbi_taxonomy)
+    species = StringProperty(max_length=150, help_text=help_text.species)
+    strain = StringProperty(max_length=150, help_text=help_text.strain)
+    refseq_accession = StringProperty(max_length=50, help_text=help_text.refseq_accession)
+    refseq_ftp = StringProperty(max_length=250, help_text=help_text.refseq_ftp)
+    genbank_accession = StringProperty(max_length=50, help_text=help_text.genbank_accession)
+    genbank_ftp = StringProperty(max_length=250, help_text=help_text.genbank_ftp)
+    ncbi_assembly = IntegerProperty(help_text=help_text.ncbi_assembly)
+    assembly_accession = StringProperty(max_length=50, help_text=help_text.assembly_accession)
 
     # relationships
-    gene = RelationshipTo('Gene', REL_TYPE)
+    data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
+    operon = RelationshipTo('.operon.Operon', REL_TYPE)
+    regulator = RelationshipTo('.regulator.Regulator', REL_TYPE)
+    gene = RelationshipTo('.gene.Gene', REL_TYPE)
+    tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE)
+    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE)
 
     class Meta(BaseNode.Meta):
         fields = ['protrend_id', 'created', 'updated', 'name', 'ncbi_taxonomy', 'species', 'strain',
                   'refseq_accession', 'refseq_ftp', 'genbank_accession', 'genbank_ftp', 'ncbi_assembly',
                   'assembly_accession',
-                  'gene']
+                  'data_source', 'operon', 'regulator', 'gene', 'tfbs', 'regulatory_interaction']
