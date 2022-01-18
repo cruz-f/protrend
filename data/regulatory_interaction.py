@@ -2,7 +2,7 @@ from neomodel import StringProperty, RelationshipTo, One
 
 from .base import BaseNode
 from .relationships import REL_TYPE, SourceRelationship
-from .utils import help_text, choices, default
+from .utils import help_text, choices
 
 
 class RegulatoryInteraction(BaseNode):
@@ -16,7 +16,6 @@ class RegulatoryInteraction(BaseNode):
     tfbs = StringProperty(max_length=100, help_text=help_text.tfbs_id)
     effector = StringProperty(max_length=100, help_text=help_text.effector_id)
     regulatory_effect = StringProperty(required=True, choices=choices.regulatory_effect,
-                                       default=default.regulatory_effect, max_length=50,
                                        help_text=help_text.regulatory_effect)
 
     # relationships

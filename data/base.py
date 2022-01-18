@@ -1,7 +1,7 @@
 from django_neomodel import DjangoNode
 from neomodel import UniqueIdProperty, StringProperty, DateTimeProperty, ArrayProperty, IntegerProperty
 
-from .utils import help_text, default, choices
+from .utils import help_text, choices
 
 
 class BaseNode(DjangoNode):
@@ -31,7 +31,7 @@ class SequenceMixIn:
 
 
 class PositionMixIn:
-    strand = StringProperty(choices=choices.strand, default=default.strand, max_length=50, help_text=help_text.strand)
+    strand = StringProperty(choices=choices.strand, help_text=help_text.strand)
     start = IntegerProperty(help_text=help_text.start)
     stop = IntegerProperty(help_text=help_text.stop)
 

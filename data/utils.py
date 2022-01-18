@@ -73,11 +73,3 @@ class choices:
                  SMALL_RNA: 'small RNA (sRNA)', UNKNOWN: 'unknown'}
     regulatory_effect = {ACTIVATION: 'activation', REPRESSION: 'repression', DUAL: 'dual', UNKNOWN: 'unknown'}
     data_source_type = {LITERATURE: 'literature', DATABASE: 'database', CURATION: 'curation'}
-
-
-# noinspection PyPep8Naming
-class default:
-    strand = 'unknown'
-    mechanism = 'unknown'
-    regulatory_effect = 'unknown'
-    data_source_type = 'database'

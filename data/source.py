@@ -2,15 +2,15 @@ from neomodel import StringProperty, RelationshipTo, ArrayProperty
 
 from .base import BaseNode, RequiredNameMixIn
 from .relationships import REL_TYPE, SourceRelationship
-from .utils import help_text, choices, default
+from .utils import help_text, choices
 
 
 class Source(BaseNode, RequiredNameMixIn):
     entity = 'SRC'
 
     # properties
-    type = StringProperty(required=True, max_length=100, choices=choices.data_source_type,
-                          default=default.data_source_type, help_text=help_text.data_source_type)
+    type = StringProperty(required=True, choices=choices.data_source_type,
+                          help_text=help_text.data_source_type)
     url = StringProperty(max_length=300, help_text=help_text.url)
     doi = StringProperty(max_length=250, help_text=help_text.doi)
     authors = ArrayProperty(StringProperty(), help_text=help_text.source_author)

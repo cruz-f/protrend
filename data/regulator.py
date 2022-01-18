@@ -2,7 +2,7 @@ from neomodel import StringProperty, RelationshipTo, One
 
 from .base import BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn
 from .relationships import REL_TYPE, SourceRelationship
-from .utils import choices, help_text, default
+from .utils import choices, help_text
 
 
 class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
@@ -11,7 +11,6 @@ class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
 
     # properties
     mechanism = StringProperty(required=True, choices=choices.mechanism,
-                               default=default.mechanism, max_length=50,
                                help_text=help_text.mechanism)
 
     # properties inherited from GeneMixIn, SequenceMixIn, PositionMixIn
