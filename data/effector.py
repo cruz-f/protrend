@@ -15,3 +15,7 @@ class Effector(BaseNode, RequiredNameMixIn):
     data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
     regulator = RelationshipTo('.regulator.Regulator', REL_TYPE)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE)
+
+    class Meta(BaseNode.Meta):
+        fields = ['protrend_id', 'created', 'updated', 'name', 'kegg_compounds',
+                  'data_source', 'regulator', 'regulatory_interaction']
