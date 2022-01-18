@@ -6,6 +6,9 @@ TRANSCRIPTION_ATTENUATOR = 'TRANSCRIPTION ATTENUATOR'
 TRANSCRIPTION_TERMINATOR = 'TRANSCRIPTION TERMINATOR'
 SIGMA_FACTOR = 'SIGMA FACTOR'
 SMALL_RNA = 'SMALL RNA (sRNA)'
+ACTIVATION = 'ACTIVATION'
+REPRESSION = 'REPRESSION'
+DUAL = 'DUAL'
 
 
 # noinspection PyPep8Naming
@@ -47,6 +50,12 @@ class help_text:
     author = 'The main author of this publication'
     year = 'The year of this publication'
     rfam = 'The Regulatory Family (RFAM) name'
+    organism_id = 'The organism ProTReND identifier'
+    regulator_id = 'The regulator ProTReND identifier'
+    gene_id = 'The gene ProTReND identifier'
+    tfbs_id = 'The TFBS ProTReND identifier'
+    effector_id = 'The effector ProTReND identifier'
+    regulatory_effect = 'The regulatory effect (eg activation, repression, dual and unknown) of this regulatory interaction'
 
 
 # noinspection PyPep8Naming
@@ -55,9 +64,11 @@ class choices:
     mechanism = {TRANSCRIPTION_FACTOR: 'transcription factor', TRANSCRIPTION_ATTENUATOR: 'transcription attenuator',
                  TRANSCRIPTION_TERMINATOR: 'transcription terminator', SIGMA_FACTOR: 'sigma factor',
                  SMALL_RNA: 'small RNA (sRNA)', UNKNOWN: 'unknown'}
+    regulatory_effect = {ACTIVATION: 'activation', REPRESSION: 'repression', DUAL: 'dual', UNKNOWN: 'unknown'}
 
 
 # noinspection PyPep8Naming
 class default:
     strand = 'unknown'
     mechanism = 'unknown'
+    regulatory_effect = 'unknown'
