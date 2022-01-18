@@ -46,6 +46,7 @@ class help_text:
     title = 'The title of this publication'
     author = 'The main author of this publication'
     year = 'The year of this publication'
+    rfam = 'The Regulatory Family (RFAM) name'
 
 
 # noinspection PyPep8Naming
