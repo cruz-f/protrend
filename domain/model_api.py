@@ -88,6 +88,22 @@ def get_object(cls: _model_type, **kwargs) -> Union[_model, None]:
         return
 
 
+def get_first_object(cls: _model_type, *fields) -> Union[_model, None]:
+    objs = order_by_objects(cls, *fields)
+    if objs:
+        return objs[0]
+
+    return
+
+
+def get_last_object(cls: _model_type, *fields) -> Union[_model, None]:
+    objs = order_by_objects(cls, *fields)
+    if objs:
+        return objs[-1]
+
+    return
+
+
 def create_object(cls: _model_type, **kwargs) -> _model:
     """
     Create an object into the database according to the parameters
