@@ -1,20 +1,16 @@
 from django_neomodel import DjangoNode
 from neomodel import UniqueIdProperty, StringProperty, DateTimeProperty, ArrayProperty, IntegerProperty
 
-from .utils import help_text, choices
+from constants import help_text, choices
 
 
 class BaseNode(DjangoNode):
     __abstract_node__ = True
 
     uid = UniqueIdProperty()
-    protrend_id = StringProperty(required=True, unique_index=True)
-    created = DateTimeProperty(default_now=True)
-    updated = DateTimeProperty(default_now=True)
-
-    identifying_property = 'protrend_id'
-    header = 'PRT'
-    entity = 'PRT'
+    protrend_id = StringProperty(required=True, unique_index=True, help_text=help_text.protrend_id)
+    created = DateTimeProperty(default_now=True, help_text=help_text.created)
+    updated = DateTimeProperty(default_now=True, help_text=help_text.updated)
 
     class Meta:
         app_label = 'data'
