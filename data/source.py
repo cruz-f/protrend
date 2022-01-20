@@ -2,12 +2,10 @@ from neomodel import StringProperty, RelationshipTo, ArrayProperty
 
 from .base import BaseNode, RequiredNameMixIn
 from .relationships import REL_TYPE, SourceRelationship
-from .utils import help_text, choices
+from constants import help_text, choices
 
 
 class Source(BaseNode, RequiredNameMixIn):
-    entity = 'SRC'
-
     # properties
     type = StringProperty(required=True, choices=choices.data_source_type,
                           help_text=help_text.data_source_type)
