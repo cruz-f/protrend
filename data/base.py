@@ -12,10 +12,6 @@ class BaseNode(DjangoNode):
     created = DateTimeProperty(default_now=True)
     updated = DateTimeProperty(default_now=True)
 
-    identifying_property = 'protrend_id'
-    header = 'PRT'
-    entity = 'PRT'
-
     class Meta:
         app_label = 'data'
         order_by = ['protrend_id']

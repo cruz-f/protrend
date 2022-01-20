@@ -1,14 +1,11 @@
-from neomodel import StringProperty, RelationshipTo, One
+from neomodel import StringProperty, RelationshipTo, One, ZeroOrOne
 
 from .base import BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn
-from .relationships import REL_TYPE, SourceRelationship
+from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
 from .utils import choices, help_text
 
 
 class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
-    # base
-    entity = 'REG'
-
     # properties
     mechanism = StringProperty(required=True, choices=choices.mechanism,
                                help_text=help_text.mechanism)
@@ -17,15 +14,17 @@ class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
 
     # relationships
     data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    evidence = RelationshipTo('.evidence.Evidence', REL_TYPE)
-    publication = RelationshipTo('.publication.Publication', REL_TYPE)
-    pathway = RelationshipTo('.pathway.Pathway', REL_TYPE)
-    effector = RelationshipTo('.effector.Effector', REL_TYPE)
-    regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', REL_TYPE, cardinality=One)
-    organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One)
-    gene = RelationshipTo('.gene.Gene', REL_TYPE)
-    tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE)
-    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE)
+    evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, model=BaseRelationship)
+    publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
+    pathway = RelationshipTo('.pathway.Pathway', REL_TYPE, model=BaseRelationship)
+    effector = RelationshipTo('.effector.Effector', REL_TYPE, model=BaseRelationship)
+    regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', REL_TYPE, cardinality=ZeroOrOne,
+                                       model=BaseRelationship)
+    organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
+    gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
+    tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
+    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+                                            model=BaseRelationship)
 
     class Meta(BaseNode.Meta):
         fields = ['protrend_id', 'created', 'updated', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',

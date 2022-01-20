@@ -6,8 +6,6 @@ from .utils import help_text, choices
 
 
 class Source(BaseNode, RequiredNameMixIn):
-    entity = 'SRC'
-
     # properties
     type = StringProperty(required=True, choices=choices.data_source_type,
                           help_text=help_text.data_source_type)
