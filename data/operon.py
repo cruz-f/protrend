@@ -2,7 +2,7 @@ from neomodel import StringProperty, ArrayProperty, RelationshipTo, One
 
 from .base import BaseNode, PositionMixIn
 from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
-from .utils import help_text
+from constants import help_text
 
 
 class Operon(BaseNode, PositionMixIn):

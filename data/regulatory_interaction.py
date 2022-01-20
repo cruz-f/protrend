@@ -2,7 +2,7 @@ from neomodel import StringProperty, RelationshipTo, One
 
 from .base import BaseNode
 from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
-from .utils import help_text, choices
+from constants import help_text, choices
 
 
 class RegulatoryInteraction(BaseNode):

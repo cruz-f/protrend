@@ -1,7 +1,7 @@
 from django_neomodel import DjangoNode
 from neomodel import UniqueIdProperty, StringProperty, DateTimeProperty, ArrayProperty, IntegerProperty
 
-from .utils import help_text, choices
+from constants import help_text, choices
 
 
 class BaseNode(DjangoNode):

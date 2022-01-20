@@ -1,8 +1,8 @@
-from neomodel import StringProperty, RelationshipTo, One, ZeroOrOne
+from neomodel import StringProperty, RelationshipTo, ZeroOrOne
 
+from constants import choices, help_text
 from .base import BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn
 from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
-from .utils import choices, help_text
 
 
 class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):

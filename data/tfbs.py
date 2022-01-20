@@ -2,7 +2,7 @@ from neomodel import StringProperty, RelationshipTo, IntegerProperty, One
 
 from .base import BaseNode, SequenceMixIn, PositionMixIn
 from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
-from .utils import help_text
+from constants import help_text
 
 
 class TFBS(BaseNode, SequenceMixIn, PositionMixIn):
