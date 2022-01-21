@@ -1,5 +1,7 @@
 from typing import List, Dict, Any
 
+from rest_framework import status
+
 import domain.model_api as mapi
 from data import Effector
 from exceptions import ProtrendException
@@ -22,7 +24,8 @@ def create_effectors(*effectors: Dict[str, Any]) -> List[Effector]:
         if obj_name in names:
             raise ProtrendException(detail=f'Object with name {obj_name} already exists in the database and '
                                     f'has the following protrend_id: {obj.protrend_id}',
-                                    code='create error')
+                                    code='create error',
+                                    status=status.HTTP_400_BAD_REQUEST)
 
     if current_objs:
         last_obj = current_objs[-1]
@@ -60,7 +63,8 @@ def create_effector(**kwargs) -> Effector:
         if name == obj_name:
             raise ProtrendException(detail=f'Object with name {obj_name} already exists in the database and '
                                            f'has the following protrend_id: {obj.protrend_id}',
-                                    code='create error')
+                                    code='create error',
+                                    status=status.HTTP_400_BAD_REQUEST)
 
     if current_objs:
         last_obj = current_objs[-1]
@@ -80,7 +84,21 @@ def update_effector(effector: Effector, **kwargs) -> Effector:
     """
     if 'protrend_id' in kwargs:
         raise ProtrendException(detail=f'protrend_id read-only attribute cannot be altered',
-                                code='update error')
+                                code='update error',
+                                status=status.HTTP_400_BAD_REQUEST)
+
+    submitted_name = str(kwargs['name'])
+    name = apply_transformers(submitted_name, lower, rstrip, lstrip)
+
+    current_objs = mapi.order_by_objects(Effector, 'protrend_id')
+    for obj in current_objs:
+        obj_name = apply_transformers(obj.name, lower, rstrip, lstrip)
+        if name == obj_name:
+            raise ProtrendException(detail=f'Object with name {obj_name} already exists in the database and '
+                                           f'has the following protrend_id: {obj.protrend_id}',
+                                    code='update error',
+                                    status=status.HTTP_400_BAD_REQUEST)
+
     return mapi.update_object(effector, **kwargs)
 
 

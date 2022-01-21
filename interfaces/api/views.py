@@ -42,7 +42,7 @@ class ObjectListCreateMixIn:
 
         error = self.perform_create(serializer)
         if error is not None:
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error.message, status=error.status)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -53,8 +53,8 @@ class ObjectListCreateMixIn:
             serializer.save()
             return
 
-        except ProtrendException as e:
-            return e.error
+        except ProtrendException as error:
+            return error
 
     @staticmethod
     def get_success_headers(data):
@@ -98,7 +98,7 @@ class ObjectRetrieveUpdateDestroy:
 
         error = self.perform_update(serializer)
         if error is not None:
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error.message, status=error.status)
 
         return Response(serializer.data)
 
@@ -108,8 +108,8 @@ class ObjectRetrieveUpdateDestroy:
             serializer.save()
             return
 
-        except ProtrendException as e:
-            return e.error
+        except ProtrendException as error:
+            return error
 
     def patch(self, request, *args, **kwargs):
         kwargs['partial'] = True
@@ -124,7 +124,7 @@ class ObjectRetrieveUpdateDestroy:
         serializer = self.get_serializer(obj)
         error = self.perform_destroy(serializer, obj)
         if error is not None:
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+            return Response(error.message, status=error.status)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -134,8 +134,8 @@ class ObjectRetrieveUpdateDestroy:
             serializer.delete(obj)
             return
 
-        except ProtrendException as e:
-            return e.error
+        except ProtrendException as error:
+            return error
 
 
 # --------------------------------------------
