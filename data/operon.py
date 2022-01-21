@@ -10,6 +10,8 @@ class Operon(BaseNode, PositionMixIn):
 
     # properties
     operon_db_id = StringProperty(required=True, unique_index=True, max_length=50, help_text=help_text.operon_db_id)
+    operon_db_id_factor = StringProperty(required=True, unique_index=True, max_length=50,
+                                         help_text=help_text.operon_db_id)
     name = StringProperty(max_length=50, help_text=help_text.operon_name)
     function = StringProperty(max_length=250, help_text=help_text.operon_function)
     genes = ArrayProperty(StringProperty(), required=True, help_text=help_text.operon_genes)
