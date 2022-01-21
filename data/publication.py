@@ -8,6 +8,7 @@ from constants import help_text
 class Publication(BaseNode):
     # properties
     pmid = IntegerProperty(required=True, unique_index=True, help_text=help_text.pmid)
+    pmid_factor = IntegerProperty(required=True, unique_index=True, help_text=help_text.pmid)
     doi = StringProperty(max_length=250, help_text=help_text.doi)
     title = StringProperty(max_length=500, help_text=help_text.title)
     author = StringProperty(max_length=250, help_text=help_text.author)
