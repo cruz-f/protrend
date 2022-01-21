@@ -8,6 +8,10 @@ def apply_transformers(item: Any, *transformers: Callable) -> Any:
     return item
 
 
+def to_str(item: Any) -> str:
+    return str(item)
+
+
 def lower(item: str) -> str:
     return item.lower()
 
