@@ -10,8 +10,8 @@ from constants import help_text, choices
 # --------------------------------------
 class BaseSerializer(serializers.Serializer):
     # properties
-    protrend_id = serializers.CharField(required=True, unique_index=True, help_text=help_text.protrend_id)
-    created = serializers.DateTimeField(default_now=True, help_text=help_text.created)
+    protrend_id = serializers.CharField(read_only=True, unique_index=True, help_text=help_text.protrend_id)
+    created = serializers.DateTimeField(read_only=True, default_now=True, help_text=help_text.created)
     updated = serializers.DateTimeField(default_now=True, help_text=help_text.updated)
 
     def update(self, instance, validated_data):
@@ -276,7 +276,7 @@ class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
 
 class RegulatoryInteraction(BaseSerializer):
     # properties
-    regulatory_interaction_hash = serializers.CharField(required=True, max_length=600)
+    regulatory_interaction_hash = serializers.CharField(read_only=True, max_length=600)
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
     gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
@@ -303,7 +303,7 @@ class RegulatoryInteraction(BaseSerializer):
 
 class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSerializer):
     # properties
-    site_hash = serializers.CharField(required=True, max_length=600)
+    site_hash = serializers.CharField(read_only=True, max_length=600)
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     length = serializers.IntegerField(required=True, help_text=help_text.length)
 

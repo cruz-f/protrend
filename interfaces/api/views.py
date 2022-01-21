@@ -1,28 +1,30 @@
-from django.http import Http404
+from typing import Type, Callable, List, Union
+
+from django.db.models import Model
+from django_neomodel import DjangoNode
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
-from rest_framework.views import APIView
 
 from .permissions import SuperUserOrReadOnly
 
 
-class ObjectList(APIView):
+class ObjectList:
     """
-    List all objects and allows creating new ones.
+    View to list and create ProTReND database objects.
     """
-    serializer_class = Serializer
-    query = None
+    serializer_class: Type[Serializer] = None
+    queryset: Callable = None
     permission_classes = [SuperUserOrReadOnly]
 
+    def get_queryset(self) -> List[DjangoNode, Model]:
+        return self.queryset()
+
     def get(self, request):
-        objs = self.query()
+        objs = self.get_queryset()
         serializer = self.serializer_class(objs, many=True)
         return Response(serializer.data)
 
-    # TODO: Try to fetch an equal record from the database.
-    #  If there is no records infer the next protrend id and create node.
-    #  Otherwise, raise an already exists error
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -31,23 +33,25 @@ class ObjectList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ObjectDetail(APIView):
+class ObjectDetail:
     """
-    Retrieve, update or delete an object instance.
+    View to retrieve, update and delete ProTReND database objects.
     """
-    serializer_class = Serializer
-    model = None
-    query = None
+    serializer_class: Type[Serializer] = None
+    queryset: Callable = None
     permission_classes = [SuperUserOrReadOnly]
 
+    def get_queryset(self, protrend_id) -> Union[DjangoNode, Model]:
+        return self.queryset(protrend_id)
+
     def get_object(self, protrend_id):
-        try:
-            return self.query(protrend_id)
-        except self.model.DoesNotExist:
-            raise Http404
+        return self.get_queryset(protrend_id)
 
     def get(self, request, protrend_id):
         obj = self.get_object(protrend_id)
+        if obj is None:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = self.serializer_class(obj)
         return Response(serializer.data)
 
