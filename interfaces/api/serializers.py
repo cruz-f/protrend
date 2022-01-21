@@ -101,6 +101,10 @@ class EffectorSerializer(BaseSerializer, NameMixInSerializer):
     def update(self, instance, validated_data):
         return papi.update_effector(instance, **validated_data)
 
+    @staticmethod
+    def delete(instance):
+        return papi.delete_effector(instance)
+
 
 class EvidenceSerializer(BaseSerializer, NameMixInSerializer):
     # properties
@@ -119,6 +123,10 @@ class EvidenceSerializer(BaseSerializer, NameMixInSerializer):
 
     def update(self, instance, validated_data):
         return papi.update_evidence(instance, **validated_data)
+
+    @staticmethod
+    def delete(instance):
+        return papi.delete_evidence(instance)
 
 
 class GeneSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer):
@@ -142,6 +150,9 @@ class GeneSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerialize
     def update(self, instance, validated_data):
         return papi.update_gene(instance, **validated_data)
 
+    @staticmethod
+    def delete(instance):
+        return papi.delete_gene(instance)
 
 class OperonSerializer(BaseSerializer, PositionMixInSerializer):
     # properties inherited from PositionMixInSerializer
@@ -165,6 +176,10 @@ class OperonSerializer(BaseSerializer, PositionMixInSerializer):
 
     def update(self, instance, validated_data):
         return papi.update_operon(instance, **validated_data)
+
+    @staticmethod
+    def delete(instance):
+        return papi.delete_operon(instance)
 
 
 class OrganismSerializer(BaseSerializer):
@@ -194,6 +209,10 @@ class OrganismSerializer(BaseSerializer):
     def update(self, instance, validated_data):
         return papi.update_organism(instance, **validated_data)
 
+    @staticmethod
+    def delete(instance):
+        return papi.delete_organism(instance)
+
 
 class PathwaySerializer(BaseSerializer, NameMixInSerializer):
     # properties
@@ -209,6 +228,10 @@ class PathwaySerializer(BaseSerializer, NameMixInSerializer):
 
     def update(self, instance, validated_data):
         return papi.update_pathway(instance, **validated_data)
+
+    @staticmethod
+    def delete(instance):
+        return papi.delete_pathway(instance)
 
 
 class Publication(BaseSerializer):
@@ -232,6 +255,10 @@ class Publication(BaseSerializer):
 
     def update(self, instance, validated_data):
         return papi.update_publication(instance, **validated_data)
+
+    @staticmethod
+    def delete(instance):
+        return papi.delete_publication(instance)
 
 
 class RegulatorSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer):
@@ -260,6 +287,10 @@ class RegulatorSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSeri
     def update(self, instance, validated_data):
         return papi.update_regulator(instance, **validated_data)
 
+    @staticmethod
+    def delete(instance):
+        return papi.delete_regulator(instance)
+
 
 class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
     # properties
@@ -277,6 +308,10 @@ class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
 
     def update(self, instance, validated_data):
         return papi.update_rfam(instance, **validated_data)
+
+    @staticmethod
+    def delete(instance):
+        return papi.delete_rfam(instance)
 
 
 class RegulatoryInteraction(BaseSerializer):
@@ -305,6 +340,10 @@ class RegulatoryInteraction(BaseSerializer):
     def update(self, instance, validated_data):
         return papi.update_interaction(instance, **validated_data)
 
+    @staticmethod
+    def delete(instance):
+        return papi.delete_interaction(instance)
+
 
 class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSerializer):
     # properties
@@ -326,3 +365,7 @@ class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSeria
 
     def update(self, instance, validated_data):
         return papi.update_biding_site(instance, **validated_data)
+
+    @staticmethod
+    def delete(instance):
+        return papi.delete_biding_site(instance)
