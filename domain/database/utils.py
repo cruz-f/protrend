@@ -11,9 +11,3 @@ def protrend_id_decoder(protrend_id: str) -> int:
     prt, entity, integer = protrend_id.split('.')
 
     return int(integer)
-
-
-def protrend_identifiers_batch(header: str, entity: str, start: Union[str, int], size: int) -> List[str]:
-
-    return [protrend_id_encoder(header, entity, i)
-            for i in range(start, start + size)]
