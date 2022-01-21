@@ -7,7 +7,7 @@ from constants import help_text
 
 class Organism(BaseNode):
     # properties
-    name = StringProperty(required=True, max_length=200, help_text=help_text.organism_name)
+    name = StringProperty(required=True, unique_index=True, max_length=200, help_text=help_text.organism_name)
     ncbi_taxonomy = IntegerProperty(help_text=help_text.ncbi_taxonomy)
     species = StringProperty(max_length=150, help_text=help_text.species)
     strain = StringProperty(max_length=150, help_text=help_text.strain)

@@ -1,11 +1,11 @@
 from neomodel import StringProperty, RelationshipTo
 
-from .base import BaseNode, RequiredNameMixIn
+from .base import BaseNode, NameMixIn
 from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
 from constants import help_text, choices
 
 
-class RegulatoryFamily(BaseNode, RequiredNameMixIn):
+class RegulatoryFamily(BaseNode, NameMixIn):
     # properties
     mechanism = StringProperty(required=True, choices=choices.mechanism,
                                help_text=help_text.mechanism)

@@ -1,11 +1,11 @@
 from neomodel import ArrayProperty, StringProperty, RelationshipTo
 
-from .base import BaseNode, RequiredNameMixIn
+from .base import BaseNode, NameMixIn
 from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
 from constants import help_text
 
 
-class Pathway(BaseNode, RequiredNameMixIn):
+class Pathway(BaseNode, NameMixIn):
     # properties
     kegg_pathways = ArrayProperty(StringProperty(), help_text=help_text.kegg_pathways)
 

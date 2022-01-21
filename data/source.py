@@ -1,11 +1,11 @@
 from neomodel import StringProperty, RelationshipTo, ArrayProperty
 
-from .base import BaseNode, RequiredNameMixIn
+from .base import BaseNode, NameMixIn
 from .relationships import REL_TYPE, SourceRelationship
 from constants import help_text, choices
 
 
-class Source(BaseNode, RequiredNameMixIn):
+class Source(BaseNode, NameMixIn):
     # properties
     type = StringProperty(required=True, choices=choices.data_source_type,
                           help_text=help_text.data_source_type)

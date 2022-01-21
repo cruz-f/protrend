@@ -1,11 +1,11 @@
 from neomodel import StringProperty, RelationshipTo
 
-from .base import BaseNode, RequiredNameMixIn
+from .base import BaseNode, NameMixIn
 from .relationships import REL_TYPE, BaseRelationship
 from constants import help_text
 
 
-class Evidence(BaseNode, RequiredNameMixIn):
+class Evidence(BaseNode, NameMixIn):
     # properties
     description = StringProperty(help_text=help_text.generic_description)
 
