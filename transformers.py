@@ -18,4 +18,3 @@ def rstrip(item: str) -> str:
 
 def lstrip(item: str) -> str:
     return item.lstrip()
-
