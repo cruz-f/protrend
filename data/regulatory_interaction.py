@@ -1,7 +1,7 @@
 from neomodel import StringProperty, RelationshipTo, One
 
 from .base import BaseNode
-from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
+from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
 from constants import help_text, choices
 
 
@@ -17,14 +17,14 @@ class RegulatoryInteraction(BaseNode):
                                        help_text=help_text.regulatory_effect)
 
     # relationships
-    data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, model=BaseRelationship)
-    publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    data_effector = RelationshipTo('.effector.Effector', REL_TYPE, cardinality=One, model=BaseRelationship)
-    data_organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One, model=BaseRelationship)
-    data_regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, cardinality=One, model=BaseRelationship)
-    data_gene = RelationshipTo('.gene.Gene', REL_TYPE, cardinality=One, model=BaseRelationship)
-    data_tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, model=SourceRelationship)
+    evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
+    publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    data_effector = RelationshipTo('.effector.Effector', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
 
     class Meta(BaseNode.Meta):
         fields = ['protrend_id', 'created', 'updated', 'organism', 'regulator', 'gene', 'tfbs', 'effector',

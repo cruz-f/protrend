@@ -1,7 +1,7 @@
 from neomodel import StringProperty, RelationshipTo
 
 from .base import BaseNode, NameMixIn
-from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
+from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
 from constants import help_text, choices
 
 
@@ -13,9 +13,9 @@ class RegulatoryFamily(BaseNode, NameMixIn):
     description = StringProperty(help_text=help_text.generic_description)
 
     # relationships
-    data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
+    data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, model=SourceRelationship)
+    publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
 
     class Meta(BaseNode.Meta):
         fields = ['protrend_id', 'created', 'updated', 'name', 'mechanism', 'rfam', 'description',

@@ -1,7 +1,7 @@
 from neomodel import StringProperty, IntegerProperty, RelationshipTo
 
 from .base import BaseNode
-from .relationships import REL_TYPE, BaseRelationship
+from .relationships import BASE_REL_TYPE, BaseRelationship
 from constants import help_text
 
 
@@ -14,12 +14,12 @@ class Publication(BaseNode):
     year = IntegerProperty(help_text=help_text.year)
 
     # relationships
-    regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', REL_TYPE, model=BaseRelationship)
-    regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    operon = RelationshipTo('.operon.Operon', REL_TYPE, model=BaseRelationship)
-    gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', BASE_REL_TYPE, model=BaseRelationship)
+    regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
+    gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
 
     class Meta(BaseNode.Meta):

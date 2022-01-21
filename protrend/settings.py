@@ -128,7 +128,7 @@ REST_FRAMEWORK = {
 }
 
 # django-neomodel settings
-NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:protrend@localhost:7687'
+NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:pass@palsson.di.uminho.pt:4750'
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50

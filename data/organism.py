@@ -1,7 +1,7 @@
 from neomodel import StringProperty, IntegerProperty, RelationshipTo
 
 from .base import BaseNode
-from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
+from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
 from constants import help_text
 
 
@@ -19,12 +19,12 @@ class Organism(BaseNode):
     assembly_accession = StringProperty(max_length=50, help_text=help_text.assembly_accession)
 
     # relationships
-    data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    operon = RelationshipTo('.operon.Operon', REL_TYPE, model=BaseRelationship)
-    regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, model=SourceRelationship)
+    operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
+    regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
 
     class Meta(BaseNode.Meta):

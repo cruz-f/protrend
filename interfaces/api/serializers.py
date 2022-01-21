@@ -87,9 +87,9 @@ class EffectorSerializer(BaseSerializer, NameMixInSerializer):
     kegg_compounds = serializers.ListField(child=serializers.CharField(), help_text=help_text.kegg_compounds)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
 
     def create(self, validated_data):
@@ -104,11 +104,11 @@ class EvidenceSerializer(BaseSerializer, NameMixInSerializer):
     description = serializers.CharField(help_text=help_text.generic_description)
 
     # # relationships
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # operon = RelationshipTo('.operon.Operon', REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
 
     def create(self, validated_data):
@@ -122,15 +122,15 @@ class GeneSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerialize
     # properties inherited from GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    # pathway = RelationshipTo('.pathway.Pathway', REL_TYPE, model=BaseRelationship)
-    # operon = RelationshipTo('.operon.Operon', REL_TYPE, model=BaseRelationship)
-    # organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
+    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    # pathway = RelationshipTo('.pathway.Pathway', BASE_REL_TYPE, model=BaseRelationship)
+    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
+    # organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
 
     def create(self, validated_data):
@@ -150,11 +150,11 @@ class OperonSerializer(BaseSerializer, PositionMixInSerializer):
     genes = serializers.ListField(child=serializers.CharField(), required=True, help_text=help_text.operon_genes)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, cardinality=One, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    # organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, cardinality=One, model=SourceRelationship)
+    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    # organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
 
     def create(self, validated_data):
         return papi.create_operon(**validated_data)
@@ -177,12 +177,12 @@ class OrganismSerializer(BaseSerializer):
     assembly_accession = serializers.CharField(max_length=50, help_text=help_text.assembly_accession)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # operon = RelationshipTo('.operon.Operon', REL_TYPE, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_organism(**validated_data)
@@ -196,9 +196,9 @@ class PathwaySerializer(BaseSerializer, NameMixInSerializer):
     kegg_pathways = serializers.ListField(child=serializers.CharField(), help_text=help_text.kegg_pathways)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_pathway(**validated_data)
 
@@ -215,12 +215,12 @@ class Publication(BaseSerializer):
     year = serializers.IntegerField(help_text=help_text.year)
 
     # # relationships
-    # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', REL_TYPE, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # operon = RelationshipTo('.operon.Operon', REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', BASE_REL_TYPE, model=BaseRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_publication(**validated_data)
@@ -237,17 +237,17 @@ class RegulatorSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSeri
     # properties inherited from GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    # pathway = RelationshipTo('.pathway.Pathway', REL_TYPE, model=BaseRelationship)
-    # effector = RelationshipTo('.effector.Effector', REL_TYPE, model=BaseRelationship)
-    # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', REL_TYPE, cardinality=ZeroOrOne,
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
+    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    # pathway = RelationshipTo('.pathway.Pathway', BASE_REL_TYPE, model=BaseRelationship)
+    # effector = RelationshipTo('.effector.Effector', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', BASE_REL_TYPE, cardinality=ZeroOrOne,
     #                                    model=BaseRelationship)
-    # organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_regulator(**validated_data)
@@ -264,9 +264,9 @@ class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
     description = serializers.CharField(help_text=help_text.generic_description)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_rfam(**validated_data)
 
@@ -286,14 +286,14 @@ class RegulatoryInteraction(BaseSerializer):
                                               help_text=help_text.regulatory_effect)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    # data_effector = RelationshipTo('.effector.Effector', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_gene = RelationshipTo('.gene.Gene', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_tfbs = RelationshipTo('.tfbs.TFBS', REL_TYPE, cardinality=One, model=BaseRelationship)
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
+    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    # data_effector = RelationshipTo('.effector.Effector', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # data_regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # data_gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # data_tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_interaction(**validated_data)
 
@@ -308,13 +308,13 @@ class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSeria
     length = serializers.IntegerField(required=True, help_text=help_text.length)
 
     # # relationships
-    # data_source = RelationshipTo('.source.Source', REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    # data_organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', REL_TYPE,
+    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
+    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
+    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    # data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
+    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
+    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
     def create(self, validated_data):
         return papi.update_biding_site(**validated_data)

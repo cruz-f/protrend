@@ -1,7 +1,7 @@
 from neomodel import StringProperty, ArrayProperty, RelationshipTo, One
 
 from .base import BaseNode, PositionMixIn
-from .relationships import REL_TYPE, SourceRelationship, BaseRelationship
+from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
 from constants import help_text
 
 
@@ -15,11 +15,11 @@ class Operon(BaseNode, PositionMixIn):
     genes = ArrayProperty(StringProperty(), required=True, help_text=help_text.operon_genes)
 
     # relationships
-    data_source = RelationshipTo('.source.Source', REL_TYPE, cardinality=One, model=SourceRelationship)
-    evidence = RelationshipTo('.evidence.Evidence', REL_TYPE, cardinality=One, model=BaseRelationship)
-    publication = RelationshipTo('.publication.Publication', REL_TYPE, model=BaseRelationship)
-    organism = RelationshipTo('.organism.Organism', REL_TYPE, cardinality=One, model=BaseRelationship)
-    gene = RelationshipTo('.gene.Gene', REL_TYPE, model=BaseRelationship)
+    data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, cardinality=One, model=SourceRelationship)
+    evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
+    organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
 
     class Meta(BaseNode.Meta):
         fields = ['protrend_id', 'created', 'updated', 'operon_db_id', 'name', 'function', 'genes',
