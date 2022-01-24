@@ -1,6 +1,3 @@
-# -----------------
-# VALIDATION TESTS
-# -----------------
 from typing import Callable, List, Type
 
 from django_neomodel import DjangoNode
@@ -12,38 +9,43 @@ from exceptions import ProtrendException
 from transformers import apply_transformers, to_str, lower, rstrip, lstrip
 
 
+# ------------------------------------------------
+# VALIDATION OF THE DATABASE UNIQUE CONSTRAINS
+# ------------------------------------------------
 def _validate_factor(value: str, transformers: List[Callable]):
     return apply_transformers(value, *transformers)
 
 
 def _validate_duplicates(value: str, transformers: List[Callable], node_cls: Type[DjangoNode], key: str):
     value = apply_transformers(value, *transformers)
-    return mapi.get_object(node_cls, **{key: value})
-
-
-def _sanitize_protrend_idx(node_cls: Type[DjangoNode]):
-    last_obj = mapi.get_last_object(node_cls, 'protrend_id')
-
-    if last_obj:
-        return protrend_id_decoder(last_obj.protrend_id) + 1
-    else:
-        return 1
-
-
-def _validate_kwargs_by_name(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
-    kwargs = kwargs.copy()
-    obj = _validate_duplicates(value=kwargs['name'],
-                               transformers=[to_str, lower, rstrip, lstrip],
-                               node_cls=node_cls,
-                               key='name_factor')
-
+    obj = mapi.get_object(node_cls, **{key: value})
     if obj is not None:
-        raise ProtrendException(detail=f'Object with name {obj.name} already exists in the database and '
-                                       f'has the following protrend_id: {obj.protrend_id}',
+        raise ProtrendException(detail=f'Duplicated issue. There is a similar entry in the database with this {value} '
+                                       f'value. Please check the following protrend_id: {obj.protrend_id}.',
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    idx = _sanitize_protrend_idx(node_cls)
+
+def _get_last_idx(node_cls: Type[DjangoNode]) -> int:
+    last_obj = mapi.get_last_object(node_cls, 'protrend_id')
+
+    if last_obj:
+        return protrend_id_decoder(last_obj.protrend_id)
+    else:
+        return 0
+
+
+# ------------------------------------------------
+# VALIDATION OF THE NAME ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_name(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    _validate_duplicates(value=kwargs['name'],
+                         transformers=[to_str, lower, rstrip, lstrip],
+                         node_cls=node_cls,
+                         key='name_factor')
+
+    idx = _get_last_idx(node_cls) + 1
     new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
     kwargs['protrend_id'] = new_id
 
@@ -55,20 +57,14 @@ def _validate_kwargs_by_name(kwargs: dict, node_cls: Type[DjangoNode], header: s
 def _validate_args_by_name(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
     args = tuple(args)
     for arg in args:
-        obj = _validate_duplicates(value=arg['name'],
-                                   transformers=[to_str, lower, rstrip, lstrip],
-                                   node_cls=node_cls,
-                                   key='name_factor')
+        _validate_duplicates(value=arg['name'],
+                             transformers=[to_str, lower, rstrip, lstrip],
+                             node_cls=node_cls,
+                             key='name_factor')
 
-        if obj is not None:
-            raise ProtrendException(detail=f'Object with name {obj.name} already exists in the database and '
-                                           f'has the following protrend_id: {obj.protrend_id}',
-                                    code='create error',
-                                    status=status.HTTP_400_BAD_REQUEST)
-    idx = _sanitize_protrend_idx(node_cls)
-
+    idx = _get_last_idx(node_cls) + 1
     for i, arg in enumerate(args):
-        i = i + idx + 1
+        i = idx + i
         new_id = protrend_id_encoder(header=header, entity=entity, integer=i)
         arg['protrend_id'] = new_id
 
