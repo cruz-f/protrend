@@ -36,31 +36,30 @@ def _get_last_idx(node_cls: Type[DjangoNode]) -> int:
 
 
 # ------------------------------------------------
-# VALIDATION OF THE NAME ATTRIBUTE
+# VALIDATION OF UNIQUENESS BY LOWER AND STRIP
 # ------------------------------------------------
-def _validate_kwargs_by_name(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
-    kwargs = kwargs.copy()
-    _validate_duplicates(value=kwargs['name'],
+def _validate_kwargs_str(kwargs: dict, factor: str, node_cls: Type[DjangoNode], header: str, entity: str):
+    _validate_duplicates(value=kwargs[factor],
                          transformers=[to_str, lower, rstrip, lstrip],
                          node_cls=node_cls,
-                         key='name_factor')
+                         key=f'{factor}_factor')
 
     idx = _get_last_idx(node_cls) + 1
     new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
     kwargs['protrend_id'] = new_id
 
-    new_factor = _validate_factor(value=kwargs['name'], transformers=[to_str, lower, rstrip, lstrip])
-    kwargs['name_factor'] = new_factor
+    new_factor = _validate_factor(value=kwargs[factor], transformers=[to_str, lower, rstrip, lstrip])
+    kwargs[f'{factor}_factor'] = new_factor
     return kwargs
 
 
-def _validate_args_by_name(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+def _validate_args_str(args: tuple, factor: str, node_cls: Type[DjangoNode], header: str, entity: str):
     args = tuple(args)
     for arg in args:
-        _validate_duplicates(value=arg['name'],
+        _validate_duplicates(value=arg[factor],
                              transformers=[to_str, lower, rstrip, lstrip],
                              node_cls=node_cls,
-                             key='name_factor')
+                             key=f'{factor}_factor')
 
     idx = _get_last_idx(node_cls) + 1
     for i, arg in enumerate(args):
@@ -68,10 +67,23 @@ def _validate_args_by_name(args: tuple, node_cls: Type[DjangoNode], header: str,
         new_id = protrend_id_encoder(header=header, entity=entity, integer=i)
         arg['protrend_id'] = new_id
 
-        new_factor = _validate_factor(value=arg['name'], transformers=[to_str, lower, rstrip, lstrip])
-        arg['name_factor'] = new_factor
+        new_factor = _validate_factor(value=arg[factor], transformers=[to_str, lower, rstrip, lstrip])
+        arg[f'{factor}_factor'] = new_factor
 
     return args
+
+
+# ------------------------------------------------
+# VALIDATION OF THE NAME ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_name(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    return _validate_kwargs_str(kwargs=kwargs, factor='name', node_cls=node_cls, header=header, entity=entity)
+
+
+def _validate_args_by_name(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+    args = tuple(args)
+    return _validate_args_str(args=args, factor='name', node_cls=node_cls, header=header, entity=entity)
 
 
 # ------------------------------------------------
@@ -79,38 +91,12 @@ def _validate_args_by_name(args: tuple, node_cls: Type[DjangoNode], header: str,
 # ------------------------------------------------
 def _validate_kwargs_by_locus_tag(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
     kwargs = kwargs.copy()
-    _validate_duplicates(value=kwargs['locus_tag'],
-                         transformers=[to_str, lower, rstrip, lstrip],
-                         node_cls=node_cls,
-                         key='locus_tag_factor')
-
-    idx = _get_last_idx(node_cls) + 1
-    new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
-    kwargs['protrend_id'] = new_id
-
-    new_factor = _validate_factor(value=kwargs['locus_tag'], transformers=[to_str, lower, rstrip, lstrip])
-    kwargs['locus_tag_factor'] = new_factor
-    return kwargs
+    return _validate_kwargs_str(kwargs=kwargs, factor='locus_tag', node_cls=node_cls, header=header, entity=entity)
 
 
 def _validate_args_by_locus_tag(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
     args = tuple(args)
-    for arg in args:
-        _validate_duplicates(value=arg['locus_tag'],
-                             transformers=[to_str, lower, rstrip, lstrip],
-                             node_cls=node_cls,
-                             key='locus_tag_factor')
-
-    idx = _get_last_idx(node_cls) + 1
-    for i, arg in enumerate(args):
-        i = idx + i
-        new_id = protrend_id_encoder(header=header, entity=entity, integer=i)
-        arg['protrend_id'] = new_id
-
-        new_factor = _validate_factor(value=arg['locus_tag'], transformers=[to_str, lower, rstrip, lstrip])
-        arg['locus_tag_factor'] = new_factor
-
-    return args
+    return _validate_args_str(args=args, factor='locus_tag', node_cls=node_cls, header=header, entity=entity)
 
 
 # ------------------------------------------------
