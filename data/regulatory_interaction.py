@@ -7,7 +7,8 @@ from constants import help_text, choices
 
 class RegulatoryInteraction(BaseNode):
     # properties
-    regulatory_interaction_hash = StringProperty(required=True, unique_index=True, max_length=600)
+    interaction_hash = StringProperty(required=True, unique_index=True, max_length=600)
+    interaction_hash_factor = StringProperty(required=True, unique_index=True, max_length=600)
     organism = StringProperty(required=True, max_length=100, help_text=help_text.organism_id)
     regulator = StringProperty(required=True, max_length=100, help_text=help_text.regulator_id)
     gene = StringProperty(required=True, max_length=100, help_text=help_text.gene_id)
