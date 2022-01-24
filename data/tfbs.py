@@ -8,6 +8,7 @@ from constants import help_text
 class TFBS(BaseNode, SequenceMixIn, PositionMixIn):
     # properties
     site_hash = StringProperty(required=True, unique_index=True, max_length=600)
+    site_hash_factor = StringProperty(required=True, unique_index=True, max_length=600)
     organism = StringProperty(required=True, max_length=100, help_text=help_text.organism_id)
     length = IntegerProperty(required=True, help_text=help_text.length)
 
