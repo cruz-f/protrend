@@ -72,3 +72,72 @@ def _validate_args_by_name(args: tuple, node_cls: Type[DjangoNode], header: str,
         arg['name_factor'] = new_factor
 
     return args
+
+
+# ------------------------------------------------
+# VALIDATION OF THE LOCUS TAG ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_locus_tag(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    _validate_duplicates(value=kwargs['locus_tag'],
+                         transformers=[to_str, lower, rstrip, lstrip],
+                         node_cls=node_cls,
+                         key='locus_tag_factor')
+
+    idx = _get_last_idx(node_cls) + 1
+    new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
+    kwargs['protrend_id'] = new_id
+
+    new_factor = _validate_factor(value=kwargs['locus_tag'], transformers=[to_str, lower, rstrip, lstrip])
+    kwargs['locus_tag_factor'] = new_factor
+    return kwargs
+
+
+def _validate_args_by_locus_tag(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+    args = tuple(args)
+    for arg in args:
+        _validate_duplicates(value=arg['locus_tag'],
+                             transformers=[to_str, lower, rstrip, lstrip],
+                             node_cls=node_cls,
+                             key='locus_tag_factor')
+
+    idx = _get_last_idx(node_cls) + 1
+    for i, arg in enumerate(args):
+        i = idx + i
+        new_id = protrend_id_encoder(header=header, entity=entity, integer=i)
+        arg['protrend_id'] = new_id
+
+        new_factor = _validate_factor(value=arg['locus_tag'], transformers=[to_str, lower, rstrip, lstrip])
+        arg['locus_tag_factor'] = new_factor
+
+    return args
+
+
+# ------------------------------------------------
+# VALIDATION OF THE UNIPROT ACCESSION ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_uniprot_accession(kwargs: dict, node_cls: Type[DjangoNode]):
+    kwargs = kwargs.copy()
+    _validate_duplicates(value=kwargs['uniprot_accession'],
+                         transformers=[to_str, lower, rstrip, lstrip],
+                         node_cls=node_cls,
+                         key='uniprot_accession_factor')
+
+    new_factor = _validate_factor(value=kwargs['uniprot_accession'], transformers=[to_str, lower, rstrip, lstrip])
+    kwargs['uniprot_accession_factor'] = new_factor
+    return kwargs
+
+
+def _validate_args_by_uniprot_accession(args: tuple, node_cls: Type[DjangoNode]):
+    args = tuple(args)
+    for arg in args:
+        _validate_duplicates(value=arg['uniprot_accession'],
+                             transformers=[to_str, lower, rstrip, lstrip],
+                             node_cls=node_cls,
+                             key='uniprot_accession_factor')
+
+    for arg in args:
+        new_factor = _validate_factor(value=arg['uniprot_accession'], transformers=[to_str, lower, rstrip, lstrip])
+        arg['uniprot_accession_factor'] = new_factor
+
+    return args
