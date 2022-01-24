@@ -127,3 +127,16 @@ def _validate_args_by_uniprot_accession(args: tuple, node_cls: Type[DjangoNode])
         arg['uniprot_accession_factor'] = new_factor
 
     return args
+
+
+# ------------------------------------------------
+# VALIDATION OF THE OPERON DB ID ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_operon_db_id(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    return _validate_kwargs_str(kwargs=kwargs, factor='operon_db_id', node_cls=node_cls, header=header, entity=entity)
+
+
+def _validate_args_by_operon_db_id(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+    args = tuple(args)
+    return _validate_args_str(args=args, factor='operon_db_id', node_cls=node_cls, header=header, entity=entity)
