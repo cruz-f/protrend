@@ -21,19 +21,27 @@ lookup_queries = {'organism': get_organism_by_id, 'regulator': get_regulator_by_
                   'gene': get_gene_by_id, 'tfbs': get_biding_site_by_id, 'effector': get_effector_by_id}
 
 
+def _validate_submitted_objects(interaction: dict):
+    for key, lookup in lookup_queries.items():
+
+        if key not in interaction:
+            continue
+
+        lookup_value = interaction[key]
+        obj = lookup(lookup_value)
+        if obj is None:
+            raise ProtrendException(detail=f'The submitted {lookup_value} protrend id for the property {key} '
+                                           f'was not found in the database.',
+                                    code='create or update error',
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+
 def create_interactions(*interactions: Dict[str, Any]) -> List[RegulatoryInteraction]:
     """
     Create interactions into the database
     """
     for interaction in interactions:
-        for key, lookup in lookup_queries.items():
-            lookup_value = interaction[key]
-            obj = lookup(lookup_value)
-            if obj is None:
-                raise ProtrendException(detail=f'The submitted {lookup_value} protrend id for the property {key} '
-                                               f'was not found in the database.',
-                                        code='create or update error',
-                                        status=status.HTTP_400_BAD_REQUEST)
+        _validate_submitted_objects(interaction)
 
     interactions = _validate_args_by_interaction_hash(args=interactions, node_cls=RegulatoryInteraction,
                                                       header=_HEADER, entity=_ENTITY)
@@ -51,14 +59,7 @@ def create_interaction(**kwargs) -> RegulatoryInteraction:
     """
     Create a given interaction into the database according to the parameters
     """
-    for key, lookup in lookup_queries.items():
-        lookup_value = kwargs[key]
-        obj = lookup(lookup_value)
-        if obj is None:
-            raise ProtrendException(detail=f'The submitted {lookup_value} protrend id for the property {key} '
-                                           f'was not found in the database.',
-                                    code='create or update error',
-                                    status=status.HTTP_400_BAD_REQUEST)
+    _validate_submitted_objects(kwargs)
     kwargs = _validate_kwargs_by_interaction_hash(kwargs=kwargs, node_cls=RegulatoryInteraction,
                                                   header=_HEADER, entity=_ENTITY)
     return mapi.create_object(RegulatoryInteraction, **kwargs)
@@ -73,22 +74,11 @@ def update_interaction(interaction: RegulatoryInteraction, **kwargs) -> Regulato
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    for key, value in kwargs.items():
-        if key not in lookup_queries:
-            continue
-
-        lookup = lookup_queries[key]
-        obj = lookup(value)
-        if obj is None:
-            raise ProtrendException(detail=f'The submitted {value} protrend id for the property {key} '
-                                           f'was not found in the database.',
-                                    code='create or update error',
-                                    status=status.HTTP_400_BAD_REQUEST)
+    _validate_submitted_objects(kwargs)
 
     # the protrend hash must always be regenerated
     kwargs = _validate_kwargs_by_interaction_hash(kwargs=kwargs, node_cls=RegulatoryInteraction,
                                                   header=_HEADER, entity=_ENTITY)
-
     return mapi.update_object(interaction, **kwargs)
 
 
