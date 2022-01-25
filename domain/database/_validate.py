@@ -54,7 +54,6 @@ def _validate_kwargs_str(kwargs: dict, factor: str, node_cls: Type[DjangoNode], 
 
 
 def _validate_args_str(args: tuple, factor: str, node_cls: Type[DjangoNode], header: str, entity: str):
-    args = tuple(args)
     for arg in args:
         _validate_duplicates(value=arg[factor],
                              transformers=[to_str, lower, rstrip, lstrip],
@@ -168,5 +167,44 @@ def _validate_args_by_ncbi_taxonomy(args: tuple, node_cls: Type[DjangoNode]):
     for arg in args:
         new_factor = _validate_factor(value=arg['ncbi_taxonomy'], transformers=[to_int, to_str, lower, rstrip, lstrip])
         arg['ncbi_taxonomy_factor'] = new_factor
+
+    return args
+
+
+# ------------------------------------------------
+# VALIDATION OF THE PUBMED ID ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_pmid(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    _validate_duplicates(value=kwargs['pmid'],
+                         transformers=[to_int, to_str, lower, rstrip, lstrip],
+                         node_cls=node_cls,
+                         key=f'pmid_factor')
+
+    idx = _get_last_idx(node_cls) + 1
+    new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
+    kwargs['protrend_id'] = new_id
+
+    new_factor = _validate_factor(value=kwargs['pmid'], transformers=[to_int, to_str, lower, rstrip, lstrip])
+    kwargs['pmid_factor'] = new_factor
+    return kwargs
+
+
+def _validate_args_by_pmid(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+    args = tuple(args)
+    for arg in args:
+        _validate_duplicates(value=arg['pmid'],
+                             transformers=[to_int, to_str, lower, rstrip, lstrip],
+                             node_cls=node_cls,
+                             key=f'pmid_factor')
+
+    idx = _get_last_idx(node_cls) + 1
+    for i, arg in enumerate(args):
+        i = idx + i
+        new_id = protrend_id_encoder(header=header, entity=entity, integer=i)
+        arg['protrend_id'] = new_id
+
+        new_factor = _validate_factor(value=arg['pmid'], transformers=[to_int, to_str, lower, rstrip, lstrip])
+        arg['pmid_factor'] = new_factor
 
     return args
