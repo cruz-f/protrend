@@ -154,6 +154,7 @@ class GeneSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerialize
     def delete(instance):
         return papi.delete_gene(instance)
 
+
 class OperonSerializer(BaseSerializer, PositionMixInSerializer):
     # properties inherited from PositionMixInSerializer
 
@@ -234,7 +235,7 @@ class PathwaySerializer(BaseSerializer, NameMixInSerializer):
         return papi.delete_pathway(instance)
 
 
-class Publication(BaseSerializer):
+class PublicationSerializer(BaseSerializer):
     # properties
     pmid = serializers.IntegerField(required=True, help_text=help_text.pmid)
     doi = serializers.CharField(required=False, max_length=250, help_text=help_text.doi)
@@ -314,7 +315,7 @@ class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
         return papi.delete_rfam(instance)
 
 
-class RegulatoryInteraction(BaseSerializer):
+class RegulatoryInteractionSerializer(BaseSerializer):
     # properties
     regulatory_interaction_hash = serializers.CharField(read_only=True, max_length=600)
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
