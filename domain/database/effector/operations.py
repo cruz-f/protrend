@@ -44,10 +44,9 @@ def update_effector(effector: Effector, **kwargs) -> Effector:
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    if 'name' not in kwargs:
-        return mapi.update_object(effector, **kwargs)
+    if 'name' in kwargs:
+        _validate_kwargs_by_name(kwargs=kwargs, node_cls=Effector, header=_HEADER, entity=_ENTITY)
 
-    _ = _validate_kwargs_by_name(kwargs=kwargs, node_cls=Effector, header=_HEADER, entity=_ENTITY)
     return mapi.update_object(effector, **kwargs)
 
 
