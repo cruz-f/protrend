@@ -16,7 +16,7 @@ def create_sources(*sources: Dict[str, Any]) -> List[Source]:
     """
     Create sources into the database
     """
-    rfams = _validate_args_by_name(args=sources, node_cls=Source, header=_HEADER, entity=_ENTITY)
+    sources = _validate_args_by_name(args=sources, node_cls=Source, header=_HEADER, entity=_ENTITY)
     return mapi.create_objects(Source, *sources)
 
 
