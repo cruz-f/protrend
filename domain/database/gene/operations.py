@@ -46,7 +46,7 @@ def update_gene(gene: Gene, **kwargs) -> Gene:
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    if 'locus_tag' not in kwargs:
+    if 'locus_tag' not in kwargs and 'uniprot_accession' not in kwargs:
         return mapi.update_object(gene, **kwargs)
 
     _ = _validate_kwargs_by_locus_tag(kwargs=kwargs, node_cls=Gene, header=_HEADER, entity=_ENTITY)
