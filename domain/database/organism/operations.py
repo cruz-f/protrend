@@ -8,6 +8,7 @@ from domain.database._validate import (_validate_args_by_name, _validate_kwargs_
                                        _validate_kwargs_by_ncbi_taxonomy, _validate_args_by_ncbi_taxonomy)
 from exceptions import ProtrendException
 
+
 _HEADER = 'PRT'
 _ENTITY = 'ORG'
 
@@ -46,11 +47,12 @@ def update_organism(organism: Organism, **kwargs) -> Organism:
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    if 'name' not in kwargs and 'ncbi_taxonomy' not in kwargs:
-        return mapi.update_object(organism, **kwargs)
+    if 'name' in kwargs and 'ncbi_taxonomy' not in kwargs:
+        _validate_kwargs_by_name(kwargs=kwargs, node_cls=Organism, header=_HEADER, entity=_ENTITY)
 
-    _ = _validate_kwargs_by_name(kwargs=kwargs, node_cls=Organism, header=_HEADER, entity=_ENTITY)
-    _ = _validate_kwargs_by_ncbi_taxonomy(kwargs=kwargs, node_cls=Organism)
+    if 'ncbi_taxonomy' in kwargs:
+        _validate_kwargs_by_ncbi_taxonomy(kwargs=kwargs, node_cls=Organism)
+
     return mapi.update_object(organism, **kwargs)
 
 
