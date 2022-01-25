@@ -1,5 +1,5 @@
 from types import GeneratorType
-from typing import Callable, Any
+from typing import Callable, Any, List, Union
 
 import numpy as np
 import pandas as pd
@@ -74,3 +74,12 @@ def rstrip(item: str) -> str:
 
 def lstrip(item: str) -> str:
     return item.lstrip()
+
+
+def protrend_hash(items: List[str]) -> Union[None, str]:
+    if is_null(items):
+        return
+
+    items = [to_str(item) for item in items]
+
+    return '_'.join(items)
