@@ -13,11 +13,11 @@ _HEADER = 'PRT'
 _ENTITY = 'TBS'
 
 
-def create_biding_sites(*biding_sites: Dict[str, Any]) -> List[TFBS]:
+def create_binding_sites(*binding_sites: Dict[str, Any]) -> List[TFBS]:
     """
-    Create biding_sites into the database
+    Create binding_sites into the database
     """
-    for site in biding_sites:
+    for site in binding_sites:
         organism = site['organism']
         obj = get_organism_by_id(organism)
         if obj is None:
@@ -26,20 +26,20 @@ def create_biding_sites(*biding_sites: Dict[str, Any]) -> List[TFBS]:
                                     code='create or update error',
                                     status=status.HTTP_400_BAD_REQUEST)
 
-    biding_sites = _validate_args_by_site_hash(args=biding_sites, node_cls=TFBS, header=_HEADER, entity=_ENTITY)
-    return mapi.create_objects(TFBS, *biding_sites)
+    binding_sites = _validate_args_by_site_hash(args=binding_sites, node_cls=TFBS, header=_HEADER, entity=_ENTITY)
+    return mapi.create_objects(TFBS, *binding_sites)
 
 
-def delete_biding_sites(*biding_sites: TFBS):
+def delete_binding_sites(*binding_sites: TFBS):
     """
-    Delete biding_sites from the database
+    Delete binding_sites from the database
     """
-    return mapi.delete_objects(*biding_sites)
+    return mapi.delete_objects(*binding_sites)
 
 
-def create_biding_site(**kwargs) -> TFBS:
+def create_binding_site(**kwargs) -> TFBS:
     """
-    Create a given biding_site into the database according to the parameters
+    Create a given binding_site into the database according to the parameters
     """
     organism = kwargs['organism']
     obj = get_organism_by_id(organism)
@@ -53,9 +53,9 @@ def create_biding_site(**kwargs) -> TFBS:
     return mapi.create_object(TFBS, **kwargs)
 
 
-def update_biding_site(biding_site: TFBS, **kwargs) -> TFBS:
+def update_binding_site(binding_site: TFBS, **kwargs) -> TFBS:
     """
-    Update the biding_site into the database according to the parameters
+    Update the binding_site into the database according to the parameters
     """
     if 'protrend_id' in kwargs:
         raise ProtrendException(detail=f'protrend_id read-only attribute cannot be altered',
@@ -73,11 +73,11 @@ def update_biding_site(biding_site: TFBS, **kwargs) -> TFBS:
 
     # the protrend hash must always be regenerated
     kwargs = _validate_kwargs_by_site_hash(kwargs=kwargs, node_cls=TFBS, header=_HEADER, entity=_ENTITY)
-    return mapi.update_object(biding_site, **kwargs)
+    return mapi.update_object(binding_site, **kwargs)
 
 
-def delete_biding_site(biding_site: TFBS) -> TFBS:
+def delete_binding_site(binding_site: TFBS) -> TFBS:
     """
-    Delete the biding_site from the database
+    Delete the binding_site from the database
     """
-    return mapi.delete_object(biding_site)
+    return mapi.delete_object(binding_site)
