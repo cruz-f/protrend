@@ -6,7 +6,7 @@ from rest_framework import status
 import domain.model_api as mapi
 from domain.database.utils import protrend_id_decoder, protrend_id_encoder
 from exceptions import ProtrendException
-from transformers import apply_transformers, to_int, to_str, lower, rstrip, lstrip
+from transformers import apply_transformers, to_int, to_str, lower, rstrip, lstrip, protrend_hash
 
 
 # ------------------------------------------------
@@ -67,6 +67,57 @@ def _validate_args_str(args: tuple, factor: str, node_cls: Type[DjangoNode], hea
         arg['protrend_id'] = new_id
 
         new_factor = _validate_factor(value=arg[factor], transformers=[to_str, lower, rstrip, lstrip])
+        arg[f'{factor}_factor'] = new_factor
+
+    return args
+
+
+# ------------------------------------------------
+# VALIDATION OF UNIQUENESS BY HASH
+# ------------------------------------------------
+def _validate_kwargs_by_hash(kwargs: dict,
+                             factor: str,
+                             value: str,
+                             node_cls: Type[DjangoNode],
+                             header: str,
+                             entity: str):
+    _validate_duplicates(value=value,
+                         transformers=[to_str, lower, rstrip, lstrip],
+                         node_cls=node_cls,
+                         key=f'{factor}_factor')
+
+    idx = _get_last_idx(node_cls) + 1
+    new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
+    kwargs['protrend_id'] = new_id
+
+    kwargs[factor] = value
+
+    new_factor = _validate_factor(value=value, transformers=[to_str, lower, rstrip, lstrip])
+    kwargs[f'{factor}_factor'] = new_factor
+    return kwargs
+
+
+def _validate_args_by_hash(args: tuple,
+                           factor: str,
+                           values: List[str],
+                           node_cls: Type[DjangoNode],
+                           header: str,
+                           entity: str):
+    for arg, value in zip(args, values):
+        _validate_duplicates(value=value,
+                             transformers=[to_str, lower, rstrip, lstrip],
+                             node_cls=node_cls,
+                             key=f'{factor}_factor')
+
+    idx = _get_last_idx(node_cls) + 1
+    for i, (arg, value) in enumerate(zip(args, values)):
+        i = idx + i
+        new_id = protrend_id_encoder(header=header, entity=entity, integer=i)
+        arg['protrend_id'] = new_id
+
+        arg[factor] = value
+
+        new_factor = _validate_factor(value=value, transformers=[to_str, lower, rstrip, lstrip])
         arg[f'{factor}_factor'] = new_factor
 
     return args
@@ -179,7 +230,7 @@ def _validate_kwargs_by_pmid(kwargs: dict, node_cls: Type[DjangoNode], header: s
     _validate_duplicates(value=kwargs['pmid'],
                          transformers=[to_int, to_str, lower, rstrip, lstrip],
                          node_cls=node_cls,
-                         key=f'pmid_factor')
+                         key='pmid_factor')
 
     idx = _get_last_idx(node_cls) + 1
     new_id = protrend_id_encoder(header=header, entity=entity, integer=idx)
@@ -196,7 +247,7 @@ def _validate_args_by_pmid(args: tuple, node_cls: Type[DjangoNode], header: str,
         _validate_duplicates(value=arg['pmid'],
                              transformers=[to_int, to_str, lower, rstrip, lstrip],
                              node_cls=node_cls,
-                             key=f'pmid_factor')
+                             key='pmid_factor')
 
     idx = _get_last_idx(node_cls) + 1
     for i, arg in enumerate(args):
@@ -208,3 +259,35 @@ def _validate_args_by_pmid(args: tuple, node_cls: Type[DjangoNode], header: str,
         arg['pmid_factor'] = new_factor
 
     return args
+
+
+# ------------------------------------------------
+# VALIDATION OF THE INTERACTION HASH ATTRIBUTE
+# ------------------------------------------------
+def _build_interaction_hash(kwargs: dict) -> str:
+    # order matters
+    organism = kwargs.get('organism', '')
+    regulator = kwargs.get('regulator', '')
+    gene = kwargs.get('gene', '')
+    tfbs = kwargs.get('tfbs', '')
+    effector = kwargs.get('effector', '')
+    regulatory_effect = kwargs.get('regulatory_effect', '')
+    return protrend_hash([organism, regulator, gene, tfbs, effector, regulatory_effect])
+
+
+def _validate_kwargs_by_interaction_hash(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    interaction_hash = _build_interaction_hash(kwargs)
+    return _validate_kwargs_by_hash(kwargs=kwargs, factor='interaction_hash', value=interaction_hash, node_cls=node_cls,
+                                    header=header, entity=entity)
+
+
+def _validate_args_by_interaction_hash(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+    args = tuple(args)
+    hashes = []
+    for arg in args:
+        interaction_hash = _build_interaction_hash(arg)
+        hashes.append(interaction_hash)
+
+    return _validate_args_by_hash(args=args, factor='interaction_hash', values=hashes, node_cls=node_cls,
+                                  header=header, entity=entity)
