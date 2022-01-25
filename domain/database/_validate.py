@@ -6,7 +6,7 @@ from rest_framework import status
 import domain.model_api as mapi
 from domain.database.utils import protrend_id_decoder, protrend_id_encoder
 from exceptions import ProtrendException
-from transformers import apply_transformers, to_str, lower, rstrip, lstrip
+from transformers import apply_transformers, to_int, to_str, lower, rstrip, lstrip
 
 
 # ------------------------------------------------
@@ -140,3 +140,33 @@ def _validate_kwargs_by_operon_db_id(kwargs: dict, node_cls: Type[DjangoNode], h
 def _validate_args_by_operon_db_id(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
     args = tuple(args)
     return _validate_args_str(args=args, factor='operon_db_id', node_cls=node_cls, header=header, entity=entity)
+
+
+# ------------------------------------------------
+# VALIDATION OF THE NCBI TAXONOMY ATTRIBUTE
+# ------------------------------------------------
+def _validate_kwargs_by_ncbi_taxonomy(kwargs: dict, node_cls: Type[DjangoNode]):
+    kwargs = kwargs.copy()
+    _validate_duplicates(value=kwargs['ncbi_taxonomy'],
+                         transformers=[to_int, to_str, lower, rstrip, lstrip],
+                         node_cls=node_cls,
+                         key='ncbi_taxonomy_factor')
+
+    new_factor = _validate_factor(value=kwargs['ncbi_taxonomy'], transformers=[to_int, to_str, lower, rstrip, lstrip])
+    kwargs['ncbi_taxonomy_factor'] = new_factor
+    return kwargs
+
+
+def _validate_args_by_ncbi_taxonomy(args: tuple, node_cls: Type[DjangoNode]):
+    args = tuple(args)
+    for arg in args:
+        _validate_duplicates(value=arg['ncbi_taxonomy'],
+                             transformers=[to_int, to_str, lower, rstrip, lstrip],
+                             node_cls=node_cls,
+                             key='ncbi_taxonomy_factor')
+
+    for arg in args:
+        new_factor = _validate_factor(value=arg['ncbi_taxonomy'], transformers=[to_int, to_str, lower, rstrip, lstrip])
+        arg['ncbi_taxonomy_factor'] = new_factor
+
+    return args
