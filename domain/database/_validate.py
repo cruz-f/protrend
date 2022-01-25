@@ -291,3 +291,35 @@ def _validate_args_by_interaction_hash(args: tuple, node_cls: Type[DjangoNode], 
 
     return _validate_args_by_hash(args=args, factor='interaction_hash', values=hashes, node_cls=node_cls,
                                   header=header, entity=entity)
+
+
+# ------------------------------------------------
+# VALIDATION OF THE SITE HASH ATTRIBUTE
+# ------------------------------------------------
+def _build_site_hash(kwargs: dict) -> str:
+    # order matters
+    organism = kwargs.get('organism', '')
+    sequence = kwargs.get('sequence', '')
+    strand = kwargs.get('strand', '')
+    start = to_str(kwargs.get('start', ''))
+    stop = to_str(kwargs.get('stop', ''))
+    length = to_str(kwargs.get('length', ''))
+    return protrend_hash([organism, sequence, strand, start, stop, length])
+
+
+def _validate_kwargs_by_site_hash(kwargs: dict, node_cls: Type[DjangoNode], header: str, entity: str):
+    kwargs = kwargs.copy()
+    site_hash = _build_site_hash(kwargs)
+    return _validate_kwargs_by_hash(kwargs=kwargs, factor='site_hash', value=site_hash, node_cls=node_cls,
+                                    header=header, entity=entity)
+
+
+def _validate_args_by_site_hash(args: tuple, node_cls: Type[DjangoNode], header: str, entity: str):
+    args = tuple(args)
+    hashes = []
+    for arg in args:
+        site_hash = _build_site_hash(arg)
+        hashes.append(site_hash)
+
+    return _validate_args_by_hash(args=args, factor='site_hash', values=hashes, node_cls=node_cls,
+                                  header=header, entity=entity)
