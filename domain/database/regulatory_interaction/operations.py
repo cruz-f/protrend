@@ -8,7 +8,7 @@ from domain.database.effector import get_effector_by_id
 from domain.database.organism import get_organism_by_id
 from domain.database.regulator import get_regulator_by_id
 from domain.database.gene import get_gene_by_id
-from domain.database.tfbs import get_biding_site_by_id
+from domain.database.tfbs import get_binding_site_by_id
 from domain.database._validate import _validate_kwargs_by_interaction_hash, _validate_args_by_interaction_hash
 from exceptions import ProtrendException
 
@@ -18,7 +18,7 @@ _ENTITY = 'RIN'
 
 
 lookup_queries = {'organism': get_organism_by_id, 'regulator': get_regulator_by_id,
-                  'gene': get_gene_by_id, 'tfbs': get_biding_site_by_id, 'effector': get_effector_by_id}
+                  'gene': get_gene_by_id, 'tfbs': get_binding_site_by_id, 'effector': get_effector_by_id}
 
 
 def _validate_submitted_objects(interaction: dict):
