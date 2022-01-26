@@ -178,3 +178,147 @@ class EvidenceDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
 
     def get_queryset(self, protrend_id: str):
         return papi.get_evidence_by_id(protrend_id)
+
+
+class GeneList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.GeneSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_genes()
+
+
+class GeneDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.GeneSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_gene_by_id(protrend_id)
+
+
+class OperonList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.OperonSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_operons()
+
+
+class OperonDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.OperonSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_operon_by_id(protrend_id)
+
+
+class OrganismList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.OrganismSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_organisms()
+
+
+class OrganismDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.OrganismSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_organism_by_id(protrend_id)
+
+
+class PathwayList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.PathwaySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_pathways()
+
+
+class PathwayDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.PathwaySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_pathway_by_id(protrend_id)
+
+
+class PublicationList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.PublicationSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_publications()
+
+
+class PublicationDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.PublicationSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_publication_by_id(protrend_id)
+
+
+class RegulatorList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.RegulatorSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_regulators()
+
+
+class RegulatorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.RegulatorSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_regulator_by_id(protrend_id)
+
+
+class RegulatoryFamilyList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.RegulatoryFamilySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_rfams()
+
+
+class RegulatoryFamilyDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.RegulatoryFamilySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_rfam_by_id(protrend_id)
+
+
+class RegulatoryInteractionList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.RegulatoryInteractionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_interactions()
+
+
+class RegulatoryInteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.RegulatoryInteractionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_interaction_by_id(protrend_id)
+
+
+class TFBSList(ObjectListCreateMixIn, generics.GenericAPIView):
+    serializer_class = serializers.TFBSSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_binding_sites()
+
+
+class TFBSDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+    serializer_class = serializers.TFBSSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+
+    def get_queryset(self, protrend_id: str):
+        return papi.get_binding_site_by_id(protrend_id)
