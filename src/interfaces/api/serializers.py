@@ -362,11 +362,11 @@ class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSeria
     # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
     def create(self, validated_data):
-        return papi.update_biding_site(**validated_data)
+        return papi.update_binding_site(**validated_data)
 
     def update(self, instance, validated_data):
-        return papi.update_biding_site(instance, **validated_data)
+        return papi.update_binding_site(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
-        return papi.delete_biding_site(instance)
+        return papi.delete_binding_site(instance)
