@@ -22,7 +22,3 @@ class Publication(BaseNode):
     tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
-
-    class Meta(BaseNode.Meta):
-        fields = ['protrend_id', 'created', 'updated', 'pmid', 'doi', 'title', 'author', 'year',
-                  'regulatory_family', 'regulator', 'operon', 'gene', 'tfbs', 'regulatory_interaction']

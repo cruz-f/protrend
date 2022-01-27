@@ -26,9 +26,3 @@ class RegulatoryInteraction(BaseNode):
     data_regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
     data_gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
     data_tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-
-    class Meta(BaseNode.Meta):
-        fields = ['protrend_id', 'created', 'updated', 'organism', 'regulator', 'gene', 'tfbs', 'effector',
-                  'regulatory_effect',
-                  'data_source', 'evidence', 'publication', 'data_effector', 'data_organism', 'data_regulator',
-                  'data_gene', 'data_tfbs']
