@@ -1,12 +1,14 @@
 from neomodel import StringProperty, RelationshipTo, ArrayProperty
 
 from constants import help_text, choices
-from .base import BaseNode, NameMixIn
+from .base import BaseNode
 from .relationships import SourceRelationship, SOURCE_REL_TYPE
 
 
-class Source(BaseNode, NameMixIn):
+class Source(BaseNode):
     # properties
+    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
+    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
     type = StringProperty(required=True, choices=choices.data_source_type,
                           help_text=help_text.data_source_type)
     url = StringProperty(max_length=300, help_text=help_text.url)
@@ -25,8 +27,3 @@ class Source(BaseNode, NameMixIn):
     effector = RelationshipTo('.effector.Effector', SOURCE_REL_TYPE, model=SourceRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', SOURCE_REL_TYPE,
                                             model=SourceRelationship)
-
-    class Meta(BaseNode.Meta):
-        fields = ['protrend_id', 'created', 'updated', 'name', 'type', 'url', 'doi', 'authors', 'description',
-                  'organism', 'pathway', 'regulatory_family', 'regulator', 'operon', 'gene',
-                  'tfbs', 'effector', 'regulatory_interaction']
