@@ -4,9 +4,7 @@ from typing import Union, List
 from django.db.models import Model
 from django_neomodel import DjangoNode
 from rest_framework import status, generics, permissions
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
 
 import domain.database as papi
@@ -82,6 +80,7 @@ class ObjectRetrieveUpdateDestroy:
             raise ProtrendException(detail='Object not found',
                                     code='get error',
                                     status=status.HTTP_404_NOT_FOUND)
+        return obj
 
     def get(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView],
             request,
@@ -148,13 +147,6 @@ class ObjectRetrieveUpdateDestroy:
 # --------------------------------------------
 # CONCRETE API VIEWS
 # --------------------------------------------
-@api_view(['GET'])
-def api_root(request):
-    data = {'effectors': reverse('effector-list', request=request),
-            'evidence': reverse('evidence-list', request=request)}
-    return Response(data)
-
-
 class EffectorList(ObjectListCreateMixIn, generics.GenericAPIView):
     serializer_class = serializers.EffectorSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]

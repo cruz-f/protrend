@@ -12,7 +12,7 @@ class BaseSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     created = serializers.DateTimeField(read_only=True, help_text=help_text.created)
-    updated = serializers.DateTimeField(required=False, help_text=help_text.updated)
+    updated = serializers.DateTimeField(read_only=True, help_text=help_text.updated)
 
     def update(self, instance, validated_data):
         pass
