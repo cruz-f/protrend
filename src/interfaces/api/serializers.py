@@ -22,69 +22,11 @@ class BaseSerializer(serializers.Serializer):
 
 
 # --------------------------------------
-# MixIn Serializers
-# --------------------------------------
-class NameMixInSerializer(serializers.Serializer):
-    # properties
-    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
-class SequenceMixInSerializer(serializers.Serializer):
-    # properties
-    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
-class PositionMixInSerializer(serializers.Serializer):
-    # properties
-    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
-class GeneMixInSerializer(serializers.Serializer):
-    # properties
-    locus_tag = serializers.CharField(required=True, max_length=50, help_text=help_text.locus_tag)
-    uniprot_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.uniprot_accession)
-    name = serializers.CharField(required=False, max_length=50, help_text=help_text.gene_name)
-    synonyms = serializers.ListField(required=False, child=serializers.CharField(required=False),
-                                     help_text=help_text.synonyms)
-    function = serializers.CharField(required=False, help_text=help_text.function)
-    description = serializers.CharField(required=False, help_text=help_text.description)
-    ncbi_gene = serializers.IntegerField(required=False, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, help_text=help_text.ncbi_protein)
-    genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
-    refseq_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.refseq_accession)
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
-# --------------------------------------
 # Concrete Serializers
 # --------------------------------------
-class EffectorSerializer(BaseSerializer, NameMixInSerializer):
+class EffectorSerializer(BaseSerializer):
     # properties
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     kegg_compounds = serializers.ListField(child=serializers.CharField(required=False),
                                            required=False,
                                            help_text=help_text.kegg_compounds)
@@ -106,8 +48,9 @@ class EffectorSerializer(BaseSerializer, NameMixInSerializer):
         return papi.delete_effector(instance)
 
 
-class EvidenceSerializer(BaseSerializer, NameMixInSerializer):
+class EvidenceSerializer(BaseSerializer):
     # properties
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     description = serializers.CharField(required=False, help_text=help_text.generic_description)
 
     # # relationships
@@ -129,8 +72,23 @@ class EvidenceSerializer(BaseSerializer, NameMixInSerializer):
         return papi.delete_evidence(instance)
 
 
-class GeneSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer):
-    # properties inherited from GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer
+class GeneSerializer(BaseSerializer):
+    # properties
+    locus_tag = serializers.CharField(required=True, max_length=50, help_text=help_text.locus_tag)
+    uniprot_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.uniprot_accession)
+    name = serializers.CharField(required=False, max_length=50, help_text=help_text.gene_name)
+    synonyms = serializers.ListField(required=False, child=serializers.CharField(required=False),
+                                     help_text=help_text.synonyms)
+    function = serializers.CharField(required=False, help_text=help_text.function)
+    description = serializers.CharField(required=False, help_text=help_text.description)
+    ncbi_gene = serializers.IntegerField(required=False, help_text=help_text.ncbi_gene)
+    ncbi_protein = serializers.IntegerField(required=False, help_text=help_text.ncbi_protein)
+    genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
+    refseq_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.refseq_accession)
+    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
+    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(required=False, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -155,7 +113,7 @@ class GeneSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerialize
         return papi.delete_gene(instance)
 
 
-class OperonSerializer(BaseSerializer, PositionMixInSerializer):
+class OperonSerializer(BaseSerializer):
     # properties inherited from PositionMixInSerializer
 
     # properties
@@ -164,6 +122,9 @@ class OperonSerializer(BaseSerializer, PositionMixInSerializer):
     function = serializers.CharField(required=False, max_length=250, help_text=help_text.operon_function)
     genes = serializers.ListField(required=True, child=serializers.CharField(required=True),
                                   help_text=help_text.operon_genes)
+    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(required=False, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, cardinality=One, model=SourceRelationship)
@@ -215,8 +176,9 @@ class OrganismSerializer(BaseSerializer):
         return papi.delete_organism(instance)
 
 
-class PathwaySerializer(BaseSerializer, NameMixInSerializer):
+class PathwaySerializer(BaseSerializer):
     # properties
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     kegg_pathways = serializers.ListField(required=False, child=serializers.CharField(required=False), allow_empty=True,
                                           help_text=help_text.kegg_pathways)
 
@@ -262,12 +224,25 @@ class PublicationSerializer(BaseSerializer):
         return papi.delete_publication(instance)
 
 
-class RegulatorSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer):
+class RegulatorSerializer(BaseSerializer):
     # properties
+    locus_tag = serializers.CharField(required=True, max_length=50, help_text=help_text.locus_tag)
+    uniprot_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.uniprot_accession)
+    name = serializers.CharField(required=False, max_length=50, help_text=help_text.gene_name)
+    synonyms = serializers.ListField(required=False, child=serializers.CharField(required=False),
+                                     help_text=help_text.synonyms)
+    function = serializers.CharField(required=False, help_text=help_text.function)
+    description = serializers.CharField(required=False, help_text=help_text.description)
     mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
                                         help_text=help_text.mechanism)
-
-    # properties inherited from GeneMixInSerializer, SequenceMixInSerializer, PositionMixInSerializer
+    ncbi_gene = serializers.IntegerField(required=False, help_text=help_text.ncbi_gene)
+    ncbi_protein = serializers.IntegerField(required=False, help_text=help_text.ncbi_protein)
+    genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
+    refseq_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.refseq_accession)
+    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
+    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(required=False, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -293,8 +268,9 @@ class RegulatorSerializer(BaseSerializer, GeneMixInSerializer, SequenceMixInSeri
         return papi.delete_regulator(instance)
 
 
-class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
+class RegulatoryFamilySerializer(BaseSerializer):
     # properties
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
                                         help_text=help_text.mechanism)
     rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
@@ -345,9 +321,13 @@ class RegulatoryInteractionSerializer(BaseSerializer):
         return papi.delete_interaction(instance)
 
 
-class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSerializer):
+class TFBSSerializer(BaseSerializer):
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
+    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
+    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(required=False, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
     length = serializers.IntegerField(required=True, help_text=help_text.length)
 
     # # relationships
