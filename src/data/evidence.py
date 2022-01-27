@@ -1,12 +1,14 @@
 from neomodel import StringProperty, RelationshipTo
 
 from constants import help_text
-from .base import BaseNode, NameMixIn
+from .base import BaseNode
 from .relationships import BASE_REL_TYPE, BaseRelationship
 
 
-class Evidence(BaseNode, NameMixIn):
+class Evidence(BaseNode):
     # properties
+    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
+    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
     description = StringProperty(help_text=help_text.generic_description)
 
     # relationships
@@ -16,7 +18,3 @@ class Evidence(BaseNode, NameMixIn):
     tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
-
-    class Meta(BaseNode.Meta):
-        fields = ['protrend_id', 'created', 'updated', 'name', 'description',
-                  'regulator', 'operon', 'gene', 'tfbs', 'regulatory_interaction']

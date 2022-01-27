@@ -1,7 +1,7 @@
 from django_neomodel import DjangoNode
-from neomodel import UniqueIdProperty, StringProperty, DateTimeProperty, ArrayProperty, IntegerProperty
+from neomodel import UniqueIdProperty, StringProperty, DateTimeProperty
 
-from constants import help_text, choices
+from constants import help_text
 
 
 class BaseNode(DjangoNode):
@@ -15,36 +15,3 @@ class BaseNode(DjangoNode):
     class Meta:
         app_label = 'data'
         order_by = ['protrend_id']
-
-
-class NameMixIn:
-    # properties
-    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-
-
-class SequenceMixIn:
-    sequence = StringProperty(help_text=help_text.sequence)
-
-
-class PositionMixIn:
-    strand = StringProperty(choices=choices.strand, help_text=help_text.strand)
-    start = IntegerProperty(help_text=help_text.start)
-    stop = IntegerProperty(help_text=help_text.stop)
-
-
-class GeneMixIn:
-    # properties
-    locus_tag = StringProperty(required=True, unique_index=True, max_length=100, help_text=help_text.locus_tag)
-    locus_tag_factor = StringProperty(required=True, unique_index=True, max_length=100,
-                                      help_text=help_text.required_name)
-    uniprot_accession = StringProperty(unique_index=True, max_length=50, help_text=help_text.uniprot_accession)
-    uniprot_accession_factor = StringProperty(unique_index=True, max_length=50, help_text=help_text.uniprot_accession)
-    name = StringProperty(max_length=50, help_text=help_text.gene_name)
-    synonyms = ArrayProperty(StringProperty(), help_text=help_text.synonyms)
-    function = StringProperty(help_text=help_text.function)
-    description = StringProperty(help_text=help_text.description)
-    ncbi_gene = IntegerProperty(max_length=50, help_text=help_text.ncbi_gene)
-    ncbi_protein = IntegerProperty(max_length=50, help_text=help_text.ncbi_protein)
-    genbank_accession = StringProperty(max_length=50, help_text=help_text.genbank_accession)
-    refseq_accession = StringProperty(max_length=50, help_text=help_text.refseq_accession)
