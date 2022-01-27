@@ -297,8 +297,8 @@ class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
     # properties
     mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
                                         help_text=help_text.mechanism)
-    rfam = serializers.CharField(max_length=100, help_text=help_text.rfam)
-    description = serializers.CharField(help_text=help_text.generic_description)
+    rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
+    description = serializers.CharField(required=False, help_text=help_text.generic_description)
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -317,7 +317,6 @@ class RegulatoryFamilySerializer(BaseSerializer, NameMixInSerializer):
 
 class RegulatoryInteractionSerializer(BaseSerializer):
     # properties
-    regulatory_interaction_hash = serializers.CharField(read_only=True, max_length=600)
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
     gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
@@ -348,7 +347,6 @@ class RegulatoryInteractionSerializer(BaseSerializer):
 
 class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSerializer):
     # properties
-    site_hash = serializers.CharField(read_only=True, max_length=600)
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     length = serializers.IntegerField(required=True, help_text=help_text.length)
 
@@ -362,7 +360,7 @@ class TFBSSerializer(BaseSerializer, SequenceMixInSerializer, PositionMixInSeria
     # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
     def create(self, validated_data):
-        return papi.update_binding_site(**validated_data)
+        return papi.create_binding_site(**validated_data)
 
     def update(self, instance, validated_data):
         return papi.update_binding_site(instance, **validated_data)

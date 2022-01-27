@@ -28,6 +28,9 @@ class ObjectListCreateMixIn:
 
     def get(self: Union['ObjectListCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
         queryset = self.get_queryset()
+        if not queryset:
+            Response({})
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -74,7 +77,11 @@ class ObjectRetrieveUpdateDestroy:
         pass
 
     def get_object(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView], protrend_id: str):
-        return self.get_queryset(protrend_id)
+        obj = self.get_queryset(protrend_id)
+        if obj is None:
+            raise ProtrendException(detail='Object not found',
+                                    code='get error',
+                                    status=status.HTTP_404_NOT_FOUND)
 
     def get(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView],
             request,
