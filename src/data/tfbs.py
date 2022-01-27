@@ -10,7 +10,7 @@ class TFBS(BaseNode):
     site_hash = StringProperty(required=True, unique_index=True, max_length=600)
     site_hash_factor = StringProperty(required=True, unique_index=True, max_length=600)
     organism = StringProperty(required=True, max_length=100, help_text=help_text.organism_id)
-    sequence = StringProperty(help_text=help_text.sequence)
+    sequence = StringProperty(help_text=help_text.tfbs_sequence)
     strand = StringProperty(choices=choices.strand, help_text=help_text.strand)
     start = IntegerProperty(help_text=help_text.start)
     stop = IntegerProperty(help_text=help_text.stop)
