@@ -156,7 +156,7 @@ class EffectorList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class EffectorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.EffectorSerializer
+    serializer_class = serializers.EffectorDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -172,7 +172,7 @@ class EvidenceList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class EvidenceDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.EvidenceSerializer
+    serializer_class = serializers.EvidenceDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -188,7 +188,7 @@ class GeneList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class GeneDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.GeneSerializer
+    serializer_class = serializers.GeneDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -204,7 +204,7 @@ class OperonList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class OperonDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.OperonSerializer
+    serializer_class = serializers.OperonDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -220,7 +220,7 @@ class OrganismList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class OrganismDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.OrganismSerializer
+    serializer_class = serializers.OrganismDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -236,7 +236,7 @@ class PathwayList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class PathwayDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.PathwaySerializer
+    serializer_class = serializers.PathwayDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -252,7 +252,7 @@ class PublicationList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class PublicationDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.PublicationSerializer
+    serializer_class = serializers.PublicationDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -268,7 +268,7 @@ class RegulatorList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class RegulatorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.RegulatorSerializer
+    serializer_class = serializers.RegulatorDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -284,7 +284,7 @@ class RegulatoryFamilyList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class RegulatoryFamilyDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.RegulatoryFamilySerializer
+    serializer_class = serializers.RegulatoryFamilyDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -300,7 +300,7 @@ class RegulatoryInteractionList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class RegulatoryInteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.RegulatoryInteractionSerializer
+    serializer_class = serializers.RegulatoryInteractionDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
@@ -316,7 +316,7 @@ class TFBSList(ObjectListCreateMixIn, generics.GenericAPIView):
 
 
 class TFBSDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
-    serializer_class = serializers.TFBSSerializer
+    serializer_class = serializers.TFBSDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):

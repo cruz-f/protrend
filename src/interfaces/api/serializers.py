@@ -31,6 +31,10 @@ class EffectorSerializer(BaseSerializer):
                                            required=False,
                                            help_text=help_text.kegg_compounds)
 
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='effectors-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
+
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
     # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
@@ -48,10 +52,18 @@ class EffectorSerializer(BaseSerializer):
         return papi.delete_effector(instance)
 
 
+class EffectorDetailSerializer(EffectorSerializer):
+    url = None
+
+
 class EvidenceSerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     description = serializers.CharField(required=False, help_text=help_text.generic_description)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='evidences-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
@@ -72,6 +84,10 @@ class EvidenceSerializer(BaseSerializer):
         return papi.delete_evidence(instance)
 
 
+class EvidenceDetailSerializer(EvidenceSerializer):
+    url = None
+
+
 class GeneSerializer(BaseSerializer):
     # properties
     locus_tag = serializers.CharField(required=True, max_length=50, help_text=help_text.locus_tag)
@@ -89,6 +105,10 @@ class GeneSerializer(BaseSerializer):
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, help_text=help_text.stop)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='genes-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -113,6 +133,10 @@ class GeneSerializer(BaseSerializer):
         return papi.delete_gene(instance)
 
 
+class GeneDetailSerializer(GeneSerializer):
+    url = None
+
+
 class OperonSerializer(BaseSerializer):
     # properties inherited from PositionMixInSerializer
 
@@ -125,6 +149,10 @@ class OperonSerializer(BaseSerializer):
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, help_text=help_text.stop)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='operons-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, cardinality=One, model=SourceRelationship)
@@ -144,6 +172,10 @@ class OperonSerializer(BaseSerializer):
         return papi.delete_operon(instance)
 
 
+class OperonDetailSerializer(OperonSerializer):
+    url = None
+
+
 class OrganismSerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
@@ -156,6 +188,10 @@ class OrganismSerializer(BaseSerializer):
     genbank_ftp = serializers.CharField(required=False, max_length=250, help_text=help_text.genbank_ftp)
     ncbi_assembly = serializers.IntegerField(required=False, help_text=help_text.ncbi_assembly)
     assembly_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.assembly_accession)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='organisms-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -176,11 +212,19 @@ class OrganismSerializer(BaseSerializer):
         return papi.delete_organism(instance)
 
 
+class OrganismDetailSerializer(OrganismSerializer):
+    url = None
+
+
 class PathwaySerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     kegg_pathways = serializers.ListField(required=False, child=serializers.CharField(required=False), allow_empty=True,
                                           help_text=help_text.kegg_pathways)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='pathways-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -197,6 +241,10 @@ class PathwaySerializer(BaseSerializer):
         return papi.delete_pathway(instance)
 
 
+class PathwayDetailSerializer(PathwaySerializer):
+    url = None
+
+
 class PublicationSerializer(BaseSerializer):
     # properties
     pmid = serializers.IntegerField(required=True, help_text=help_text.pmid)
@@ -204,6 +252,10 @@ class PublicationSerializer(BaseSerializer):
     title = serializers.CharField(required=False, max_length=500, help_text=help_text.title)
     author = serializers.CharField(required=False, max_length=250, help_text=help_text.author)
     year = serializers.IntegerField(required=False, help_text=help_text.year)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='publications-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', BASE_REL_TYPE, model=BaseRelationship)
@@ -222,6 +274,10 @@ class PublicationSerializer(BaseSerializer):
     @staticmethod
     def delete(instance):
         return papi.delete_publication(instance)
+
+
+class PublicationDetailSerializer(PublicationSerializer):
+    url = None
 
 
 class RegulatorSerializer(BaseSerializer):
@@ -243,6 +299,10 @@ class RegulatorSerializer(BaseSerializer):
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, help_text=help_text.stop)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='regulators-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -268,6 +328,10 @@ class RegulatorSerializer(BaseSerializer):
         return papi.delete_regulator(instance)
 
 
+class RegulatorDetailSerializer(RegulatorSerializer):
+    url = None
+
+
 class RegulatoryFamilySerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
@@ -275,6 +339,10 @@ class RegulatoryFamilySerializer(BaseSerializer):
                                         help_text=help_text.mechanism)
     rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
     description = serializers.CharField(required=False, help_text=help_text.generic_description)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='rfams-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -291,6 +359,10 @@ class RegulatoryFamilySerializer(BaseSerializer):
         return papi.delete_rfam(instance)
 
 
+class RegulatoryFamilyDetailSerializer(RegulatoryFamilySerializer):
+    url = None
+
+
 class RegulatoryInteractionSerializer(BaseSerializer):
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
@@ -300,6 +372,10 @@ class RegulatoryInteractionSerializer(BaseSerializer):
     effector = serializers.CharField(required=False, max_length=100, help_text=help_text.effector_id)
     regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
                                                 help_text=help_text.regulatory_effect)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='interactions-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -321,14 +397,22 @@ class RegulatoryInteractionSerializer(BaseSerializer):
         return papi.delete_interaction(instance)
 
 
+class RegulatoryInteractionDetailSerializer(RegulatoryInteractionSerializer):
+    url = None
+
+
 class TFBSSerializer(BaseSerializer):
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
-    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
+    sequence = serializers.CharField(required=False, help_text=help_text.tfbs_sequence)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, help_text=help_text.stop)
     length = serializers.IntegerField(required=True, help_text=help_text.length)
+
+    # url
+    url = serializers.HyperlinkedIdentityField(view_name='binding-sites-detail',
+                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
     # # relationships
     # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
@@ -348,3 +432,7 @@ class TFBSSerializer(BaseSerializer):
     @staticmethod
     def delete(instance):
         return papi.delete_binding_site(instance)
+
+
+class TFBSDetailSerializer(TFBSSerializer):
+    url = None
