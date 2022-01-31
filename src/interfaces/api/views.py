@@ -156,7 +156,7 @@ class IndexView(routers.APIRootView):
     ProTReND's REST API allows users to retrieve structured regulatory data. In addition, the web interface provides a simple yet powerful resource to visualize ProTReND.
     All data can be visualized by navigating through the several biological entities available at the API Index.
 
-    IMPORTANT: USERS PERFORMING MORE THAN 3 REQUESTS PER SECOND WILL BE BANNED!
+    IMPORTANT: USERS PERFORMING MORE THAN 1 REQUEST PER SECOND WILL BE BANNED!
     Please follow the best practices mentioned in the documentation.
 
     The web API navigation provides detailed visualizations for each biological entity contained in the database.
