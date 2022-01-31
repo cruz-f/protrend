@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Union, List
 
 from django.db.models import Model
+from django.shortcuts import render
 from django_neomodel import DjangoNode
 from rest_framework import status, generics, permissions, routers
 from rest_framework.response import Response
@@ -150,32 +151,13 @@ class ObjectRetrieveUpdateDestroy:
 # --------------------------------------------
 class IndexView(routers.APIRootView):
     """
-    ProTReND database REST API.
-
-    ProTReND provides open programmatic access to the Transcriptional Regulatory Network (TRN) database through a RESTful web API.
+    ProTReND database REST API. ProTReND provides open programmatic access to the Transcriptional Regulatory Network (TRN) database through a RESTful web API.
 
     ProTReND's REST API allows users to retrieve structured regulatory data. In addition, the web interface provides a simple yet powerful resource to visualize ProTReND.
     All data can be visualized by navigating through the several biological entities available at the API Index.
 
-    The following methods are available to all users:
-     - GET
-     - HEAD
-     - OPTIONS
-
-    IMPORTANT: Please note t follow the best practices mentioned in the guidelines.
-
-    USERS PERFORMING MORE THAN 3 REQUESTS PER SECOND WILL BE BANNED!
-
-    The following methods are available to registered users (upon request):
-     - GET
-     - POST
-     - PUT
-     - PATCH
-     - DELETE
-     - HEAD
-     - OPTIONS
-
-    All requests submitted to the REST API must be performed in JSON format. Responses provided by the REST API will also be provided in a JSON format.
+    IMPORTANT: USERS PERFORMING MORE THAN 3 REQUESTS PER SECOND WILL BE BANNED!
+    Please follow the best practices mentioned in the documentation.
 
     The web API navigation provides detailed visualizations for each biological entity contained in the database.
     """
@@ -188,6 +170,10 @@ class IndexView(routers.APIRootView):
             view_name = f'{prefix}-list'
             data[prefix] = reverse(view_name, request=request)
         return Response(data)
+
+
+def best_practices(request):
+    return render(request, 'api/best-practices.html')
 
 
 class EffectorList(ObjectListCreateMixIn, generics.GenericAPIView):
@@ -269,8 +255,7 @@ class GeneList(ObjectListCreateMixIn, generics.GenericAPIView):
     Genes are composed by a sequence of nucleotides in DNA that encodes a given RNA or protein. In this case, most genes listed in ProTReND are implicity target genes for a set of regulators.
     In detail, ProTReND genes are involved in regulatory interactions. The expression of these genes can be mediated by one or more regulators available at ProTReND.
 
-    Several details are available for each gene including for instance locus tag, name, synonyms, and function.
-    The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
+    Several details are available for each gene including for instance locus tag, name, synonyms, and function. The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
     serializer_class = serializers.GeneSerializer
@@ -289,8 +274,7 @@ class GeneDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Genes are composed by a sequence of nucleotides in DNA that encodes a given RNA or protein. In this case, most genes listed in ProTReND are implicity target genes for a set of regulators.
     In detail, ProTReND genes are involved in regulatory interactions. The expression of these genes can be mediated by one or more regulators available at ProTReND.
 
-    Several details are available for each gene including for instance locus tag, name, synonyms, and function.
-    The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
+    Several details are available for each gene including for instance locus tag, name, synonyms, and function. The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
     serializer_class = serializers.GeneDetailSerializer
@@ -461,9 +445,7 @@ class RegulatorList(ObjectListCreateMixIn, generics.GenericAPIView):
     A regulator consists of a Transcription Factor, Sigma Factor, small RNA (sRNA), Transcription attenuator, or Transcription Terminator. In detail, a regulator can be considered a regulatory protein or RNA regulatory element that mediates the control of gene expression.
     Target genes can be activated or repressed by the binding (or not) of these regulatory elements.
 
-    Regulators are composed by a sequence of nucleotides in DNA that encodes a given RNA or protein.
-    Several details are available for each regulator including for instance locus tag, name, synonyms, and function.
-    The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
+    Regulators are composed by a sequence of nucleotides in DNA that encodes a given RNA or protein. Several details are available for each regulator including for instance locus tag, name, synonyms, and function. The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
     Most regulators are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers.
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
@@ -483,9 +465,7 @@ class RegulatorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     A regulator consists of a Transcription Factor, Sigma Factor, small RNA (sRNA), Transcription attenuator, or Transcription Terminator. In detail, a regulator can be considered a regulatory protein or RNA regulatory element that mediates the control of gene expression.
     Target genes can be activated or repressed by the binding (or not) of these regulatory elements.
 
-    Regulators are composed by a sequence of nucleotides in DNA that encodes a given RNA or protein.
-    Several details are available for each regulator including for instance locus tag, name, synonyms, and function.
-    The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
+    Regulators are composed by a sequence of nucleotides in DNA that encodes a given RNA or protein. Several details are available for each regulator including for instance locus tag, name, synonyms, and function. The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
     Most regulators are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers.
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
