@@ -174,7 +174,8 @@ class GeneSerializer(BaseSerializer):
     function = serializers.CharField(required=False, write_only=True, help_text=help_text.function)
     description = serializers.CharField(required=False, write_only=True, help_text=help_text.description)
     ncbi_gene = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_protein)
+    ncbi_protein = serializers.IntegerField(required=False, min_value=0, write_only=True,
+                                            help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, write_only=True, max_length=50,
                                               help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, write_only=True, max_length=50,
@@ -448,7 +449,8 @@ class RegulatorSerializer(BaseSerializer):
     function = serializers.CharField(required=False, write_only=True, help_text=help_text.function)
     description = serializers.CharField(required=False, write_only=True, help_text=help_text.description)
     ncbi_gene = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_protein)
+    ncbi_protein = serializers.IntegerField(required=False, min_value=0, write_only=True,
+                                            help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, write_only=True, max_length=50,
                                               help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, write_only=True, max_length=50,
