@@ -77,3 +77,9 @@ class choices:
                  SMALL_RNA: 'small RNA (sRNA)', UNKNOWN: 'unknown'}
     regulatory_effect = {ACTIVATION: 'activation', REPRESSION: 'repression', DUAL: 'dual', UNKNOWN: 'unknown'}
     data_source_type = {LITERATURE: 'literature', DATABASE: 'database', CURATION: 'curation'}
+
+
+# noinspection PyPep8Naming
+class alphabets:
+    dna = 'ACTGN.X'
+    protrein = 'ACDEFGHIKLMNPQRSTVWYX*.BZJ'
