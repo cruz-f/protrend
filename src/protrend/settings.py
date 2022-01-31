@@ -58,7 +58,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'interfaces', 'api', 'templates')
+            os.path.join(BASE_DIR, 'interfaces', 'api', 'templates'),
+            os.path.join(BASE_DIR, 'interfaces', 'website', 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -121,7 +122,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'interfaces', 'api', 'static')
+    os.path.join(BASE_DIR, 'interfaces', 'api', 'static'),
+    os.path.join(BASE_DIR, 'interfaces', 'website', 'static')
 ]
 
 # Default primary key field type
