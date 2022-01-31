@@ -4,7 +4,7 @@ from rest_framework import serializers, status
 
 # stands for protrend api
 import domain.database as papi
-from constants import help_text, choices
+from constants import help_text, choices, alphabets
 from exceptions import ProtrendException
 
 
@@ -31,7 +31,7 @@ class OrganismHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=200, help_text=help_text.organism_name)
-    ncbi_taxonomy = serializers.IntegerField(read_only=True, help_text=help_text.ncbi_taxonomy)
+    ncbi_taxonomy = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.ncbi_taxonomy)
 
     def update(self, instance, validated_data):
         pass
@@ -75,8 +75,8 @@ class TFBSHighlightSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
     strand = serializers.ChoiceField(read_only=True, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(read_only=True, help_text=help_text.start)
-    stop = serializers.IntegerField(read_only=True, help_text=help_text.stop)
+    start = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.stop)
 
     def update(self, instance, validated_data):
         pass
@@ -173,8 +173,8 @@ class GeneSerializer(BaseSerializer):
                                      help_text=help_text.synonyms)
     function = serializers.CharField(required=False, write_only=True, help_text=help_text.function)
     description = serializers.CharField(required=False, write_only=True, help_text=help_text.description)
-    ncbi_gene = serializers.IntegerField(required=False, write_only=True, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, write_only=True, help_text=help_text.ncbi_protein)
+    ncbi_gene = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_gene)
+    ncbi_protein = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, write_only=True, max_length=50,
                                               help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, write_only=True, max_length=50,
@@ -182,8 +182,8 @@ class GeneSerializer(BaseSerializer):
     sequence = serializers.CharField(required=False, write_only=True, help_text=help_text.sequence)
     strand = serializers.ChoiceField(required=False, write_only=True, choices=choices.strand,
                                      help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, write_only=True, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, write_only=True, help_text=help_text.stop)
+    start = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.stop)
 
     # url
     url = serializers.HyperlinkedIdentityField(view_name='genes-detail',
@@ -201,29 +201,54 @@ class GeneSerializer(BaseSerializer):
     # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
 
+    @staticmethod
+    def _validate_protein_sequence(start, stop, strand):
+        if strand == 'forward' and start > stop:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the strand value of {strand}")
+
+        if strand == 'reverse' and stop > start:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the strand value of {strand}")
+
     def create(self, validated_data):
+        strand = validated_data['strand']
+        start = validated_data['start']
+        stop = validated_data['stop']
+        self._validate_protein_sequence(start, stop, strand)
         return papi.create_gene(**validated_data)
 
     def update(self, instance, validated_data):
+        strand = validated_data.get('strand', instance['strand'])
+        start = validated_data.get('start', instance['start'])
+        stop = validated_data.get('stop', instance['stop'])
+        self._validate_protein_sequence(start, stop, strand)
         return papi.update_gene(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
         return papi.delete_gene(instance)
 
+    def validate_sequence(self, value):
+        value = value.upper()
+        if not all(letter in alphabets.protrein for letter in value):
+            raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
+                                              f"Please submit a protein sequence (ACDEFGHIKLMNPQRSTVWY)")
+        return value
+
 
 class GeneDetailSerializer(GeneSerializer):
     url = None
     function = serializers.CharField(required=False, help_text=help_text.function)
     description = serializers.CharField(required=False, help_text=help_text.description)
-    ncbi_gene = serializers.IntegerField(required=False, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, help_text=help_text.ncbi_protein)
+    ncbi_gene = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_gene)
+    ncbi_protein = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.refseq_accession)
     sequence = serializers.CharField(required=False, help_text=help_text.sequence)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
+    start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
 
 
 class OperonSerializer(BaseSerializer):
@@ -237,8 +262,8 @@ class OperonSerializer(BaseSerializer):
                                   help_text=help_text.operon_genes)
     strand = serializers.ChoiceField(required=False, write_only=True, choices=choices.strand,
                                      help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, write_only=True, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, write_only=True, help_text=help_text.stop)
+    start = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.stop)
 
     # url
     url = serializers.HyperlinkedIdentityField(view_name='operons-detail',
@@ -274,8 +299,8 @@ class OperonDetailSerializer(OperonSerializer):
                                   child=GeneHighlightSerializer(read_only=True),
                                   help_text=help_text.operon_genes)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
+    start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
 
     def to_representation(self, instance):
         instance = copy(instance)
@@ -298,7 +323,7 @@ class OperonDetailSerializer(OperonSerializer):
 class OrganismSerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
-    ncbi_taxonomy = serializers.IntegerField(required=False, help_text=help_text.ncbi_taxonomy)
+    ncbi_taxonomy = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_taxonomy)
     species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
     strain = serializers.CharField(required=False, max_length=150, help_text=help_text.strain)
     refseq_accession = serializers.CharField(required=False, write_only=True, max_length=50,
@@ -309,7 +334,7 @@ class OrganismSerializer(BaseSerializer):
                                               help_text=help_text.genbank_accession)
     genbank_ftp = serializers.CharField(required=False, write_only=True, max_length=250,
                                         help_text=help_text.genbank_ftp)
-    ncbi_assembly = serializers.IntegerField(required=False, write_only=True,
+    ncbi_assembly = serializers.IntegerField(required=False, min_value=0, write_only=True,
                                              help_text=help_text.ncbi_assembly)
     assembly_accession = serializers.CharField(required=False, write_only=True, max_length=50,
                                                help_text=help_text.assembly_accession)
@@ -343,7 +368,7 @@ class OrganismDetailSerializer(OrganismSerializer):
     refseq_ftp = serializers.CharField(required=False, max_length=250, help_text=help_text.refseq_ftp)
     genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
     genbank_ftp = serializers.CharField(required=False, max_length=250, help_text=help_text.genbank_ftp)
-    ncbi_assembly = serializers.IntegerField(required=False, help_text=help_text.ncbi_assembly)
+    ncbi_assembly = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_assembly)
     assembly_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.assembly_accession)
 
 
@@ -378,11 +403,11 @@ class PathwayDetailSerializer(PathwaySerializer):
 
 class PublicationSerializer(BaseSerializer):
     # properties
-    pmid = serializers.IntegerField(required=True, help_text=help_text.pmid)
+    pmid = serializers.IntegerField(required=True, min_value=0, help_text=help_text.pmid)
     doi = serializers.CharField(required=False, max_length=250, help_text=help_text.doi)
     title = serializers.CharField(required=False, max_length=500, help_text=help_text.title)
     author = serializers.CharField(required=False, max_length=250, help_text=help_text.author)
-    year = serializers.IntegerField(required=False, help_text=help_text.year)
+    year = serializers.IntegerField(required=False, min_value=0, help_text=help_text.year)
 
     # url
     url = serializers.HyperlinkedIdentityField(view_name='publications-detail',
@@ -422,8 +447,8 @@ class RegulatorSerializer(BaseSerializer):
                                         help_text=help_text.mechanism)
     function = serializers.CharField(required=False, write_only=True, help_text=help_text.function)
     description = serializers.CharField(required=False, write_only=True, help_text=help_text.description)
-    ncbi_gene = serializers.IntegerField(required=False, write_only=True, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, write_only=True, help_text=help_text.ncbi_protein)
+    ncbi_gene = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_gene)
+    ncbi_protein = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, write_only=True, max_length=50,
                                               help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, write_only=True, max_length=50,
@@ -431,8 +456,8 @@ class RegulatorSerializer(BaseSerializer):
     sequence = serializers.CharField(required=False, write_only=True, help_text=help_text.sequence)
     strand = serializers.ChoiceField(required=False, write_only=True, choices=choices.strand,
                                      help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, write_only=True, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, write_only=True, help_text=help_text.stop)
+    start = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.stop)
 
     # url
     url = serializers.HyperlinkedIdentityField(view_name='regulators-detail',
@@ -451,15 +476,40 @@ class RegulatorSerializer(BaseSerializer):
     # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
     # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
+    @staticmethod
+    def _validate_protein_sequence(start, stop, strand):
+        if strand == 'forward' and start > stop:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the strand value of {strand}")
+
+        if strand == 'reverse' and stop > start:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the strand value of {strand}")
+
     def create(self, validated_data):
+        strand = validated_data['strand']
+        start = validated_data['start']
+        stop = validated_data['stop']
+        self._validate_protein_sequence(start, stop, strand)
         return papi.create_regulator(**validated_data)
 
     def update(self, instance, validated_data):
+        strand = validated_data.get('strand', instance['strand'])
+        start = validated_data.get('start', instance['start'])
+        stop = validated_data.get('stop', instance['stop'])
+        self._validate_protein_sequence(start, stop, strand)
         return papi.update_regulator(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
         return papi.delete_regulator(instance)
+
+    def validate_sequence(self, value):
+        value = value.upper()
+        if not all(letter in alphabets.protrein for letter in value):
+            raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
+                                              f"Please submit a protein sequence (ACDEFGHIKLMNPQRSTVWY)")
+        return value
 
 
 class RegulatorDetailSerializer(RegulatorSerializer):
@@ -468,14 +518,14 @@ class RegulatorDetailSerializer(RegulatorSerializer):
     description = serializers.CharField(required=False, help_text=help_text.description)
     mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
                                         help_text=help_text.mechanism)
-    ncbi_gene = serializers.IntegerField(required=False, help_text=help_text.ncbi_gene)
-    ncbi_protein = serializers.IntegerField(required=False, help_text=help_text.ncbi_protein)
+    ncbi_gene = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_gene)
+    ncbi_protein = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.refseq_accession)
     sequence = serializers.CharField(required=False, help_text=help_text.sequence)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
+    start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
 
 
 class RegulatoryFamilySerializer(BaseSerializer):
@@ -594,9 +644,9 @@ class TFBSSerializer(BaseSerializer):
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     sequence = serializers.CharField(required=True, help_text=help_text.tfbs_sequence)
     strand = serializers.ChoiceField(required=True, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(required=False, help_text=help_text.start)
-    stop = serializers.IntegerField(required=False, help_text=help_text.stop)
-    length = serializers.IntegerField(required=True, help_text=help_text.length)
+    start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
+    length = serializers.IntegerField(required=True, min_value=0, help_text=help_text.length)
 
     # url
     url = serializers.HyperlinkedIdentityField(view_name='binding-sites-detail',
@@ -663,10 +713,9 @@ class TFBSSerializer(BaseSerializer):
         Check that the sequence only contains nucleotides.
         """
         value = value.upper()
-        for letter in value:
-            if letter not in "ACTG":
-                raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
-                                                  f"Please submit a DNA nucleotide sequence (ACTG)")
+        if not all(letter in alphabets.dna for letter in value):
+            raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
+                                              f"Please submit a DNA nucleotide sequence (ACTG)")
         return value
 
 
