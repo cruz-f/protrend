@@ -4,12 +4,12 @@ from drf_yasg import openapi
 from rest_framework import permissions
 
 from interfaces.api.permissions import SuperUserOrReadOnly
+from interfaces.api.router import APIRouter
 from interfaces.api import views
-from router import Router
 
 
 # Create a router and register our class-based views.
-router = Router(r'', views.IndexView, name='api')
+router = APIRouter(r'', name='api')
 router.register(r'effectors', list_view=views.EffectorList, detail_view=views.EffectorDetail)
 router.register(r'evidences', list_view=views.EvidenceList, detail_view=views.EvidenceDetail)
 router.register(r'genes', list_view=views.GeneList, detail_view=views.GeneDetail)

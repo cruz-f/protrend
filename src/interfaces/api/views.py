@@ -4,14 +4,14 @@ from typing import Union, List
 from django.db.models import Model
 from django.shortcuts import render
 from django_neomodel import DjangoNode
-from rest_framework import status, generics, permissions, routers
+from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.reverse import reverse
 
 import domain.database as papi
 import interfaces.api.serializers as serializers
 from exceptions import ProtrendException
+from router import BaseIndexView
 from .permissions import SuperUserOrReadOnly
 
 
@@ -149,7 +149,7 @@ class ObjectRetrieveUpdateDestroy:
 # --------------------------------------------
 # CONCRETE API VIEWS
 # --------------------------------------------
-class IndexView(routers.APIRootView):
+class IndexView(BaseIndexView):
     """
     ProTReND database REST API. ProTReND provides open programmatic access to the Transcriptional Regulatory Network (TRN) database through a RESTful web API.
 
@@ -161,15 +161,6 @@ class IndexView(routers.APIRootView):
 
     The web API navigation provides detailed visualizations for each biological entity contained in the database.
     """
-    index_views = ()
-
-    def get(self, request, *args, **kwargs):
-        data = {}
-
-        for prefix, list_view, detail_view in self.index_views:
-            view_name = f'{prefix}-list'
-            data[prefix] = reverse(view_name, request=request)
-        return Response(data)
 
 
 def best_practices(request):
