@@ -47,11 +47,16 @@ def update_organism(organism: Organism, **kwargs) -> Organism:
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    if 'name' in kwargs and 'ncbi_taxonomy' not in kwargs:
-        _validate_kwargs_by_name(kwargs=kwargs, node_cls=Organism, header=_HEADER, entity=_ENTITY)
+    if 'name' in kwargs:
+        name = kwargs['name']
+        if name != organism.name:
+            kwargs = _validate_kwargs_by_name(kwargs=kwargs, node_cls=Organism, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
     if 'ncbi_taxonomy' in kwargs:
-        _validate_kwargs_by_ncbi_taxonomy(kwargs=kwargs, node_cls=Organism)
+        ncbi_taxonomy = kwargs['ncbi_taxonomy']
+        if ncbi_taxonomy != organism.ncbi_taxonomy:
+            kwargs = _validate_kwargs_by_ncbi_taxonomy(kwargs=kwargs, node_cls=Organism)
 
     return mapi.update_object(organism, **kwargs)
 

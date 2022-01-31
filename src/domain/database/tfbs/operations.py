@@ -73,6 +73,7 @@ def update_binding_site(binding_site: TFBS, **kwargs) -> TFBS:
 
     # the protrend hash must always be regenerated
     kwargs = _validate_kwargs_by_site_hash(kwargs=kwargs, node_cls=TFBS, header=_HEADER, entity=_ENTITY)
+    kwargs.pop('protrend_id')
     return mapi.update_object(binding_site, **kwargs)
 
 

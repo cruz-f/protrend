@@ -43,10 +43,12 @@ def update_operon(operon: Operon, **kwargs) -> Operon:
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    if 'operon_db_id' not in kwargs:
-        return mapi.update_object(operon, **kwargs)
+    if 'operon_db_id' in kwargs:
+        operon_db_id = kwargs['operon_db_id']
+        if operon_db_id != operon.operon_db_id:
+            kwargs = _validate_kwargs_by_operon_db_id(kwargs=kwargs, node_cls=Operon, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
-    _ = _validate_kwargs_by_operon_db_id(kwargs=kwargs, node_cls=Operon, header=_HEADER, entity=_ENTITY)
     return mapi.update_object(operon, **kwargs)
 
 

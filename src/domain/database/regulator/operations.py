@@ -48,10 +48,15 @@ def update_regulator(regulator: Regulator, **kwargs) -> Regulator:
                                 status=status.HTTP_400_BAD_REQUEST)
 
     if 'locus_tag' in kwargs:
-        _validate_kwargs_by_locus_tag(kwargs=kwargs, node_cls=Regulator, header=_HEADER, entity=_ENTITY)
+        locus_tag = kwargs['locus_tag']
+        if locus_tag != regulator.locus_tag:
+            kwargs = _validate_kwargs_by_locus_tag(kwargs=kwargs, node_cls=Regulator, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
     if 'uniprot_accession' in kwargs:
-        _validate_kwargs_by_uniprot_accession(kwargs=kwargs, node_cls=Regulator)
+        uniprot_accession = kwargs['uniprot_accession']
+        if uniprot_accession != regulator.uniprot_accession:
+            kwargs = _validate_kwargs_by_uniprot_accession(kwargs=kwargs, node_cls=Regulator)
 
     return mapi.update_object(regulator, **kwargs)
 
