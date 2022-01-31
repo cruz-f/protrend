@@ -27,7 +27,7 @@ class BaseSerializer(serializers.Serializer):
 # --------------------------------------
 # Nested Object Serializers
 # --------------------------------------
-class SmallOrganismSerializer(serializers.Serializer):
+class OrganismHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=200, help_text=help_text.organism_name)
@@ -40,7 +40,7 @@ class SmallOrganismSerializer(serializers.Serializer):
         pass
 
 
-class SmallRegulatorSerializer(serializers.Serializer):
+class RegulatorHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     locus_tag = serializers.CharField(read_only=True, max_length=50, help_text=help_text.locus_tag)
@@ -56,7 +56,7 @@ class SmallRegulatorSerializer(serializers.Serializer):
         pass
 
 
-class SmallGeneSerializer(serializers.Serializer):
+class GeneHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     locus_tag = serializers.CharField(read_only=True, max_length=50, help_text=help_text.locus_tag)
@@ -70,7 +70,7 @@ class SmallGeneSerializer(serializers.Serializer):
         pass
 
 
-class SmallTFBSSerializer(serializers.Serializer):
+class TFBSHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
@@ -85,7 +85,7 @@ class SmallTFBSSerializer(serializers.Serializer):
         pass
 
 
-class SmallEffectorSerializer(serializers.Serializer):
+class EffectorHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
@@ -271,7 +271,7 @@ class OperonSerializer(BaseSerializer):
 class OperonDetailSerializer(OperonSerializer):
     url = None
     genes = serializers.ListField(read_only=True,
-                                  child=SmallGeneSerializer(read_only=True),
+                                  child=GeneHighlightSerializer(read_only=True),
                                   help_text=help_text.operon_genes)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, help_text=help_text.start)
@@ -547,11 +547,11 @@ class RegulatoryInteractionSerializer(BaseSerializer):
 
 class RegulatoryInteractionDetailSerializer(RegulatoryInteractionSerializer):
     url = None
-    organism = SmallOrganismSerializer(read_only=True)
-    regulator = SmallGeneSerializer(read_only=True)
-    gene = SmallGeneSerializer(read_only=True)
-    tfbs = SmallTFBSSerializer(read_only=True)
-    effector = SmallEffectorSerializer(read_only=True)
+    organism = OrganismHighlightSerializer(read_only=True)
+    regulator = GeneHighlightSerializer(read_only=True)
+    gene = GeneHighlightSerializer(read_only=True)
+    tfbs = TFBSHighlightSerializer(read_only=True)
+    effector = EffectorHighlightSerializer(read_only=True)
 
     def to_representation(self, instance):
         instance = copy(instance)
@@ -624,7 +624,7 @@ class TFBSSerializer(BaseSerializer):
 
 class TFBSDetailSerializer(TFBSSerializer):
     url = None
-    organism = SmallOrganismSerializer(read_only=True)
+    organism = OrganismHighlightSerializer(read_only=True)
 
     def to_representation(self, instance):
         instance = copy(instance)
