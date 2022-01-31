@@ -13,7 +13,7 @@ RoutedView = namedtuple(typename='RoutedView',
                         defaults=[None, None, None])
 
 
-class IndexView(routers.APIRootView):
+class BaseIndexView(routers.APIRootView):
     """
     Index
     """
@@ -28,12 +28,18 @@ class IndexView(routers.APIRootView):
         return Response(data)
 
 
+class IndexView(BaseIndexView):
+    """
+    Index
+    """
+
+
 class Router:
     index_class = IndexView
 
     def __init__(self,
                  route: str = None,
-                 index: Type[generics.GenericAPIView, generic.View] = None,
+                 index: Union[Type[generics.GenericAPIView], Type[generic.View]] = None,
                  name: str = None):
         """
         A router for class-based views.
