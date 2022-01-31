@@ -1,11 +1,15 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
 
+from interfaces.api.permissions import SuperUserOrReadOnly
 from interfaces.api import views
 from router import Router
 
 
 # Create a router and register our class-based views.
-router = Router()
+router = Router(r'', views.IndexView, name='api')
 router.register(r'effectors', list_view=views.EffectorList, detail_view=views.EffectorDetail)
 router.register(r'evidences', list_view=views.EvidenceList, detail_view=views.EvidenceDetail)
 router.register(r'genes', list_view=views.GeneList, detail_view=views.GeneDetail)
@@ -20,7 +24,25 @@ router.register(r'interactions', list_view=views.RegulatoryInteractionList,
 router.register(r'binding-sites', list_view=views.TFBSList, detail_view=views.TFBSDetail)
 
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="ProTReND REST API",
+        default_version='v1',
+        description="ProTReND provides open programmatic access to the Transcriptional Regulatory Network (TRN) database through a RESTful web API",
+        terms_of_service="",
+        contact=openapi.Contact(email="contact@example.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly),
+)
+
+
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
     path('', include(router.urls)),
+    path(r'best-practices/', views.best_practices, name='best-practices'),
+    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),
+    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
 ]
