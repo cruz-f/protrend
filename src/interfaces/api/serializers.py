@@ -611,15 +611,63 @@ class TFBSSerializer(BaseSerializer):
     # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
     # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
     #                                         model=BaseRelationship)
+
+    @staticmethod
+    def _validate_tfbs(sequence, start, stop, strand, length):
+        if len(sequence) != length:
+            raise serializers.ValidationError(f"Provided sequence of length {len(sequence)} "
+                                              f"does not match length field of {length}")
+
+        if strand == 'forward' and start > stop:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the strand value of {strand}")
+
+        if strand == 'reverse' and stop > start:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the strand value of {strand}")
+
+        diff = stop - start
+        if strand == 'reverse':
+            diff = start - stop
+
+        if diff != length:
+            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
+                                              f"do not match the provided sequence of length {len(sequence)}")
+
     def create(self, validated_data):
+        sequence = validated_data['sequence'].upper()
+        strand = validated_data['strand']
+        start = validated_data['start']
+        stop = validated_data['stop']
+        length = validated_data['length']
+        self._validate_tfbs(sequence, start, stop, strand, length)
+
         return papi.create_binding_site(**validated_data)
 
     def update(self, instance, validated_data):
+        sequence = validated_data.get('sequence', instance['sequence']).upper()
+        strand = validated_data.get('strand', instance['strand'])
+        start = validated_data.get('start', instance['start'])
+        stop = validated_data.get('stop', instance['stop'])
+        length = validated_data.get('length', instance['length'])
+        self._validate_tfbs(sequence, start, stop, strand, length)
+
         return papi.update_binding_site(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
         return papi.delete_binding_site(instance)
+
+    def validate_sequence(self, value):
+        """
+        Check that the sequence only contains nucleotides.
+        """
+        value = value.upper()
+        for letter in value:
+            if letter not in "ACTG":
+                raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
+                                                  f"Please submit a DNA nucleotide sequence (ACTG)")
+        return value
 
 
 class TFBSDetailSerializer(TFBSSerializer):
