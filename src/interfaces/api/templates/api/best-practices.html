@@ -1,0 +1,146 @@
+{% extends "rest_framework/base.html" %}
+{% load static %}
+{% block bootstrap_theme %}
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/flatly-bootstrap-theme.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/navbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/best-practices.css' %}">
+{% endblock %}
+{% block name %}
+    { ProTReND }
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-default navbar-custom">
+        <div class="container-fluid px-10">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">ProTReND</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right pe-5 text-uppercase">
+                    {% block userlinks %}
+                        {{ block.super }}
+                    {% endblock %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right pe-5">
+                    <li class="text-uppercase"><a href="{% url 'api' %}">Index</a></li>
+                    <li class="text-uppercase"><a href="{% url 'organisms-list' %}">Organisms</a></li>
+                    <li class="text-uppercase"><a href="{% url 'regulators-list' %}">Regulators</a></li>
+                    <li class="text-uppercase"><a href="{% url 'genes-list' %}">Genes</a></li>
+                    <li class="text-uppercase"><a href="{% url 'binding-sites-list' %}">Binding Sites</a></li>
+                    <li class="text-uppercase"><a href="{% url 'interactions-list' %}">Interactions</a></li>
+                    <li class="text-uppercase"><a href="{% url 'effectors-list' %}">Effectors</a></li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Other
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'operons-list' %}">Operons</a></li>
+                            <li class="text-uppercase"><a href="{% url 'pathways-list' %}">Pathways</a></li>
+                            <li class="text-uppercase"><a href="{% url 'publications-list' %}">Publications</a></li>
+                            <li class="text-uppercase"><a href="{% url 'rfams-list' %}">RFAMS</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Documentation
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'schema-swagger' %}">Swagger</a></li>
+                            <li class="text-uppercase"><a href="{% url 'schema-redoc' %}">Redoc</a></li>
+                            <li class="text-uppercase"><a href="{% url 'best-practices' %}">Best practices</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+{% block breadcrumbs %}
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <h3 class="text-uppercase pb-5">
+                    best practices
+                </h3>
+                <p class="pb-5">
+                    ProTReND provides open programmatic access to the Transcriptional Regulatory Network (TRN) database through a RESTful web API.
+                    All data can be visualized by navigating through the several biological entities available at the API Index.
+                </p>
+                <p class="pb-2">
+                    Biological entities:
+                </p>
+                <ul class="no-bullet pb-5">
+                    <li>Effector</li>
+                    <li>Evidence</li>
+                    <li>Gene</li>
+                    <li>Operon</li>
+                    <li>Organism</li>
+                    <li>Pathway</li>
+                    <li>Publication</li>
+                    <li>Regulator</li>
+                    <li>RegulatoryFamily</li>
+                    <li>RegulatoryInteraction</li>
+                    <li>Source</li>
+                    <li>TFBS</li>
+                </ul>
+                <p class="pb-2">
+                    The following methods are available to all users over all end-points:
+                </p>
+                <ul class="no-bullet pb-5">
+                    <li>GET</li>
+                    <li>HEAD</li>
+                    <li>OPTIONS</li>
+                </ul>
+                <p class="pb-2">
+                    The following methods are available to registered users (upon request) over all end-points:
+                </p>
+                <ul class="no-bullet pb-5">
+                    <li>GET</li>
+                    <li>POST</li>
+                    <li>PUT</li>
+                    <li>PATCH</li>
+                    <li>DELETE</li>
+                    <li>HEAD</li>
+                    <li>OPTIONS</li>
+                </ul>
+                <p class="pb-5">
+                    All requests submitted to the REST API must be performed in JSON format.
+                    Responses provided by the REST API will also be provided in a JSON format.
+                    For more details about each API end-point try out the swagger and redoc documentation
+                </p>
+                <div class="btn-group pb-5" role="group">
+                    <a type="button" href="{% url 'schema-swagger' %}"
+                       class="btn btn-success text-uppercase">swagger</a>
+                    <a type="button" href="{% url 'schema-redoc' %}"
+                       class="btn btn-primary text-uppercase">redoc</a>
+                </div>
+
+                <p class="pb-2">
+                    REQUEST POLICY:
+                </p>
+                <ul class="no-bullet pb-5">
+                    <li>USERS PERFORMING MORE THAN 1 REQUEST PER SECOND WILL BE BANNED!</li>
+                    <li>For large requests, please submit GET request to the list end-points,
+                        such as api/genes/, api/regulators/, etc</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
