@@ -147,7 +147,7 @@ def get_rel_query_set(obj: _model, target: str) -> Union[Any, RelationshipManage
 # ---------------------------------------------------------
 # Relationships Create Read Update and Delete operations
 # ---------------------------------------------------------
-def get_related_objects(obj: _model, target: str) -> SetList:
+def get_related_objects(obj: _model, target: str) -> SetList[DjangoNode]:
     """
     Get all objects connected with this object
     """
@@ -155,7 +155,7 @@ def get_related_objects(obj: _model, target: str) -> SetList:
     return SetList(query_set.all())
 
 
-def filter_related_objects(obj: _model, target: str, **kwargs) -> SetList:
+def filter_related_objects(obj: _model, target: str, **kwargs) -> SetList[DjangoNode]:
     """
     Get and filter the objects connected with this object
     """
@@ -163,7 +163,7 @@ def filter_related_objects(obj: _model, target: str, **kwargs) -> SetList:
     return SetList(query_set.filter(**kwargs))
 
 
-def order_by_related_objects(obj: _model, target: str, *fields) -> SetList:
+def order_by_related_objects(obj: _model, target: str, *fields) -> SetList[DjangoNode]:
     """
     Get and order by fields the objects connected with this object
     """
@@ -199,10 +199,10 @@ def get_relationships(source_obj: _model, target: str, target_obj: _model) -> Li
     Get all relationships objects between two objects
     """
     query_set = get_rel_query_set(obj=source_obj, target=target)
-    return query_set.all_relationships(target_obj)
+    return list(query_set.all_relationships(target_obj))
 
 
-def delete_relationships(source_obj: _model, target: str, target_obj: _model) -> List[StructuredRel]:
+def delete_relationships(source_obj: _model, target: str, target_obj: _model):
     """
     Delete all relationships between two objects
     """
