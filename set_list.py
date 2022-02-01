@@ -1,8 +1,11 @@
 from collections import UserList
-from typing import Sequence, Any, Iterator, Union
+from typing import Sequence, Any, Iterator, Union, List, TypeVar
 
 
-class SetList(UserList):
+T = TypeVar('T')
+
+
+class SetList(UserList, List[T]):
 
     def __init__(self, sequence: Union[Iterator, Sequence] = None, key: str = 'protrend_id'):
 
