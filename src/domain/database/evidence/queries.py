@@ -1,6 +1,6 @@
 from typing import List
 
-from data import Evidence
+from data import Evidence, TFBS, RegulatoryInteraction
 import domain.model_api as mapi
 
 
@@ -51,3 +51,19 @@ def get_last_evidence() -> Evidence:
     Get the last evidence from database using the protrend identifier
     """
     return mapi.get_last_object(Evidence, 'protrend_id')
+
+
+def get_evidence_binding_sites(protrend_id: str) -> List[TFBS]:
+    """
+    Get binding sites connected with this evidence
+    """
+    obj = get_evidence_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'tfbs')
+
+
+def get_evidence_interactions(protrend_id: str) -> List[RegulatoryInteraction]:
+    """
+    Get interactions connected with this evidence
+    """
+    obj = get_evidence_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulatory_interaction')

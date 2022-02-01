@@ -1,6 +1,6 @@
 from typing import List
 
-from data import Publication
+from data import Publication, RegulatoryInteraction, TFBS
 import domain.model_api as mapi
 
 
@@ -51,3 +51,19 @@ def get_last_publication() -> Publication:
     Get the last publication from database using the protrend identifier
     """
     return mapi.get_last_object(Publication, 'protrend_id')
+
+
+def get_publication_binding_sites(protrend_id: str) -> List[TFBS]:
+    """
+    Get binding sites connected with this publication
+    """
+    obj = get_publication_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'tfbs')
+
+
+def get_publication_interactions(protrend_id: str) -> List[RegulatoryInteraction]:
+    """
+    Get interactions connected with this publication
+    """
+    obj = get_publication_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulatory_interaction')
