@@ -4,6 +4,7 @@ from rest_framework import status
 
 import domain.model_api as mapi
 from data import TFBS, Organism
+from domain.database import delete_interactions
 from domain.database._validate import _validate_args_by_site_hash, _validate_kwargs_by_site_hash
 from domain.database.organism import get_organism_by_id
 from exceptions import ProtrendException
@@ -40,7 +41,8 @@ def delete_binding_sites(*binding_sites: TFBS):
     """
     Delete binding_sites from the database
     """
-    return mapi.delete_objects(*binding_sites)
+    for binding_site in binding_sites:
+        delete_binding_site(binding_site)
 
 
 def create_binding_site(**kwargs) -> TFBS:
@@ -75,6 +77,10 @@ def delete_binding_site(binding_site: TFBS) -> TFBS:
     """
     Delete the binding_site from the database
     """
+    # first let's delete interactions associated with the organism
+    interactions = mapi.get_related_objects(binding_site, 'regulatory_interactions')
+    delete_interactions(*interactions)
+
     return mapi.delete_object(binding_site)
 
 

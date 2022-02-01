@@ -2,12 +2,12 @@ from typing import List, Dict, Any
 
 from rest_framework import status
 
-from data import Organism
 import domain.model_api as mapi
+from data import Organism
+from domain.database import delete_regulators, delete_genes, delete_binding_sites, delete_interactions
 from domain.database._validate import (_validate_args_by_name, _validate_kwargs_by_name,
                                        _validate_kwargs_by_ncbi_taxonomy, _validate_args_by_ncbi_taxonomy)
 from exceptions import ProtrendException
-
 
 _HEADER = 'PRT'
 _ENTITY = 'ORG'
@@ -26,7 +26,8 @@ def delete_organisms(*organisms: Organism):
     """
     Delete organisms from the database
     """
-    return mapi.delete_objects(*organisms)
+    for organism in organisms:
+        delete_organism(organism)
 
 
 def create_organism(**kwargs) -> Organism:
@@ -65,4 +66,17 @@ def delete_organism(organism: Organism) -> Organism:
     """
     Delete the organism from the database
     """
+    # first let's delete the regulator, genes, binding sites and interactions associated with the organism
+    regulators = mapi.get_related_objects(organism, 'regulator')
+    delete_regulators(*regulators)
+
+    genes = mapi.get_related_objects(organism, 'gene')
+    delete_genes(*genes)
+
+    binding_sites = mapi.get_related_objects(organism, 'tfbs')
+    delete_binding_sites(*binding_sites)
+
+    interactions = mapi.get_related_objects(organism, 'regulatory_interactions')
+    delete_interactions(*interactions)
+
     return mapi.delete_object(organism)

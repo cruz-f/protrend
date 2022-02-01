@@ -5,6 +5,7 @@ from rest_framework import status
 import domain.model_api as mapi
 from data import Effector
 from exceptions import ProtrendException
+from .. import delete_interactions
 from .._validate import _validate_kwargs_by_name, _validate_args_by_name
 
 
@@ -24,7 +25,8 @@ def delete_effectors(*effectors: Effector):
     """
     Delete effectors from the database
     """
-    return mapi.delete_objects(*effectors)
+    for effector in effectors:
+        delete_effector(effector)
 
 
 def create_effector(**kwargs) -> Effector:
@@ -57,4 +59,8 @@ def delete_effector(effector: Effector) -> Effector:
     """
     Delete the effector from the database
     """
+    # first let's delete interactions associated with the organism
+    interactions = mapi.get_related_objects(effector, 'regulatory_interactions')
+    delete_interactions(*interactions)
+
     return mapi.delete_object(effector)
