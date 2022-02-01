@@ -154,6 +154,9 @@ def _validate_args_by_locus_tag(args: tuple, node_cls: Type[DjangoNode], header:
 # ------------------------------------------------
 def _validate_kwargs_by_uniprot_accession(kwargs: dict, node_cls: Type[DjangoNode]):
     kwargs = kwargs.copy()
+    if 'uniprot_accession' not in kwargs:
+        return kwargs
+
     _validate_duplicates(value=kwargs['uniprot_accession'],
                          transformers=[to_str, lower, rstrip, lstrip],
                          node_cls=node_cls,
@@ -167,12 +170,18 @@ def _validate_kwargs_by_uniprot_accession(kwargs: dict, node_cls: Type[DjangoNod
 def _validate_args_by_uniprot_accession(args: tuple, node_cls: Type[DjangoNode]):
     args = tuple(args)
     for arg in args:
+        if 'uniprot_accession' not in arg:
+            continue
+
         _validate_duplicates(value=arg['uniprot_accession'],
                              transformers=[to_str, lower, rstrip, lstrip],
                              node_cls=node_cls,
                              key='uniprot_accession_factor')
 
     for arg in args:
+        if 'uniprot_accession' not in arg:
+            continue
+
         new_factor = _validate_factor(value=arg['uniprot_accession'], transformers=[to_str, lower, rstrip, lstrip])
         arg['uniprot_accession_factor'] = new_factor
 
@@ -197,6 +206,9 @@ def _validate_args_by_operon_db_id(args: tuple, node_cls: Type[DjangoNode], head
 # ------------------------------------------------
 def _validate_kwargs_by_ncbi_taxonomy(kwargs: dict, node_cls: Type[DjangoNode]):
     kwargs = kwargs.copy()
+    if 'ncbi_taxonomy' not in kwargs:
+        return kwargs
+
     _validate_duplicates(value=kwargs['ncbi_taxonomy'],
                          transformers=[to_int, to_str, lower, rstrip, lstrip],
                          node_cls=node_cls,
@@ -210,12 +222,18 @@ def _validate_kwargs_by_ncbi_taxonomy(kwargs: dict, node_cls: Type[DjangoNode]):
 def _validate_args_by_ncbi_taxonomy(args: tuple, node_cls: Type[DjangoNode]):
     args = tuple(args)
     for arg in args:
+        if 'ncbi_taxonomy' not in arg:
+            continue
+
         _validate_duplicates(value=arg['ncbi_taxonomy'],
                              transformers=[to_int, to_str, lower, rstrip, lstrip],
                              node_cls=node_cls,
                              key='ncbi_taxonomy_factor')
 
     for arg in args:
+        if 'ncbi_taxonomy' not in arg:
+            continue
+
         new_factor = _validate_factor(value=arg['ncbi_taxonomy'], transformers=[to_int, to_str, lower, rstrip, lstrip])
         arg['ncbi_taxonomy_factor'] = new_factor
 
