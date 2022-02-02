@@ -29,7 +29,7 @@ class ObjectListCreateMixIn:
     def get(self: Union['ObjectListCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
         queryset = self.get_queryset()
         if not queryset:
-            Response({})
+            return Response({})
 
         page = self.paginate_queryset(queryset)
         if page is not None:
