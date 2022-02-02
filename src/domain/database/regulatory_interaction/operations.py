@@ -4,11 +4,6 @@ from rest_framework import status
 
 from data import RegulatoryInteraction, Organism, Regulator, Gene, TFBS, Effector
 import domain.model_api as mapi
-from domain.database.effector import get_effector_by_id
-from domain.database.organism import get_organism_by_id
-from domain.database.regulator import get_regulator_by_id
-from domain.database.gene import get_gene_by_id
-from domain.database.tfbs import get_binding_site_by_id
 from domain.database._validate import _validate_kwargs_by_interaction_hash, _validate_args_by_interaction_hash
 from exceptions import ProtrendException
 
@@ -17,15 +12,20 @@ _HEADER = 'PRT'
 _ENTITY = 'RIN'
 
 
-# order matters - do not change dict order
-lookup_queries = {'organism': get_organism_by_id,
-                  'regulator': get_regulator_by_id,
-                  'gene': get_gene_by_id,
-                  'tfbs': get_binding_site_by_id,
-                  'effector': get_effector_by_id}
-
-
 def _validate_submitted_objects(interaction: dict):
+    from domain.database.effector.queries import get_effector_by_id
+    from domain.database.organism.queries import get_organism_by_id
+    from domain.database.regulator.queries import get_regulator_by_id
+    from domain.database.gene.queries import get_gene_by_id
+    from domain.database.tfbs.queries import get_binding_site_by_id
+
+    # order matters - do not change dict order
+    lookup_queries = {'organism': get_organism_by_id,
+                      'regulator': get_regulator_by_id,
+                      'gene': get_gene_by_id,
+                      'tfbs': get_binding_site_by_id,
+                      'effector': get_effector_by_id}
+
     objs = []
     for key, lookup in lookup_queries.items():
 

@@ -4,7 +4,6 @@ from rest_framework import status
 
 import domain.model_api as mapi
 from data import Operon, Gene
-from domain.database import get_gene_by_id
 from domain.database._validate import _validate_kwargs_by_operon_db_id, _validate_args_by_operon_db_id
 from exceptions import ProtrendException
 
@@ -16,6 +15,8 @@ def create_operons(*operons: Dict[str, Any]) -> List[Operon]:
     """
     Create operons into the database
     """
+    from domain.database.gene.queries import get_gene_by_id
+
     operons = _validate_args_by_operon_db_id(args=operons, node_cls=Operon, header=_HEADER, entity=_ENTITY)
     objs = mapi.create_objects(Operon, *operons)
 
@@ -37,6 +38,8 @@ def create_operon(**kwargs) -> Operon:
     """
     Create a given operon into the database according to the parameters
     """
+    from domain.database.gene.queries import get_gene_by_id
+
     kwargs = _validate_kwargs_by_operon_db_id(kwargs=kwargs, node_cls=Operon, header=_HEADER, entity=_ENTITY)
     obj = mapi.create_object(Operon, **kwargs)
     genes = [get_gene_by_id(gene) for gene in obj.genes]

@@ -4,7 +4,6 @@ from rest_framework import status
 
 from data import Gene
 import domain.model_api as mapi
-from domain.database import delete_interactions, delete_operons
 from domain.database._validate import (_validate_args_by_locus_tag, _validate_kwargs_by_locus_tag,
                                        _validate_args_by_uniprot_accession, _validate_kwargs_by_uniprot_accession)
 from exceptions import ProtrendException
@@ -67,6 +66,8 @@ def delete_gene(gene: Gene) -> Gene:
     """
     Delete the gene from the database
     """
+    from domain.database.regulatory_interaction.operations import delete_interactions
+    from domain.database.operon.operations import delete_operons
     # first let's delete operons and interactions associated with the organism
     operons = mapi.get_related_objects(gene, 'operon')
     delete_operons(*operons)
