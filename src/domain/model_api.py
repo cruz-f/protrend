@@ -1,9 +1,13 @@
-from typing import Union, Type, Any, List, Dict
+from functools import wraps
+from typing import Union, Type, Any, List, Dict, Callable
 
 from django.db.models import Model, QuerySet
 from django_neomodel import DjangoNode
-from neomodel import NodeSet, MultipleNodesReturned, StructuredRel, RelationshipManager
+from neo4j.exceptions import DriverError, Neo4jError
+from neomodel import NodeSet, MultipleNodesReturned, StructuredRel, RelationshipManager, NeomodelException
+from rest_framework import status
 
+from exceptions import ProtrendException
 from set_list import SetList
 
 _model_type = Union[Type[DjangoNode], Type[Model]]
@@ -20,9 +24,26 @@ def get_query_set(cls: _model_type) -> Union[Any, NodeSet, QuerySet]:
     raise AttributeError(f'objects or nodes attribute not found for type object {cls.__name__}')
 
 
+def run_or_raise(fn: Callable):
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+
+        except (AttributeError, NeomodelException, Neo4jError, DriverError):
+            raise ProtrendException(detail='ProTReND database is currently unavailable. '
+                                           'Please try again later or contact the support team',
+                                    code='service unavailable',
+                                    status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    return wrapper
+
+
 # ---------------------------------------------------------
 # Bulk Object Create Read Update and Delete operations
 # ---------------------------------------------------------
+@run_or_raise
 def get_objects(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
     """
     Get objects from database
@@ -31,6 +52,7 @@ def get_objects(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
     return list(query_set.all())
 
 
+@run_or_raise
 def filter_objects(cls: _model_type, *args, **kwargs) -> Union[List[DjangoNode], List[Model]]:
     """
     Get and filter objects from database
@@ -39,6 +61,7 @@ def filter_objects(cls: _model_type, *args, **kwargs) -> Union[List[DjangoNode],
     return list(query_set.filter(*args, **kwargs))
 
 
+@run_or_raise
 def order_by_objects(cls: _model_type, *fields) -> Union[List[DjangoNode], List[Model]]:
     """
     Get and order by fields all objects from database
@@ -47,6 +70,7 @@ def order_by_objects(cls: _model_type, *fields) -> Union[List[DjangoNode], List[
     return list(query_set.order_by(*fields))
 
 
+@run_or_raise
 def create_objects(cls: _model_type, *objects: Dict[str, Any]) -> Union[List[DjangoNode], List[Model]]:
     """
     Create multiple objects into the database from a set of dictionaries
@@ -60,6 +84,7 @@ def create_objects(cls: _model_type, *objects: Dict[str, Any]) -> Union[List[Dja
     return []
 
 
+@run_or_raise
 def delete_objects(*objects: _model):
     """
     Delete multiple objects from the database calling the delete method of these objects
@@ -71,6 +96,7 @@ def delete_objects(*objects: _model):
 # ---------------------------------------------------------
 # Single Object Create Read Update and Delete operations
 # ---------------------------------------------------------
+@run_or_raise
 def get_object(cls: _model_type, **kwargs) -> Union[_model, None]:
     """
     Get an object from database according to the parameters
@@ -84,6 +110,7 @@ def get_object(cls: _model_type, **kwargs) -> Union[_model, None]:
         return
 
 
+@run_or_raise
 def get_first_object(cls: _model_type, *fields) -> Union[_model, None]:
     """
     Get the first object from database according to the fields
@@ -95,6 +122,7 @@ def get_first_object(cls: _model_type, *fields) -> Union[_model, None]:
     return
 
 
+@run_or_raise
 def get_last_object(cls: _model_type, *fields) -> Union[_model, None]:
     """
     Get the last object from database according to the fields
@@ -106,6 +134,7 @@ def get_last_object(cls: _model_type, *fields) -> Union[_model, None]:
     return
 
 
+@run_or_raise
 def create_object(cls: _model_type, **kwargs) -> _model:
     """
     Create an object into the database according to the parameters
@@ -115,6 +144,7 @@ def create_object(cls: _model_type, **kwargs) -> _model:
     return obj
 
 
+@run_or_raise
 def update_object(obj: _model, **kwargs) -> _model:
     """
     Update an object into the database according to the parameters
@@ -125,6 +155,7 @@ def update_object(obj: _model, **kwargs) -> _model:
     return obj
 
 
+@run_or_raise
 def delete_object(obj: _model):
     """
     Delete an object from the database
@@ -147,6 +178,7 @@ def get_rel_query_set(obj: _model, target: str) -> Union[Any, RelationshipManage
 # ---------------------------------------------------------
 # Relationships Create Read Update and Delete operations
 # ---------------------------------------------------------
+@run_or_raise
 def get_related_objects(obj: _model, target: str) -> SetList[DjangoNode]:
     """
     Get all objects connected with this object
@@ -155,6 +187,7 @@ def get_related_objects(obj: _model, target: str) -> SetList[DjangoNode]:
     return SetList(query_set.all())
 
 
+@run_or_raise
 def filter_related_objects(obj: _model, target: str, **kwargs) -> SetList[DjangoNode]:
     """
     Get and filter the objects connected with this object
@@ -163,6 +196,7 @@ def filter_related_objects(obj: _model, target: str, **kwargs) -> SetList[Django
     return SetList(query_set.filter(**kwargs))
 
 
+@run_or_raise
 def order_by_related_objects(obj: _model, target: str, *fields) -> SetList[DjangoNode]:
     """
     Get and order by fields the objects connected with this object
@@ -171,6 +205,7 @@ def order_by_related_objects(obj: _model, target: str, *fields) -> SetList[Djang
     return SetList(query_set.order_by(*fields))
 
 
+@run_or_raise
 def get_related_object(obj: _model, target: str, **kwargs) -> Union[DjangoNode, None]:
     """
     Get a specific object (by identifier, etc) connected with this object
@@ -194,6 +229,7 @@ def get_related_object(obj: _model, target: str, **kwargs) -> Union[DjangoNode, 
     return
 
 
+@run_or_raise
 def get_relationships(source_obj: _model, target: str, target_obj: _model) -> List[StructuredRel]:
     """
     Get all relationships objects between two objects
@@ -202,6 +238,7 @@ def get_relationships(source_obj: _model, target: str, target_obj: _model) -> Li
     return list(query_set.all_relationships(target_obj))
 
 
+@run_or_raise
 def delete_relationships(source_obj: _model, target: str, target_obj: _model):
     """
     Delete all relationships between two objects
@@ -210,6 +247,7 @@ def delete_relationships(source_obj: _model, target: str, target_obj: _model):
     return query_set.disconnect(target_obj)
 
 
+@run_or_raise
 def get_relationship(source_obj: _model, target: str, target_obj: _model) -> Union[StructuredRel, None]:
     """
     Get the first relationship object between two nodes
@@ -218,6 +256,7 @@ def get_relationship(source_obj: _model, target: str, target_obj: _model) -> Uni
     return query_set.relationship(target_obj)
 
 
+@run_or_raise
 def create_relationship(source_obj: _model, target: str, target_obj: _model, **kwargs) -> Union[StructuredRel, None]:
     """
     Create a relationship object between two objects
@@ -226,6 +265,7 @@ def create_relationship(source_obj: _model, target: str, target_obj: _model, **k
     return query_set.connect(target_obj, properties=kwargs)
 
 
+@run_or_raise
 def update_relationship(source_obj: _model, target: str, target_obj: _model, **kwargs) -> StructuredRel:
     """
     Update a relationship object between two objects
@@ -237,6 +277,7 @@ def update_relationship(source_obj: _model, target: str, target_obj: _model, **k
     return relationship
 
 
+@run_or_raise
 def delete_relationship(source_obj: _model, target: str, target_obj: _model):
     """
     Delete a relationship object between two objects
