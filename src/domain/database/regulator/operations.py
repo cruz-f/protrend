@@ -4,6 +4,7 @@ from rest_framework import status
 
 from data import Regulator
 import domain.model_api as mapi
+from domain.database import delete_interactions
 from domain.database._validate import (_validate_args_by_locus_tag, _validate_args_by_uniprot_accession,
                                        _validate_kwargs_by_locus_tag, _validate_kwargs_by_uniprot_accession)
 from exceptions import ProtrendException
@@ -26,7 +27,8 @@ def delete_regulators(*regulators: Regulator):
     """
     Delete regulators from the database
     """
-    return mapi.delete_objects(*regulators)
+    for regulator in regulators:
+        delete_regulator(regulator)
 
 
 def create_regulator(**kwargs) -> Regulator:
@@ -65,4 +67,8 @@ def delete_regulator(regulator: Regulator) -> Regulator:
     """
     Delete the regulator from the database
     """
+    # first let's delete interactions associated with the organism
+    interactions = mapi.get_related_objects(regulator, 'regulatory_interactions')
+    delete_interactions(*interactions)
+
     return mapi.delete_object(regulator)

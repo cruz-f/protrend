@@ -1,7 +1,8 @@
 from typing import List
 
-from data import RegulatoryFamily
+from data import RegulatoryFamily, Regulator, Source
 import domain.model_api as mapi
+from data.relationships import SourceRelationship
 
 
 def get_rfams() -> List[RegulatoryFamily]:
@@ -51,3 +52,32 @@ def get_last_rfam() -> RegulatoryFamily:
     Get the last rfam from database using the protrend identifier
     """
     return mapi.get_last_object(RegulatoryFamily, 'protrend_id')
+
+
+def get_rfam_sources(protrend_id: str) -> List[Source]:
+    """
+    Get sources connected with this rfam
+    """
+    obj = get_rfam_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'data_source')
+
+
+def get_rfam_sources_relationships(protrend_id: str) -> List[SourceRelationship]:
+    """
+    Get sources relationships connected with this rfam
+    """
+    obj = get_rfam_by_id(protrend_id)
+    sources = mapi.get_related_objects(obj, 'data_source')
+    relationships = []
+    for source in sources:
+        source_relationships = mapi.get_relationships(source_obj=obj, target='data_source', target_obj=source)
+        relationships.extend(source_relationships)
+    return relationships
+
+
+def get_rfam_regulator(protrend_id: str) -> List[Regulator]:
+    """
+    Get regulators connected with this rfam
+    """
+    obj = get_rfam_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulator')

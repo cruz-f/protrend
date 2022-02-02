@@ -2,9 +2,10 @@ from typing import List, Dict, Any
 
 from rest_framework import status
 
-from data import Operon
 import domain.model_api as mapi
-from domain.database._validate import _validate_args_by_operon_db_id, _validate_kwargs_by_operon_db_id
+from data import Operon, Gene
+from domain.database import get_gene_by_id
+from domain.database._validate import _validate_kwargs_by_operon_db_id, _validate_args_by_operon_db_id
 from exceptions import ProtrendException
 
 _HEADER = 'PRT'
@@ -16,7 +17,13 @@ def create_operons(*operons: Dict[str, Any]) -> List[Operon]:
     Create operons into the database
     """
     operons = _validate_args_by_operon_db_id(args=operons, node_cls=Operon, header=_HEADER, entity=_ENTITY)
-    return mapi.create_objects(Operon, *operons)
+    objs = mapi.create_objects(Operon, *operons)
+
+    for obj in objs:
+        genes = [get_gene_by_id(gene) for gene in obj.genes]
+        create_operon_relationships(operon=obj, genes=genes)
+
+    return objs
 
 
 def delete_operons(*operons: Operon):
@@ -31,7 +38,10 @@ def create_operon(**kwargs) -> Operon:
     Create a given operon into the database according to the parameters
     """
     kwargs = _validate_kwargs_by_operon_db_id(kwargs=kwargs, node_cls=Operon, header=_HEADER, entity=_ENTITY)
-    return mapi.create_object(Operon, **kwargs)
+    obj = mapi.create_object(Operon, **kwargs)
+    genes = [get_gene_by_id(gene) for gene in obj.genes]
+    create_operon_relationships(operon=obj, genes=genes)
+    return obj
 
 
 def update_operon(operon: Operon, **kwargs) -> Operon:
@@ -57,3 +67,12 @@ def delete_operon(operon: Operon) -> Operon:
     Delete the operon from the database
     """
     return mapi.delete_object(operon)
+
+
+def create_operon_relationships(operon: Operon, genes: List[Gene]):
+    """
+    Create a relationship between operon and genes
+    """
+    for gene in genes:
+        mapi.create_relationship(source_obj=operon, target='gene', target_obj=gene)
+        mapi.create_relationship(source_obj=gene, target='operon', target_obj=operon)

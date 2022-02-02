@@ -1,7 +1,8 @@
 from typing import List
 
-from data import Operon
+from data import Operon, Organism, Gene, Source
 import domain.model_api as mapi
+from data.relationships import SourceRelationship
 
 
 def get_operons() -> List[Operon]:
@@ -51,3 +52,40 @@ def get_last_operon() -> Operon:
     Get the last operon from database using the protrend identifier
     """
     return mapi.get_last_object(Operon, 'protrend_id')
+
+
+def get_operon_sources(protrend_id: str) -> List[Source]:
+    """
+    Get sources connected with this operon
+    """
+    obj = get_operon_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'data_source')
+
+
+def get_operon_sources_relationships(protrend_id: str) -> List[SourceRelationship]:
+    """
+    Get sources relationships connected with this operon
+    """
+    obj = get_operon_by_id(protrend_id)
+    sources = mapi.get_related_objects(obj, 'data_source')
+    relationships = []
+    for source in sources:
+        source_relationships = mapi.get_relationships(source_obj=obj, target='data_source', target_obj=source)
+        relationships.extend(source_relationships)
+    return relationships
+
+
+def get_operon_organisms(protrend_id: str) -> List[Organism]:
+    """
+    Get organism connected with this operon
+    """
+    obj = get_operon_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'organism')
+
+
+def get_operon_genes(protrend_id: str) -> List[Gene]:
+    """
+    Get genes connected with this operon
+    """
+    obj = get_operon_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'gene')
