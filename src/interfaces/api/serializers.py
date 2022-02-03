@@ -1,11 +1,11 @@
-from copy import copy
-
 from rest_framework import serializers, status
 
 # stands for protrend api
 import domain.database as papi
-from constants import help_text, choices, alphabets
+import domain.model_api as mapi
+from constants import help_text, choices
 from exceptions import ProtrendException
+from interfaces.api.validation import validate_dna_sequence, validate_protein_sequence
 
 
 # --------------------------------------
@@ -27,6 +27,49 @@ class BaseSerializer(serializers.Serializer):
 # --------------------------------------
 # Nested Object Serializers
 # --------------------------------------
+class ManyRelatedSerializer(serializers.ListSerializer):
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    def get_attribute(self, instance):
+        return mapi.get_related_objects(instance, self.field_name)
+
+
+class SourceListSerializer(serializers.ListSerializer):
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    def get_attribute(self, instance):
+        sources = mapi.get_related_objects(instance, 'data_source')
+        relationships = []
+        for source in sources:
+            source_relationships = mapi.get_relationships(source_obj=instance, target='data_source', target_obj=source)
+            for source_rel in source_relationships:
+                source_rel.name = source.name
+                relationships.append(source_rel)
+        return relationships
+
+
+class SourceHighlightSerializer(serializers.Serializer):
+    # properties
+    name = serializers.CharField(read_only=True, max_length=100, help_text=help_text.required_name)
+    url = serializers.CharField(read_only=True, help_text=help_text.url)
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
 class OrganismHighlightSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
@@ -38,6 +81,15 @@ class OrganismHighlightSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
+
+    def get_attribute(self, instance):
+        organism = papi.get_organism_by_id(instance.organism)
+        if organism is None:
+            raise ProtrendException(detail=f'Organism with protrend id {instance.organism} not found',
+                                    code='get error',
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        return organism
 
 
 class RegulatorHighlightSerializer(serializers.Serializer):
@@ -55,6 +107,38 @@ class RegulatorHighlightSerializer(serializers.Serializer):
     def create(self, validated_data):
         pass
 
+    def get_attribute(self, instance):
+        regulator = papi.get_regulator_by_id(instance.regulator)
+        if regulator is None:
+            raise ProtrendException(detail=f'Regulator with protrend id {instance.regulator} not found',
+                                    code='get error',
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        return regulator
+
+
+class GeneListSerializer(serializers.ListSerializer):
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    def get_attribute(self, instance):
+        genes = []
+        for gene_id in instance.genes:
+
+            gene = papi.get_gene_by_id(gene_id)
+            if gene is None:
+                raise ProtrendException(detail=f'Gene with protrend id {gene_id} not found',
+                                        code='get error',
+                                        status=status.HTTP_404_NOT_FOUND)
+
+            genes.append(gene)
+
+        return genes
+
 
 class GeneHighlightSerializer(serializers.Serializer):
     # properties
@@ -68,6 +152,15 @@ class GeneHighlightSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
+
+    def get_attribute(self, instance):
+        gene = papi.get_gene_by_id(instance.gene)
+        if gene is None:
+            raise ProtrendException(detail=f'Gene with protrend id {instance.gene} not found',
+                                    code='get error',
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        return gene
 
 
 class TFBSHighlightSerializer(serializers.Serializer):
@@ -84,6 +177,15 @@ class TFBSHighlightSerializer(serializers.Serializer):
     def create(self, validated_data):
         pass
 
+    def get_attribute(self, instance):
+        tfbs = papi.get_binding_site_by_id(instance.tfbs)
+        if tfbs is None:
+            raise ProtrendException(detail=f'TFBS with protrend id {instance.tfbs} not found',
+                                    code='get error',
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        return tfbs
+
 
 class EffectorHighlightSerializer(serializers.Serializer):
     # properties
@@ -95,6 +197,15 @@ class EffectorHighlightSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
+
+    def get_attribute(self, instance):
+        effector = papi.get_effector_by_id(instance.effector)
+        if effector is None:
+            raise ProtrendException(detail=f'Effector with protrend id {instance.effector} not found',
+                                    code='get error',
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        return effector
 
 
 # --------------------------------------
@@ -108,14 +219,10 @@ class EffectorSerializer(BaseSerializer):
                                            help_text=help_text.kegg_compounds)
 
     # url
-    url = serializers.HyperlinkedIdentityField(view_name='effectors-detail',
-                                               lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
-
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
+    url = serializers.HyperlinkedIdentityField(read_only=True,
+                                               view_name='effectors-detail',
+                                               lookup_field='protrend_id',
+                                               lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         return papi.create_effector(**validated_data)
@@ -130,6 +237,21 @@ class EffectorSerializer(BaseSerializer):
 
 class EffectorDetailSerializer(EffectorSerializer):
     url = None
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    regulator = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='regulators-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
 
 
 class EvidenceSerializer(BaseSerializer):
@@ -140,14 +262,6 @@ class EvidenceSerializer(BaseSerializer):
     # url
     url = serializers.HyperlinkedIdentityField(view_name='evidences-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
-
-    # # relationships
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
 
     def create(self, validated_data):
         return papi.create_evidence(**validated_data)
@@ -162,6 +276,20 @@ class EvidenceSerializer(BaseSerializer):
 
 class EvidenceDetailSerializer(EvidenceSerializer):
     url = None
+
+    # relationships
+    tfbs = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='binding-sites-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
 
 
 class GeneSerializer(BaseSerializer):
@@ -190,52 +318,17 @@ class GeneSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='genes-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    # pathway = RelationshipTo('.pathway.Pathway', BASE_REL_TYPE, model=BaseRelationship)
-    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
-    # organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
-
-    @staticmethod
-    def _validate_protein_sequence(start, stop, strand):
-        if strand == 'forward' and start > stop:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the strand value of {strand}")
-
-        if strand == 'reverse' and stop > start:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the strand value of {strand}")
-
     def create(self, validated_data):
-        strand = validated_data['strand']
-        start = validated_data['start']
-        stop = validated_data['stop']
-        self._validate_protein_sequence(start, stop, strand)
+        validated_data = validate_protein_sequence(validated_data)
         return papi.create_gene(**validated_data)
 
     def update(self, instance, validated_data):
-        strand = validated_data.get('strand', instance['strand'])
-        start = validated_data.get('start', instance['start'])
-        stop = validated_data.get('stop', instance['stop'])
-        self._validate_protein_sequence(start, stop, strand)
+        validated_data = validate_protein_sequence(validated_data, instance)
         return papi.update_gene(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
         return papi.delete_gene(instance)
-
-    def validate_sequence(self, value):
-        value = value.upper()
-        if not all(letter in alphabets.protrein for letter in value):
-            raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
-                                              f"Please submit a protein sequence (ACDEFGHIKLMNPQRSTVWY)")
-        return value
 
 
 class GeneDetailSerializer(GeneSerializer):
@@ -250,6 +343,40 @@ class GeneDetailSerializer(GeneSerializer):
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
+
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    organism = ManyRelatedSerializer(read_only=True,
+                                     child=serializers.HyperlinkedRelatedField(
+                                         read_only=True,
+                                         view_name='organisms-detail',
+                                         lookup_field='protrend_id',
+                                         lookup_url_kwarg='protrend_id'))
+    operon = ManyRelatedSerializer(read_only=True,
+                                   child=serializers.HyperlinkedRelatedField(
+                                       read_only=True,
+                                       view_name='operons-detail',
+                                       lookup_field='protrend_id',
+                                       lookup_url_kwarg='protrend_id'))
+    regulator = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='regulators-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+    tfbs = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='binding-sites-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
 
 
 class OperonSerializer(BaseSerializer):
@@ -270,13 +397,6 @@ class OperonSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='operons-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, cardinality=One, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    # organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
-
     def create(self, validated_data):
         for gene_id in validated_data['genes']:
             gene = papi.get_gene_by_id(gene_id)
@@ -296,29 +416,27 @@ class OperonSerializer(BaseSerializer):
 
 class OperonDetailSerializer(OperonSerializer):
     url = None
-    genes = serializers.ListField(read_only=True,
-                                  child=GeneHighlightSerializer(read_only=True),
-                                  help_text=help_text.operon_genes)
+    genes = GeneListSerializer(read_only=True, child=GeneHighlightSerializer(read_only=True),
+                               help_text=help_text.operon_genes)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
 
-    def to_representation(self, instance):
-        instance = copy(instance)
-        genes = []
-        for gene_id in instance.genes:
-
-            gene = papi.get_gene_by_id(gene_id)
-            if gene is None:
-                raise ProtrendException(detail=f'Gene with protrend id {gene_id} not found',
-                                        code='get error',
-                                        status=status.HTTP_404_NOT_FOUND)
-
-            genes.append(gene)
-
-        instance.genes = genes
-
-        return super(OperonDetailSerializer, self).to_representation(instance)
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    organism = ManyRelatedSerializer(read_only=True,
+                                     child=serializers.HyperlinkedRelatedField(
+                                         read_only=True,
+                                         view_name='organisms-detail',
+                                         lookup_field='protrend_id',
+                                         lookup_url_kwarg='protrend_id'))
+    gene = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='genes-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
 
 
 class OrganismSerializer(BaseSerializer):
@@ -344,14 +462,6 @@ class OrganismSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='organisms-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_organism(**validated_data)
 
@@ -372,6 +482,34 @@ class OrganismDetailSerializer(OrganismSerializer):
     ncbi_assembly = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_assembly)
     assembly_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.assembly_accession)
 
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    regulator = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='regulators-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+    gene = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='genes-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    tfbs = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='binding-sites-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
+
 
 class PathwaySerializer(BaseSerializer):
     # properties
@@ -383,10 +521,6 @@ class PathwaySerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='pathways-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_pathway(**validated_data)
 
@@ -401,6 +535,22 @@ class PathwaySerializer(BaseSerializer):
 class PathwayDetailSerializer(PathwaySerializer):
     url = None
 
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    regulator = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='regulators-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+    gene = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='genes-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+
 
 class PublicationSerializer(BaseSerializer):
     # properties
@@ -414,14 +564,6 @@ class PublicationSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='publications-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', BASE_REL_TYPE, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # operon = RelationshipTo('.operon.Operon', BASE_REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_publication(**validated_data)
 
@@ -435,6 +577,20 @@ class PublicationSerializer(BaseSerializer):
 
 class PublicationDetailSerializer(PublicationSerializer):
     url = None
+
+    # relationships
+    tfbs = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='binding-sites-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
 
 
 class RegulatorSerializer(BaseSerializer):
@@ -465,53 +621,17 @@ class RegulatorSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='regulators-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    # pathway = RelationshipTo('.pathway.Pathway', BASE_REL_TYPE, model=BaseRelationship)
-    # effector = RelationshipTo('.effector.Effector', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_family = RelationshipTo('.regulatory_family.RegulatoryFamily', BASE_REL_TYPE, cardinality=ZeroOrOne,
-    #                                    model=BaseRelationship)
-    # organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
-    # tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
-    @staticmethod
-    def _validate_protein_sequence(start, stop, strand):
-        if strand == 'forward' and start > stop:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the strand value of {strand}")
-
-        if strand == 'reverse' and stop > start:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the strand value of {strand}")
-
     def create(self, validated_data):
-        strand = validated_data['strand']
-        start = validated_data['start']
-        stop = validated_data['stop']
-        self._validate_protein_sequence(start, stop, strand)
+        validated_data = validate_protein_sequence(validated_data)
         return papi.create_regulator(**validated_data)
 
     def update(self, instance, validated_data):
-        strand = validated_data.get('strand', instance['strand'])
-        start = validated_data.get('start', instance['start'])
-        stop = validated_data.get('stop', instance['stop'])
-        self._validate_protein_sequence(start, stop, strand)
+        validated_data = validate_protein_sequence(validated_data, instance)
         return papi.update_regulator(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
         return papi.delete_regulator(instance)
-
-    def validate_sequence(self, value):
-        value = value.upper()
-        if not all(letter in alphabets.protrein for letter in value):
-            raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
-                                              f"Please submit a protein sequence (ACDEFGHIKLMNPQRSTVWY)")
-        return value
 
 
 class RegulatorDetailSerializer(RegulatorSerializer):
@@ -529,6 +649,40 @@ class RegulatorDetailSerializer(RegulatorSerializer):
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
 
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    organism = ManyRelatedSerializer(read_only=True,
+                                     child=serializers.HyperlinkedRelatedField(
+                                         read_only=True,
+                                         view_name='organisms-detail',
+                                         lookup_field='protrend_id',
+                                         lookup_url_kwarg='protrend_id'))
+    effector = ManyRelatedSerializer(read_only=True,
+                                     child=serializers.HyperlinkedRelatedField(
+                                         read_only=True,
+                                         view_name='effectors-detail',
+                                         lookup_field='protrend_id',
+                                         lookup_url_kwarg='protrend_id'))
+    gene = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='genes-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    tfbs = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='binding-sites-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
+
 
 class RegulatoryFamilySerializer(BaseSerializer):
     # properties
@@ -542,10 +696,6 @@ class RegulatoryFamilySerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='rfams-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_rfam(**validated_data)
 
@@ -562,6 +712,16 @@ class RegulatoryFamilyDetailSerializer(RegulatoryFamilySerializer):
     rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
     description = serializers.CharField(required=False, help_text=help_text.generic_description)
 
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    regulator = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='regulators-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+
 
 class RegulatoryInteractionSerializer(BaseSerializer):
     # properties
@@ -577,15 +737,6 @@ class RegulatoryInteractionSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='interactions-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    # data_effector = RelationshipTo('.effector.Effector', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # data_tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
     def create(self, validated_data):
         return papi.create_interaction(**validated_data)
 
@@ -600,45 +751,56 @@ class RegulatoryInteractionSerializer(BaseSerializer):
 class RegulatoryInteractionDetailSerializer(RegulatoryInteractionSerializer):
     url = None
     organism = OrganismHighlightSerializer(read_only=True)
-    regulator = GeneHighlightSerializer(read_only=True)
+    regulator = RegulatorHighlightSerializer(read_only=True)
     gene = GeneHighlightSerializer(read_only=True)
     tfbs = TFBSHighlightSerializer(read_only=True)
     effector = EffectorHighlightSerializer(read_only=True)
 
-    def to_representation(self, instance):
-        instance = copy(instance)
-
-        def get_object(getter, protrend_id, entity):
-            obj = getter(protrend_id)
-            if obj is None:
-                raise ProtrendException(detail=f'{entity} with protrend id {protrend_id} not found',
-                                        code='get error',
-                                        status=status.HTTP_404_NOT_FOUND)
-            return obj
-
-        instance.organism = get_object(getter=papi.get_organism_by_id,
-                                       protrend_id=instance.organism,
-                                       entity='Organism')
-
-        instance.regulator = get_object(getter=papi.get_regulator_by_id,
-                                        protrend_id=instance.regulator,
-                                        entity='Regulator')
-
-        instance.gene = get_object(getter=papi.get_gene_by_id,
-                                   protrend_id=instance.gene,
-                                   entity='Gene')
-
-        if instance.tfbs:
-            instance.tfbs = get_object(getter=papi.get_binding_site_by_id,
-                                       protrend_id=instance.tfbs,
-                                       entity='TFBS')
-
-        if instance.effector:
-            instance.effector = get_object(getter=papi.get_effector_by_id,
-                                           protrend_id=instance.effector,
-                                           entity='Effector')
-
-        return super().to_representation(instance)
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    evidence = ManyRelatedSerializer(read_only=True,
+                                     child=serializers.HyperlinkedRelatedField(
+                                         read_only=True,
+                                         view_name='evidences-detail',
+                                         lookup_field='protrend_id',
+                                         lookup_url_kwarg='protrend_id'))
+    publication = ManyRelatedSerializer(read_only=True,
+                                        child=serializers.HyperlinkedRelatedField(
+                                            read_only=True,
+                                            view_name='publications-detail',
+                                            lookup_field='protrend_id',
+                                            lookup_url_kwarg='protrend_id'))
+    data_organism = ManyRelatedSerializer(read_only=True,
+                                          child=serializers.HyperlinkedRelatedField(
+                                              read_only=True,
+                                              view_name='organisms-detail',
+                                              lookup_field='protrend_id',
+                                              lookup_url_kwarg='protrend_id'))
+    data_effector = ManyRelatedSerializer(read_only=True,
+                                          child=serializers.HyperlinkedRelatedField(
+                                              read_only=True,
+                                              view_name='effectors-detail',
+                                              lookup_field='protrend_id',
+                                              lookup_url_kwarg='protrend_id'))
+    data_regulator = ManyRelatedSerializer(read_only=True,
+                                           child=serializers.HyperlinkedRelatedField(
+                                               read_only=True,
+                                               view_name='regulators-detail',
+                                               lookup_field='protrend_id',
+                                               lookup_url_kwarg='protrend_id'))
+    data_gene = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='genes-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+    data_tfbs = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='binding-sites-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
 
 
 class TFBSSerializer(BaseSerializer):
@@ -654,86 +816,59 @@ class TFBSSerializer(BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='binding-sites-detail',
                                                lookup_field='protrend_id', lookup_url_kwarg='protrend_id')
 
-    # # relationships
-    # data_source = RelationshipTo('.source.Source', BASE_REL_TYPE, model=SourceRelationship)
-    # evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
-    # publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    # data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
-    # regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
-    # gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
-    # regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
-    #                                         model=BaseRelationship)
-
-    @staticmethod
-    def _validate_tfbs(sequence, start, stop, strand, length):
-        if len(sequence) != length:
-            raise serializers.ValidationError(f"Provided sequence of length {len(sequence)} "
-                                              f"does not match length field of {length}")
-
-        if strand == 'forward' and start > stop:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the strand value of {strand}")
-
-        if strand == 'reverse' and stop > start:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the strand value of {strand}")
-
-        diff = stop - start
-        if strand == 'reverse':
-            diff = start - stop
-
-        if diff != length:
-            raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
-                                              f"do not match the provided sequence of length {len(sequence)}")
-
     def create(self, validated_data):
-        sequence = validated_data['sequence'].upper()
-        strand = validated_data['strand']
-        start = validated_data['start']
-        stop = validated_data['stop']
-        length = validated_data['length']
-        self._validate_tfbs(sequence, start, stop, strand, length)
-
+        validated_data = validate_dna_sequence(validated_data)
         return papi.create_binding_site(**validated_data)
 
     def update(self, instance, validated_data):
-        sequence = validated_data.get('sequence', instance['sequence']).upper()
-        strand = validated_data.get('strand', instance['strand'])
-        start = validated_data.get('start', instance['start'])
-        stop = validated_data.get('stop', instance['stop'])
-        length = validated_data.get('length', instance['length'])
-        self._validate_tfbs(sequence, start, stop, strand, length)
-
+        validated_data = validate_dna_sequence(validated_data, instance)
         return papi.update_binding_site(instance, **validated_data)
 
     @staticmethod
     def delete(instance):
         return papi.delete_binding_site(instance)
 
-    def validate_sequence(self, value):
-        """
-        Check that the sequence only contains nucleotides.
-        """
-        value = value.upper()
-        if not all(letter in alphabets.dna for letter in value):
-            raise serializers.ValidationError(f"Sequence {value} contains chars not allowed characters. "
-                                              f"Please submit a DNA nucleotide sequence (ACTG)")
-        return value
-
 
 class TFBSDetailSerializer(TFBSSerializer):
     url = None
     organism = OrganismHighlightSerializer(read_only=True)
 
-    def to_representation(self, instance):
-        instance = copy(instance)
-
-        organism = papi.get_organism_by_id(instance.organism)
-        if organism is None:
-            raise ProtrendException(detail=f'Organism with protrend id {instance.organism} not found',
-                                    code='get error',
-                                    status=status.HTTP_404_NOT_FOUND)
-
-        instance.organism = organism
-
-        return super().to_representation(instance)
+    # relationships
+    data_source = SourceListSerializer(read_only=True,
+                                       child=SourceHighlightSerializer(read_only=True))
+    evidence = ManyRelatedSerializer(read_only=True,
+                                     child=serializers.HyperlinkedRelatedField(
+                                         read_only=True,
+                                         view_name='evidences-detail',
+                                         lookup_field='protrend_id',
+                                         lookup_url_kwarg='protrend_id'))
+    publication = ManyRelatedSerializer(read_only=True,
+                                        child=serializers.HyperlinkedRelatedField(
+                                            read_only=True,
+                                            view_name='publications-detail',
+                                            lookup_field='protrend_id',
+                                            lookup_url_kwarg='protrend_id'))
+    data_organism = ManyRelatedSerializer(read_only=True,
+                                          child=serializers.HyperlinkedRelatedField(
+                                              read_only=True,
+                                              view_name='organisms-detail',
+                                              lookup_field='protrend_id',
+                                              lookup_url_kwarg='protrend_id'))
+    regulator = ManyRelatedSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='regulators-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
+    gene = ManyRelatedSerializer(read_only=True,
+                                 child=serializers.HyperlinkedRelatedField(
+                                     read_only=True,
+                                     view_name='genes-detail',
+                                     lookup_field='protrend_id',
+                                     lookup_url_kwarg='protrend_id'))
+    regulatory_interaction = ManyRelatedSerializer(read_only=True,
+                                                   child=serializers.HyperlinkedRelatedField(
+                                                       read_only=True,
+                                                       view_name='interactions-detail',
+                                                       lookup_field='protrend_id',
+                                                       lookup_url_kwarg='protrend_id'))
