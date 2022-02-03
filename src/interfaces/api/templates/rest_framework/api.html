@@ -4,8 +4,8 @@
     <link rel="stylesheet" type="text/css" href="{% static '/api/css/flatly-bootstrap-theme.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static '/api/css/navbar.css' %}">
 {% endblock %}
-{% block name %}
-    { ProTReND }
+{% block title %}
+    ProTReND API - {% if name %}{{ name }}{% endif %}
 {% endblock %}
 {% block navbar %}
     <nav class="navbar navbar-default navbar-custom">
