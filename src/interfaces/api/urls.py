@@ -22,6 +22,7 @@ router.register(r'rfams', list_view=views.RegulatoryFamilyList, detail_view=view
 router.register(r'interactions', list_view=views.RegulatoryInteractionList,
                 detail_view=views.RegulatoryInteractionDetail)
 router.register(r'binding-sites', list_view=views.TFBSList, detail_view=views.TFBSDetail)
+router.register(r'trns', list_view=views.TRNList, detail_view=views.TRNDetail)
 
 
 schema_view = get_schema_view(

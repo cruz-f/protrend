@@ -12,15 +12,16 @@ import domain.database as papi
 import interfaces.serializers as serializers
 from exceptions import ProtrendException
 from router import BaseIndexView
+from utils import ExportFileMixin
 from .permissions import SuperUserOrReadOnly
 
 
 # --------------------------------------------
 # BASE API VIEWS
 # --------------------------------------------
-class ObjectListCreateMixIn:
+class ObjectListMixIn(ExportFileMixin):
     """
-    View to list and create ProTReND database objects.
+    View to list ProTReND database objects.
     """
     @abstractmethod
     def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
@@ -29,15 +30,36 @@ class ObjectListCreateMixIn:
     def get(self: Union['ObjectListCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
         queryset = self.get_queryset()
         if not queryset:
-            return Response({})
+            return Response([{}], status=status.HTTP_204_NO_CONTENT)
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        if request.accepted_renderer.format == 'api':
+
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        serializer = serializer_cls()
+        header = tuple(serializer.fields.keys())
+        context['header'] = header
+        return context
+
+
+class ObjectListCreateMixIn(ObjectListMixIn):
+    """
+    View to list and create ProTReND database objects.
+    """
+    @abstractmethod
+    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
+        pass
 
     def post(self: Union['ObjectListCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -67,11 +89,10 @@ class ObjectListCreateMixIn:
             return {}
 
 
-class ObjectRetrieveUpdateDestroy:
+class ObjectRetrieveMixIn(ExportFileMixin):
     """
-    View to retrieve, update and delete ProTReND database objects.
+    View to retrieve ProTReND database objects.
     """
-
     @abstractmethod
     def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
         pass
@@ -90,8 +111,32 @@ class ObjectRetrieveUpdateDestroy:
             *args,
             **kwargs):
         obj = self.get_object(protrend_id)
+
+        if request.accepted_renderer.format == 'api':
+            serializer = self.get_serializer(obj)
+            return Response(serializer.data)
+
         serializer = self.get_serializer(obj)
-        return Response(serializer.data)
+        return Response([serializer.data])
+
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        serializer = serializer_cls()
+        header = tuple(serializer.fields.keys())
+        context['header'] = header
+        return context
+
+
+class ObjectRetrieveUpdateDestroy(ObjectRetrieveMixIn):
+    """
+    View to retrieve, update and delete ProTReND database objects.
+    """
+    @abstractmethod
+    def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
+        pass
 
     def put(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView],
             request,
@@ -585,3 +630,50 @@ class TFBSDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
 
     def get_queryset(self, protrend_id: str):
         return papi.get_binding_site_by_id(protrend_id)
+
+
+class TRNList(ObjectListMixIn, generics.GenericAPIView):
+    """
+    ProTReND database REST API.
+
+    Open programmatic access for the Transcriptional Regulatory Networks (TRNs) available at ProTReND. Consult here the current list of all TRNs in ProTReND.
+
+    TRNs encode instructions for the expression of target genes in response to regulatory proteins.
+    TRNs can be thought of as computational modeling tools that allow to describe meaningful regulatory interactions between regulators and target genes.
+
+    In ProTReND, a TRN is organism-specific and comprehends all these regulatory elements:
+     - the regulator that mediates the control of gene expression
+     - the target gene whose expression is being controlled by the regulatory element
+     - the TFBS (might not be available for all interactions) where the regulator binds to activate/repress the target gene
+     - the effector which can bind or not to a regulator altering the regulatory action of this element
+     - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
+    """
+    serializer_class = serializers.TRNSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_organisms()
+
+
+class TRNDetail(ObjectListMixIn, generics.GenericAPIView):
+    """
+    ProTReND database REST API.
+
+    Open programmatic access for the Transcriptional Regulatory Networks (TRNs) available at ProTReND. Consult here all information available over this TRN.
+
+    TRNs encode instructions for the expression of target genes in response to regulatory proteins.
+    TRNs can be thought of as computational modeling tools that allow to describe meaningful regulatory interactions between regulators and target genes.
+
+    In ProTReND, a TRN is organism-specific and comprehends all these regulatory elements:
+     - the regulator that mediates the control of gene expression
+     - the target gene whose expression is being controlled by the regulatory element
+     - the TFBS (might not be available for all interactions) where the regulator binds to activate/repress the target gene
+     - the effector which can bind or not to a regulator altering the regulatory action of this element
+     - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
+    """
+    serializer_class = serializers.TRNDetailSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
+        return papi.filter_interactions(organism__exact=organism_id)
