@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 import domain.database as papi
-import interfaces.api.serializers as serializers
+import interfaces.serializers as serializers
 from exceptions import ProtrendException
 from router import BaseIndexView
 from .permissions import SuperUserOrReadOnly
