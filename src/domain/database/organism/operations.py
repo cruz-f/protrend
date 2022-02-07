@@ -80,7 +80,7 @@ def delete_organism(organism: Organism) -> Organism:
     binding_sites = mapi.get_related_objects(organism, 'tfbs')
     delete_binding_sites(*binding_sites)
 
-    interactions = mapi.get_related_objects(organism, 'regulatory_interactions')
+    interactions = mapi.get_related_objects(organism, 'regulatory_interaction')
     delete_interactions(*interactions)
 
     return mapi.delete_object(organism)

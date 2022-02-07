@@ -32,7 +32,12 @@ def create_binding_sites(*binding_sites: Dict[str, Any]) -> List[TFBS]:
     objs = mapi.create_objects(TFBS, *binding_sites)
 
     for obj, organism_obj in zip(objs, organisms):
-        create_binding_site_relationships(binding_site=obj, organism=organism_obj)
+        try:
+            create_binding_site_relationships(binding_site=obj, organism=organism_obj)
+
+        except ProtrendException:
+            # if something goes wrong the interaction must be deleted
+            delete_binding_site(obj)
 
     return objs
 
@@ -61,7 +66,13 @@ def create_binding_site(**kwargs) -> TFBS:
 
     kwargs = _validate_kwargs_by_site_hash(kwargs=kwargs, node_cls=TFBS, header=_HEADER, entity=_ENTITY)
     obj = mapi.create_object(TFBS, **kwargs)
-    create_binding_site_relationships(binding_site=obj, organism=organism_obj)
+
+    try:
+        create_binding_site_relationships(binding_site=obj, organism=organism_obj)
+
+    except ProtrendException:
+        # if something goes wrong the interaction must be deleted
+        delete_binding_site(obj)
     return obj
 
 
@@ -82,7 +93,7 @@ def delete_binding_site(binding_site: TFBS) -> TFBS:
     from domain.database.regulatory_interaction.operations import delete_interactions
 
     # first let's delete interactions associated with the organism
-    interactions = mapi.get_related_objects(binding_site, 'regulatory_interactions')
+    interactions = mapi.get_related_objects(binding_site, 'regulatory_interaction')
     delete_interactions(*interactions)
 
     return mapi.delete_object(binding_site)

@@ -69,7 +69,7 @@ def delete_regulator(regulator: Regulator) -> Regulator:
     from domain.database.regulatory_interaction.operations import delete_interactions
 
     # first let's delete interactions associated with the organism
-    interactions = mapi.get_related_objects(regulator, 'regulatory_interactions')
+    interactions = mapi.get_related_objects(regulator, 'regulatory_interaction')
     delete_interactions(*interactions)
 
     return mapi.delete_object(regulator)

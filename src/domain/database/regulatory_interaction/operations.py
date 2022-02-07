@@ -62,9 +62,14 @@ def create_interactions(*interactions: Dict[str, Any]) -> List[RegulatoryInterac
 
     for obj, submitted_obj in zip(objs, submitted_objs):
         organism, regulator, gene, tfbs, effector = submitted_obj
-        create_interaction_relationships(interaction=obj,
-                                         organism=organism, regulator=regulator, gene=gene, tfbs=tfbs,
-                                         effector=effector)
+        try:
+            create_interaction_relationships(interaction=obj,
+                                             organism=organism, regulator=regulator, gene=gene, tfbs=tfbs,
+                                             effector=effector)
+
+        except ProtrendException:
+            # if something goes wrong the interaction must be deleted
+            delete_interaction(obj)
 
     return objs
 
@@ -84,8 +89,15 @@ def create_interaction(**kwargs) -> RegulatoryInteraction:
     kwargs = _validate_kwargs_by_interaction_hash(kwargs=kwargs, node_cls=RegulatoryInteraction,
                                                   header=_HEADER, entity=_ENTITY)
     obj = mapi.create_object(RegulatoryInteraction, **kwargs)
-    create_interaction_relationships(interaction=obj,
-                                     organism=organism, regulator=regulator, gene=gene, tfbs=tfbs, effector=effector)
+    try:
+        create_interaction_relationships(interaction=obj,
+                                         organism=organism, regulator=regulator,
+                                         gene=gene, tfbs=tfbs, effector=effector)
+
+    except ProtrendException:
+        # if something happens the interaction must be deleted
+        delete_interaction(obj)
+
     return obj
 
 

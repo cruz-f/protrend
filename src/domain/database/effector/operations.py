@@ -61,7 +61,7 @@ def delete_effector(effector: Effector) -> Effector:
     from domain.database.regulatory_interaction import delete_interactions
 
     # first let's delete interactions associated with the organism
-    interactions = mapi.get_related_objects(effector, 'regulatory_interactions')
+    interactions = mapi.get_related_objects(effector, 'regulatory_interaction')
     delete_interactions(*interactions)
 
     return mapi.delete_object(effector)

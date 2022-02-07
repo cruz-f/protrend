@@ -72,7 +72,7 @@ def delete_gene(gene: Gene) -> Gene:
     operons = mapi.get_related_objects(gene, 'operon')
     delete_operons(*operons)
 
-    interactions = mapi.get_related_objects(gene, 'regulatory_interactions')
+    interactions = mapi.get_related_objects(gene, 'regulatory_interaction')
     delete_interactions(*interactions)
 
     return mapi.delete_object(gene)
