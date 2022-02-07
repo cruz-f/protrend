@@ -555,7 +555,7 @@ class RegulatoryFamilyDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIVie
         return papi.get_rfam_by_id(protrend_id)
 
 
-class RegulatoryInteractionList(ObjectListCreateMixIn, generics.GenericAPIView):
+class InteractionsList(ObjectListCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -579,7 +579,7 @@ class RegulatoryInteractionList(ObjectListCreateMixIn, generics.GenericAPIView):
         return papi.get_interactions()
 
 
-class RegulatoryInteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class InteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -603,11 +603,11 @@ class RegulatoryInteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericA
         return papi.get_interaction_by_id(protrend_id)
 
 
-class TFBSList(ObjectListCreateMixIn, generics.GenericAPIView):
+class BindingSitesList(ObjectListCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
-    Open programmatic access for the TFBSs available at ProTReND. Consult here the current list of all binding sites in ProTReND.
+    Open programmatic access for the Binding Sites available at ProTReND. Consult here the current list of all binding sites in ProTReND.
 
     Regulators can often bind to specific DNA sequences, which are regularly called cis-elements or Transcription Factor Binding Sites (TFBS) to exert the control of gene expression.
     These binding sites in the organism DNA sequence can be characterized by the nucleotide sequence and genomic coordinates.
@@ -621,11 +621,11 @@ class TFBSList(ObjectListCreateMixIn, generics.GenericAPIView):
         return papi.get_binding_sites()
 
 
-class TFBSDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class BindingSiteDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
-    Open programmatic access for the TFBSs available at ProTReND. Consult here all information available over this binding site.
+    Open programmatic access for the Binding Sites available at ProTReND. Consult here all information available over this binding site.
 
     Regulators can often bind to specific DNA sequences, which are regularly called cis-elements or Transcription Factor Binding Sites (TFBS) to exert the control of gene expression.
     These binding sites in the organism DNA sequence can be characterized by the nucleotide sequence and genomic coordinates.
