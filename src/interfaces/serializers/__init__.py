@@ -1,3 +1,9 @@
+from .datasets import (TRNsSerializer,
+                       TRNSerializer,
+                       OrganismsBindingSitesSerializer,
+                       OrganismBindingSitesSerializer,
+                       RegulatorsBindingSitesSerializer,
+                       RegulatorBindingSitesSerializer)
 from .effector import (EffectorDetailSerializer,
                        EffectorHighlightSerializer,
                        EffectorSerializer)
@@ -26,5 +32,3 @@ from .regulatory_interaction import (RegulatoryInteractionDetailSerializer,
 from .tfbs import (TFBSDetailSerializer,
                    TFBSHighlightSerializer,
                    TFBSSerializer)
-from .trn import (TRNSerializer,
-                  TRNDetailSerializer)

@@ -1,3 +1,5 @@
+import abc
+
 from rest_framework import serializers, status
 
 import domain.database as papi
@@ -91,10 +93,12 @@ class TFBSHighlightSerializer(serializers.Serializer):
     start = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.stop)
 
-    def update(self, instance, validated_data):
+    @abc.abstractmethod
+    def create(self, validated_data):
         pass
 
-    def create(self, validated_data):
+    @abc.abstractmethod
+    def update(self, instance, validated_data):
         pass
 
     def get_attribute(self, instance):
