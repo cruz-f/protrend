@@ -1,6 +1,6 @@
-from typing import Union
+from typing import Union, Tuple, Type
 
-from rest_framework import views
+from rest_framework import views, serializers
 
 
 class ExportFileMixin:
@@ -51,3 +51,24 @@ class ExportFileMixin:
             response["content-disposition"] = f"attachment; filename={filename}"
 
         return response
+
+
+def get_header(serializer_cls: Type[serializers.Serializer], nested_fields: Tuple = None) -> Tuple:
+    serializer = serializer_cls()
+
+    if not nested_fields:
+        nested_fields = ()
+
+    header = []
+    for key, value in serializer.fields.items():
+
+        if key in nested_fields:
+
+            for sub_key in value.fields.keys():
+                nested_key = f'{key}.{sub_key}'
+                header.append(nested_key)
+
+        else:
+            header.append(key)
+
+    return tuple(header)
