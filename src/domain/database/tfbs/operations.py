@@ -92,5 +92,5 @@ def create_binding_site_relationships(binding_site: TFBS, organism: Organism):
     """
     Create a relationship between binding_site and organism
     """
-    mapi.create_relationship(source_obj=binding_site, target='data_organism', target_obj=organism)
-    mapi.create_relationship(source_obj=organism, target='tfbs', target_obj=binding_site)
+    mapi.create_or_none(source_obj=binding_site, target='data_organism', target_obj=organism)
+    mapi.create_or_none(source_obj=organism, target='tfbs', target_obj=binding_site)
