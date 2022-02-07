@@ -25,7 +25,7 @@ def validate_protein_sequence(validated_data: dict, instance: DjangoNode = None)
 
         validated_data['sequence'] = sequence
 
-    if strand is not None or start is not None or stop is not None:
+    if strand is not None and start is not None and stop is not None:
         if strand == 'forward' and start > stop:
             raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
                                               f"do not match the strand value of {strand}")
@@ -63,7 +63,7 @@ def validate_dna_sequence(validated_data: dict, instance: DjangoNode = None) -> 
         raise serializers.ValidationError(f"Provided sequence of length {len(sequence)} "
                                           f"does not match length field of {length}")
 
-    if strand is not None or start is not None or stop is not None:
+    if strand is not None and start is not None and stop is not None:
 
         if strand == 'forward' and start > stop:
             raise serializers.ValidationError(f"Start and stop values of {start} - {stop} "
