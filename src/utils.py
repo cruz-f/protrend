@@ -11,6 +11,7 @@ class ExportFileMixin:
 
     excel_filename = "protrend_data.xlsx"
     csv_filename = "protrend_data.csv"
+    fasta_filename = "protrend_data.fasta"
 
     def get_excel_filename(self):
         """
@@ -23,6 +24,12 @@ class ExportFileMixin:
         Returns a custom filename for the csv.
         """
         return self.csv_filename
+
+    def get_fasta_filename(self):
+        """
+        Returns a custom filename for the fasta.
+        """
+        return self.fasta_filename
 
     def finalize_response(self: Union['ExportFileMixin', views.APIView], request, response, *args, **kwargs):
         """
@@ -37,6 +44,10 @@ class ExportFileMixin:
 
         elif response.accepted_renderer.format == 'csv':
             filename = self.get_csv_filename()
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'fasta':
+            filename = self.get_fasta_filename()
             response["content-disposition"] = f"attachment; filename={filename}"
 
         return response
