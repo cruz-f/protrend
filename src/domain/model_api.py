@@ -257,12 +257,34 @@ def get_relationship(source_obj: _model, target: str, target_obj: _model) -> Uni
 
 
 @run_or_raise
+def is_connected(source_obj: _model, target: str, target_obj: _model) -> Union[StructuredRel, None]:
+    """
+    Get the first relationship object between two nodes
+    """
+    query_set = get_rel_query_set(obj=source_obj, target=target)
+    return query_set.is_connected(target_obj)
+
+
+@run_or_raise
 def create_relationship(source_obj: _model, target: str, target_obj: _model, **kwargs) -> Union[StructuredRel, None]:
     """
     Create a relationship object between two objects
     """
     query_set = get_rel_query_set(obj=source_obj, target=target)
     return query_set.connect(target_obj, properties=kwargs)
+
+
+@run_or_raise
+def create_or_none(source_obj: _model, target: str, target_obj: _model, **kwargs) -> Union[StructuredRel, None]:
+    """
+    Create a relationship object between two objects
+    """
+    query_set = get_rel_query_set(obj=source_obj, target=target)
+
+    if not query_set.is_connected(target_obj):
+        return query_set.connect(target_obj, properties=kwargs)
+
+    return
 
 
 @run_or_raise
