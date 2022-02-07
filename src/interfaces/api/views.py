@@ -10,11 +10,11 @@ from rest_framework.settings import api_settings
 
 import domain.database as papi
 import interfaces.serializers as serializers
+import interfaces.renderers as renderers
 from exceptions import ProtrendException
 from router import BaseIndexView
-from utils import ExportFileMixin
+from utils import ExportFileMixin, get_header
 from .permissions import SuperUserOrReadOnly
-from ..renderers.fasta import FastaRenderer
 
 
 # --------------------------------------------
@@ -49,8 +49,8 @@ class ObjectListMixIn(ExportFileMixin):
         context = super().get_renderer_context()
 
         serializer_cls = self.get_serializer_class()
-        serializer = serializer_cls()
-        header = tuple(serializer.fields.keys())
+        header = get_header(serializer_cls=serializer_cls)
+
         context['header'] = header
         return context
 
@@ -368,6 +368,17 @@ class OperonDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     def get_queryset(self, protrend_id: str):
         return papi.get_operon_by_id(protrend_id)
 
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        nested_fields = ('genes', )
+        header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
+
+        context['header'] = header
+        return context
+
 
 class OrganismList(ObjectListCreateMixIn, generics.GenericAPIView):
     """
@@ -602,6 +613,17 @@ class InteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     def get_queryset(self, protrend_id: str):
         return papi.get_interaction_by_id(protrend_id)
 
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        nested_fields = ('organism', 'regulator', 'gene', 'tfbs', 'effector')
+        header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
+
+        context['header'] = header
+        return context
+
 
 class BindingSitesList(ObjectListCreateMixIn, generics.GenericAPIView):
     """
@@ -637,6 +659,17 @@ class BindingSiteDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
 
     def get_queryset(self, protrend_id: str):
         return papi.get_binding_site_by_id(protrend_id)
+
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        nested_fields = ('organism',)
+        header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
+
+        context['header'] = header
+        return context
 
 
 class TRNs(ObjectListMixIn, generics.GenericAPIView):
@@ -685,6 +718,17 @@ class TRN(ObjectListMixIn, generics.GenericAPIView):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
         return papi.filter_interactions(organism__exact=organism_id)
 
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        nested_fields = ('regulator', 'gene', 'tfbs', 'effector')
+        header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
+
+        context['header'] = header
+        return context
+
 
 class OrganismsBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
@@ -719,7 +763,7 @@ class OrganismBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
     serializer_class = serializers.OrganismBindingSitesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (FastaRenderer,)
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (renderers.FastaRenderer, )
 
     def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
@@ -759,7 +803,7 @@ class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatorBindingSitesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (FastaRenderer,)
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (renderers.FastaRenderer, )
 
     def get_queryset(self):
         regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
@@ -769,3 +813,14 @@ class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
                                for interaction in interactions
                                if interaction.tfbs}
         return list(unique_interactions.values())
+
+    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+        # noinspection PyUnresolvedReferences
+        context = super().get_renderer_context()
+
+        serializer_cls = self.get_serializer_class()
+        nested_fields = ('regulator', 'tfbs')
+        header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
+
+        context['header'] = header
+        return context
