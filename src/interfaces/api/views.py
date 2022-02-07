@@ -14,6 +14,7 @@ from exceptions import ProtrendException
 from router import BaseIndexView
 from utils import ExportFileMixin
 from .permissions import SuperUserOrReadOnly
+from ..renderers.fasta import FastaRenderer
 
 
 # --------------------------------------------
@@ -23,6 +24,7 @@ class ObjectListMixIn(ExportFileMixin):
     """
     View to list ProTReND database objects.
     """
+
     @abstractmethod
     def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
         pass
@@ -57,6 +59,7 @@ class ObjectListCreateMixIn(ObjectListMixIn):
     """
     View to list and create ProTReND database objects.
     """
+
     @abstractmethod
     def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
         pass
@@ -93,6 +96,7 @@ class ObjectRetrieveMixIn(ExportFileMixin):
     """
     View to retrieve ProTReND database objects.
     """
+
     @abstractmethod
     def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
         pass
@@ -134,6 +138,7 @@ class ObjectRetrieveUpdateDestroy(ObjectRetrieveMixIn):
     """
     View to retrieve, update and delete ProTReND database objects.
     """
+
     @abstractmethod
     def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
         pass
@@ -201,7 +206,9 @@ class IndexView(BaseIndexView):
     ProTReND's REST API allows users to retrieve structured regulatory data. In addition, the web interface provides a simple yet powerful resource to visualize ProTReND.
     All data can be visualized by navigating through the several biological entities available at the API Index.
 
-    IMPORTANT: USERS PERFORMING MORE THAN 1 REQUEST PER SECOND WILL BE BANNED!
+    IMPORTANT:
+     - ANONYMOUS USERS PERFORMING MORE THAN 3 REQUESTS PER SECOND WILL BE BANNED!
+     - REGISTERED USERS PERFORMING MORE THAN 5 REQUESTS PER SECOND WILL BE BANNED!
     Please follow the best practices mentioned in the documentation.
 
     The web API navigation provides detailed visualizations for each biological entity contained in the database.
@@ -632,7 +639,7 @@ class TFBSDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
         return papi.get_binding_site_by_id(protrend_id)
 
 
-class TRNList(ObjectListMixIn, generics.GenericAPIView):
+class TRNs(ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -648,14 +655,14 @@ class TRNList(ObjectListMixIn, generics.GenericAPIView):
      - the effector which can bind or not to a regulator altering the regulatory action of this element
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
-    serializer_class = serializers.TRNSerializer
+    serializer_class = serializers.TRNsSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         return papi.get_organisms()
 
 
-class TRNDetail(ObjectListMixIn, generics.GenericAPIView):
+class TRN(ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -671,9 +678,94 @@ class TRNDetail(ObjectListMixIn, generics.GenericAPIView):
      - the effector which can bind or not to a regulator altering the regulatory action of this element
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
-    serializer_class = serializers.TRNDetailSerializer
+    serializer_class = serializers.TRNSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
         return papi.filter_interactions(organism__exact=organism_id)
+
+
+class OrganismsBindingSites(ObjectListMixIn, generics.GenericAPIView):
+    """
+    ProTReND database REST API.
+
+    Open programmatic access for the Binding Sites datasets available at ProTReND. Consult here the current list of all Binding Sites datasets grouped by organism.
+
+    Regulators can often bind to specific DNA sequences, which are regularly called cis-elements or Transcription Factor Binding Sites (TFBS) to exert the control of gene expression.
+    These binding sites in the organism DNA sequence can be characterized by the nucleotide sequence and genomic coordinates.
+
+    The TFBS Dataset API allows one to retrieve all TFBSs associated with a single organism in several standard formats,
+    such as FASTA.
+    """
+    serializer_class = serializers.OrganismsBindingSitesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_organisms()
+
+
+class OrganismBindingSites(ObjectListMixIn, generics.GenericAPIView):
+    """
+    ProTReND database REST API.
+
+    Open programmatic access for the Binding Sites datasets available at ProTReND. Consult here the Binding Site dataset for the selected organism.
+
+    Regulators can often bind to specific DNA sequences, which are regularly called cis-elements or Transcription Factor Binding Sites (TFBS) to exert the control of gene expression.
+    These binding sites in the organism DNA sequence can be characterized by the nucleotide sequence and genomic coordinates.
+
+    The TFBS Dataset API allows one to retrieve all TFBSs associated with a single organism in several standard formats,
+    such as FASTA
+    """
+    serializer_class = serializers.OrganismBindingSitesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (FastaRenderer,)
+
+    def get_queryset(self):
+        organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
+        return papi.filter_binding_sites(organism__exact=organism_id)
+
+
+class RegulatorsBindingSites(ObjectListMixIn, generics.GenericAPIView):
+    """
+    ProTReND database REST API.
+
+    Open programmatic access for the Binding Sites datasets available at ProTReND. Consult here the current list of all Binding Sites datasets grouped by regulator.
+
+    Regulators can often bind to specific DNA sequences, which are regularly called cis-elements or Transcription Factor Binding Sites (TFBS) to exert the control of gene expression.
+    These binding sites in the organism DNA sequence can be characterized by the nucleotide sequence and genomic coordinates.
+
+    The Regulator-TFBS Dataset API allows one to retrieve all TFBSs associated with a single regulator in several standard formats,
+    such as FASTA.
+    """
+    serializer_class = serializers.RegulatorsBindingSitesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return papi.get_regulators()
+
+
+class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
+    """
+    ProTReND database REST API.
+
+    Open programmatic access for the Binding Sites datasets available at ProTReND. Consult here the Binding Sites dataset for the selected regulator.
+
+    Regulators can often bind to specific DNA sequences, which are regularly called cis-elements or Transcription Factor Binding Sites (TFBS) to exert the control of gene expression.
+    These binding sites in the organism DNA sequence can be characterized by the nucleotide sequence and genomic coordinates.
+
+    The Regulator-TFBS Dataset API allows one to retrieve all TFBSs associated with a single regulator in several standard formats,
+    such as FASTA
+    """
+    serializer_class = serializers.RegulatorBindingSitesSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (FastaRenderer,)
+
+    def get_queryset(self):
+        regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
+        interactions = papi.filter_interactions(regulator__exact=regulator_id)
+
+        unique_interactions = {(interaction.regulator, interaction.tfbs): interaction
+                               for interaction in interactions
+                               if interaction.tfbs}
+        return list(unique_interactions.values())

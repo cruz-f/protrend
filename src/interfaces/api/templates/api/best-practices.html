@@ -5,8 +5,8 @@
     <link rel="stylesheet" type="text/css" href="{% static '/api/css/navbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static '/api/css/best-practices.css' %}">
 {% endblock %}
-{% block name %}
-    { ProTReND }
+{% block title %}
+    ProTReND API
 {% endblock %}
 {% block navbar %}
     <nav class="navbar navbar-default navbar-custom">
@@ -35,7 +35,20 @@
                     <li class="text-uppercase"><a href="{% url 'genes-list' %}">Genes</a></li>
                     <li class="text-uppercase"><a href="{% url 'binding-sites-list' %}">Binding Sites</a></li>
                     <li class="text-uppercase"><a href="{% url 'interactions-list' %}">Interactions</a></li>
-                    <li class="text-uppercase"><a href="{% url 'effectors-list' %}">Effectors</a></li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Datasets
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'trns-list' %}">TRNs</a></li>
+                            <li class="text-uppercase"><a href="{% url 'organisms-binding-sites-list' %}">Organisms Binding Sites</a></li>
+                            <li class="text-uppercase"><a href="{% url 'regulators-binding-sites-list' %}">Regulators Binding Sites</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a href="#"
                            class="dropdown-toggle text-uppercase"
@@ -45,6 +58,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'effectors-list' %}">Effectors</a></li>
                             <li class="text-uppercase"><a href="{% url 'operons-list' %}">Operons</a></li>
                             <li class="text-uppercase"><a href="{% url 'pathways-list' %}">Pathways</a></li>
                             <li class="text-uppercase"><a href="{% url 'publications-list' %}">Publications</a></li>
@@ -100,6 +114,14 @@
                     <li>Source</li>
                     <li>TFBS</li>
                 </ul>
+                <p class="pb-5">
+                    In addition, ProTReND REST API provides data access through pre-built datasets in the following formats:
+                </p>
+                <ul class="no-bullet pb-5">
+                    <li>TRNs</li>
+                    <li>Organisms Binding Sites</li>
+                    <li>Regulators Binding Sites</li>
+                </ul>
                 <p class="pb-2">
                     The following methods are available to all users over all end-points:
                 </p>
@@ -122,8 +144,18 @@
                 </ul>
                 <p class="pb-5">
                     All requests submitted to the REST API must be performed in JSON format.
-                    Responses provided by the REST API will also be provided in a JSON format.
-                    For more details about each API end-point try out the swagger and redoc documentation
+                    Responses provided by the REST API will also be provided in a JSON format by default.
+                    ProTReND REST API also supports data access in the following file formats:
+                </p>
+                <ul class="no-bullet pb-5">
+                    <li>JSON</li>
+                    <li>CSV</li>
+                    <li>EXCEL</li>
+                    <li>BROWSABLE HTML API</li>
+                    <li>FASTA (Binding Sites datasets)</li>
+                </ul>
+                <p class="pb-5">
+                    For more details about each API end-point consult the swagger and redoc documentation
                 </p>
                 <div class="btn-group pb-5" role="group">
                     <a type="button" href="{% url 'schema-swagger' %}"
@@ -131,12 +163,12 @@
                     <a type="button" href="{% url 'schema-redoc' %}"
                        class="btn btn-primary text-uppercase">redoc</a>
                 </div>
-
                 <p class="pb-2">
                     REQUEST POLICY:
                 </p>
                 <ul class="no-bullet pb-5">
-                    <li>USERS PERFORMING MORE THAN 1 REQUEST PER SECOND WILL BE BANNED!</li>
+                    <li>ANONYMOUS USERS PERFORMING MORE THAN 3 REQUESTS PER SECOND WILL BE BANNED!</li>
+                    <li>REGISTERED USERS PERFORMING MORE THAN 5 REQUESTS PER SECOND WILL BE BANNED!</li>
                     <li>For large requests, please submit GET request to the list end-points,
                         such as api/genes/, api/regulators/, etc</li>
                 </ul>
