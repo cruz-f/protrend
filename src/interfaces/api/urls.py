@@ -19,9 +19,13 @@ router.register(r'pathways', list_view=views.PathwayList, detail_view=views.Path
 router.register(r'publications', list_view=views.PublicationList, detail_view=views.PublicationDetail)
 router.register(r'regulators', list_view=views.RegulatorList, detail_view=views.RegulatorDetail)
 router.register(r'rfams', list_view=views.RegulatoryFamilyList, detail_view=views.RegulatoryFamilyDetail)
-router.register(r'interactions', list_view=views.RegulatoryInteractionList,
-                detail_view=views.RegulatoryInteractionDetail)
-router.register(r'binding-sites', list_view=views.TFBSList, detail_view=views.TFBSDetail)
+router.register(r'interactions', list_view=views.InteractionsList, detail_view=views.InteractionDetail)
+router.register(r'binding-sites', list_view=views.BindingSitesList, detail_view=views.BindingSiteDetail)
+router.register(r'trns', list_view=views.TRNs, detail_view=views.TRN)
+router.register(r'organisms-binding-sites', list_view=views.OrganismsBindingSites,
+                detail_view=views.OrganismBindingSites)
+router.register(r'regulators-binding-sites', list_view=views.RegulatorsBindingSites,
+                detail_view=views.RegulatorBindingSites)
 
 
 schema_view = get_schema_view(
@@ -39,6 +43,7 @@ schema_view = get_schema_view(
 
 
 # The API URLs are now determined automatically by the router.
+# noinspection PyUnresolvedReferences
 urlpatterns = [
     path('', include(router.urls)),
     path(r'best-practices/', views.best_practices, name='best-practices'),

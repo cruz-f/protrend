@@ -34,7 +34,20 @@
                     <li class="text-uppercase"><a href="{% url 'genes-list' %}">Genes</a></li>
                     <li class="text-uppercase"><a href="{% url 'binding-sites-list' %}">Binding Sites</a></li>
                     <li class="text-uppercase"><a href="{% url 'interactions-list' %}">Interactions</a></li>
-                    <li class="text-uppercase"><a href="{% url 'effectors-list' %}">Effectors</a></li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Datasets
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'trns-list' %}">TRNs</a></li>
+                            <li class="text-uppercase"><a href="{% url 'organisms-binding-sites-list' %}">Organisms Binding Sites</a></li>
+                            <li class="text-uppercase"><a href="{% url 'regulators-binding-sites-list' %}">Regulators Binding Sites</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a href="#"
                            class="dropdown-toggle text-uppercase"
@@ -44,6 +57,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'effectors-list' %}">Effectors</a></li>
                             <li class="text-uppercase"><a href="{% url 'operons-list' %}">Operons</a></li>
                             <li class="text-uppercase"><a href="{% url 'pathways-list' %}">Pathways</a></li>
                             <li class="text-uppercase"><a href="{% url 'publications-list' %}">Publications</a></li>
