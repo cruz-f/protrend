@@ -767,7 +767,7 @@ class OrganismBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
     serializer_class = serializers.OrganismBindingSitesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = (BrowsableAPIRenderer, JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, )
+    renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
     def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
@@ -807,7 +807,7 @@ class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatorBindingSitesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = (BrowsableAPIRenderer, JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, )
+    renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
     def get_queryset(self):
         regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))

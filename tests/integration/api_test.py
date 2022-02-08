@@ -32,6 +32,7 @@ class ApiTest(TestCase):
         """
         Test the organism API.
         """
+        clean_db()
         obj = dict(name='Escherichia coli str. K-12 substr. MG1655',
                    ncbi_taxonomy=511145,
                    species='Escherichia coli')
@@ -62,6 +63,7 @@ class ApiTest(TestCase):
         """
         Test the regulator API.
         """
+        clean_db()
         obj = dict(locus_tag='b0001',
                    uniprot_accession='P0AD86',
                    name='thrL',
@@ -98,6 +100,7 @@ class ApiTest(TestCase):
         """
         Test the gene API.
         """
+        clean_db()
         obj = dict(locus_tag='b0001',
                    uniprot_accession='P0AD86',
                    name='thrL',
@@ -177,6 +180,7 @@ class ApiTest(TestCase):
         """
         Test the effector API.
         """
+        clean_db()
         obj = dict(name='Threonine')
         post = self.client.post('/api/effectors/', data=obj)
         self.assertEqual(post.status_code, 201)

@@ -144,10 +144,10 @@ REST_FRAMEWORK = {
         'user': '5/second'
     },
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_csv.renderers.CSVRenderer',
-        'drf_renderer_xlsx.renderers.XLSXRenderer'
+        'drf_renderer_xlsx.renderers.XLSXRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
 }
 
