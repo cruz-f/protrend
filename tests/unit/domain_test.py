@@ -8,7 +8,7 @@ import domain.model_api as mapi
 from ..utils import clean_db, populate_db
 
 
-class ApiTest(TestCase):
+class DomainTest(TestCase):
 
     def setUp(self) -> None:
         clean_db()
