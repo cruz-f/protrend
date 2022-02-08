@@ -6,7 +6,7 @@ from data import *
 from ..utils import clean_db, populate_db
 
 
-class ApiTest(TestCase):
+class DataTest(TestCase):
 
     def setUp(self) -> None:
         clean_db()
