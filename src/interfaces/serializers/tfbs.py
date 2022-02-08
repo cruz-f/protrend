@@ -102,6 +102,9 @@ class TFBSHighlightSerializer(serializers.Serializer):
         pass
 
     def get_attribute(self, instance):
+        if instance.tfbs is None:
+            return
+
         tfbs = papi.get_binding_site_by_id(instance.tfbs)
         if tfbs is None:
             raise ProtrendException(detail=f'TFBS with protrend id {instance.tfbs} not found',

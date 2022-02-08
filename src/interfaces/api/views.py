@@ -4,9 +4,12 @@ from typing import Union, List
 from django.db.models import Model
 from django.shortcuts import render
 from django_neomodel import DjangoNode
+from drf_renderer_xlsx.renderers import XLSXRenderer
 from rest_framework import status, generics, permissions
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework_csv.renderers import CSVRenderer
 
 import domain.database as papi
 import interfaces.serializers as serializers
@@ -29,7 +32,7 @@ class ObjectListMixIn(ExportFileMixin):
     def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
         pass
 
-    def get(self: Union['ObjectListCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
+    def get(self: Union['ObjectListMixIn', generics.GenericAPIView], request, *args, **kwargs):
         queryset = self.get_queryset()
         if not queryset:
             return Response([{}], status=status.HTTP_204_NO_CONTENT)
@@ -44,7 +47,7 @@ class ObjectListMixIn(ExportFileMixin):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['ObjectListMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -101,7 +104,7 @@ class ObjectRetrieveMixIn(ExportFileMixin):
     def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
         pass
 
-    def get_object(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView], protrend_id: str):
+    def get_object(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView], protrend_id: str):
         obj = self.get_queryset(protrend_id)
         if obj is None:
             raise ProtrendException(detail='Object not found',
@@ -109,7 +112,7 @@ class ObjectRetrieveMixIn(ExportFileMixin):
                                     status=status.HTTP_404_NOT_FOUND)
         return obj
 
-    def get(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView],
+    def get(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView],
             request,
             protrend_id: str,
             *args,
@@ -121,15 +124,15 @@ class ObjectRetrieveMixIn(ExportFileMixin):
             return Response(serializer.data)
 
         serializer = self.get_serializer(obj)
-        return Response([serializer.data])
+        return Response(serializer.data)
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
         serializer_cls = self.get_serializer_class()
-        serializer = serializer_cls()
-        header = tuple(serializer.fields.keys())
+        header = get_header(serializer_cls=serializer_cls)
+
         context['header'] = header
         return context
 
@@ -213,6 +216,7 @@ class IndexView(BaseIndexView):
 
     The web API navigation provides detailed visualizations for each biological entity contained in the database.
     """
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
 
 
 def best_practices(request):
@@ -763,7 +767,7 @@ class OrganismBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
     serializer_class = serializers.OrganismBindingSitesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (renderers.FastaRenderer, )
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, )
 
     def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
@@ -803,7 +807,7 @@ class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatorBindingSitesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (renderers.FastaRenderer, )
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, )
 
     def get_queryset(self):
         regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))

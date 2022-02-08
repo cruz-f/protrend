@@ -68,6 +68,9 @@ class EffectorHighlightSerializer(serializers.Serializer):
         pass
 
     def get_attribute(self, instance):
+        if instance.effector is None:
+            return
+
         effector = papi.get_effector_by_id(instance.effector)
         if effector is None:
             raise ProtrendException(detail=f'Effector with protrend id {instance.effector} not found',
