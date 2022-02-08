@@ -1,8 +1,8 @@
-from neomodel import StringProperty, RelationshipTo, IntegerProperty, One
+from neomodel import StringProperty, RelationshipTo, IntegerProperty, ZeroOrOne
 
+from constants import help_text, choices
 from .base import BaseNode
 from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
-from constants import help_text, choices
 
 
 class TFBS(BaseNode):
@@ -20,7 +20,7 @@ class TFBS(BaseNode):
     data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, model=SourceRelationship)
     evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
     publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
     regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)
     gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
