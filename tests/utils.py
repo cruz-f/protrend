@@ -29,13 +29,12 @@ def clean_db():
             node_instance.delete()
 
 
-def avoid_throttling(fn):
-    @functools.wraps(fn)
-    def wrapper(*args, **kwargs):
-        time.sleep(0.3)
-        return fn(*args, **kwargs)
+def disable_throttling(router):
+    for _, list_view, detail_view in router.views:
+        list_view.throttle_classes = ()
+        detail_view.throttle_classes = ()
 
-    return wrapper
+    return
 
 
 def populate_db():
