@@ -24,3 +24,14 @@ such as creating a new TRN, building a TFBS dataset, etc.
 
 - **domain** - Re-usable business logic. It implements universal queries and operations to the databases.
 
+
+## Known Issues and Limitations
+
+### ProTReND domain layer
+The ProTReND domain layer has the following limitations:
+- **TFBS Update** - update operations on binding sites are not possible due to missing logic. An error is raised
+- **RegulatoryInteraction Update** - update operations on interactions are not possible due to missing logic. 
+An error is raised
+- **Relationship Create** - It is not currently possible to create arbitrary relationships between objects. 
+Only read procedures are supported on nodes relationships. 
+Although, upon creating binding sites and interactions new relationships are automatically created among these objects

@@ -1,7 +1,8 @@
 from typing import List
 
-from data import Gene
+from data import Gene, RegulatoryInteraction, TFBS, Regulator, Organism, Operon, Pathway, Publication, Source
 import domain.model_api as mapi
+from data.relationships import SourceRelationship
 
 
 def get_genes() -> List[Gene]:
@@ -51,3 +52,80 @@ def get_last_gene() -> Gene:
     Get the last gene from database using the protrend identifier
     """
     return mapi.get_last_object(Gene, 'protrend_id')
+
+
+def get_effector_sources(protrend_id: str) -> List[Source]:
+    """
+    Get sources connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'data_source')
+
+
+def get_gene_sources_relationships(protrend_id: str) -> List[SourceRelationship]:
+    """
+    Get sources relationships connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    sources = mapi.get_related_objects(obj, 'data_source')
+    relationships = []
+    for source in sources:
+        source_relationships = mapi.get_relationships(source=obj, rel='data_source', target=source)
+        relationships.extend(source_relationships)
+    return relationships
+
+
+def get_gene_publications(protrend_id: str) -> List[Publication]:
+    """
+    Get publications connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'publication')
+
+
+def get_gene_pathways(protrend_id: str) -> List[Pathway]:
+    """
+    Get pathways connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'pathway')
+
+
+def get_gene_operons(protrend_id: str) -> List[Operon]:
+    """
+    Get operons connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'operon')
+
+
+def get_gene_organisms(protrend_id: str) -> List[Organism]:
+    """
+    Get organism connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'organism')
+
+
+def get_gene_regulators(protrend_id: str) -> List[Regulator]:
+    """
+    Get regulator connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulator')
+
+
+def get_gene_binding_sites(protrend_id: str) -> List[TFBS]:
+    """
+    Get binding sites connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'tfbs')
+
+
+def get_gene_interactions(protrend_id: str) -> List[RegulatoryInteraction]:
+    """
+    Get interactions connected with this gene
+    """
+    obj = get_gene_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulatory_interaction')

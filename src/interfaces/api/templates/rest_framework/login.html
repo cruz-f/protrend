@@ -1,0 +1,10 @@
+{% extends "rest_framework/login_base.html" %}
+{% load static %}
+{% block bootstrap_theme %}
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/flatly-bootstrap-theme.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/navbar.css' %}">
+{% endblock %}
+
+{% block branding %}
+    <h3>ProTReND API LOGIN</h3>
+{% endblock %}

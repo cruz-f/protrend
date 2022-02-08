@@ -26,7 +26,8 @@ def delete_genes(*genes: Gene):
     """
     Delete genes from the database
     """
-    return mapi.delete_objects(*genes)
+    for gene in genes:
+        delete_gene(gene)
 
 
 def create_gene(**kwargs) -> Gene:
@@ -48,10 +49,15 @@ def update_gene(gene: Gene, **kwargs) -> Gene:
                                 status=status.HTTP_400_BAD_REQUEST)
 
     if 'locus_tag' in kwargs:
-        _validate_kwargs_by_locus_tag(kwargs=kwargs, node_cls=Gene, header=_HEADER, entity=_ENTITY)
+        locus_tag = kwargs['locus_tag']
+        if locus_tag != gene.locus_tag:
+            kwargs = _validate_kwargs_by_locus_tag(kwargs=kwargs, node_cls=Gene, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
     if 'uniprot_accession' in kwargs:
-        _validate_kwargs_by_uniprot_accession(kwargs=kwargs, node_cls=Gene)
+        uniprot_accession = kwargs['uniprot_accession']
+        if uniprot_accession != gene.uniprot_accession:
+            kwargs = _validate_kwargs_by_uniprot_accession(kwargs=kwargs, node_cls=Gene)
 
     return mapi.update_object(gene, **kwargs)
 
@@ -60,4 +66,13 @@ def delete_gene(gene: Gene) -> Gene:
     """
     Delete the gene from the database
     """
+    from domain.database.regulatory_interaction.operations import delete_interactions
+    from domain.database.operon.operations import delete_operons
+    # first let's delete operons and interactions associated with the organism
+    operons = mapi.get_related_objects(gene, 'operon')
+    delete_operons(*operons)
+
+    interactions = mapi.get_related_objects(gene, 'regulatory_interaction')
+    delete_interactions(*interactions)
+
     return mapi.delete_object(gene)

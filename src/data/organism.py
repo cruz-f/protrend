@@ -28,9 +28,3 @@ class Organism(BaseNode):
     tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
-
-    class Meta(BaseNode.Meta):
-        fields = ['protrend_id', 'created', 'updated', 'name', 'ncbi_taxonomy', 'species', 'strain',
-                  'refseq_accession', 'refseq_ftp', 'genbank_accession', 'genbank_ftp', 'ncbi_assembly',
-                  'assembly_accession',
-                  'data_source', 'operon', 'regulator', 'gene', 'tfbs', 'regulatory_interaction']

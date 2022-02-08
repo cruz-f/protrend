@@ -45,7 +45,10 @@ def update_evidence(evidence: Evidence, **kwargs) -> Evidence:
                                 status=status.HTTP_400_BAD_REQUEST)
 
     if 'name' in kwargs:
-        _validate_kwargs_by_name(kwargs=kwargs, node_cls=Evidence, header=_HEADER, entity=_ENTITY)
+        name = kwargs['name']
+        if name != evidence.name:
+            kwargs = _validate_kwargs_by_name(kwargs=kwargs, node_cls=Evidence, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
     return mapi.update_object(evidence, **kwargs)
 

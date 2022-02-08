@@ -1,9 +1,9 @@
 from collections import namedtuple
-from typing import List, Type, Callable, Any, Union
+from typing import List, Type, Union
 
 from django.urls import path
-from rest_framework import generics
-from rest_framework.decorators import api_view
+from django.views import generic
+from rest_framework import generics, routers
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
@@ -13,52 +13,86 @@ RoutedView = namedtuple(typename='RoutedView',
                         defaults=[None, None, None])
 
 
-class Router:
+class BaseIndexView(routers.APIRootView):
+    """
+    Index
+    """
+    views = ()
 
-    def __init__(self, root: str = None):
+    def get(self, request, *args, **kwargs):
+        data = {}
+
+        for prefix, list_view, detail_view in self.views:
+            view_name = f'{prefix}-list'
+            data[prefix] = reverse(view_name, request=request)
+        return Response(data)
+
+
+class IndexView(BaseIndexView):
+    """
+    Index
+    """
+
+
+class Router:
+    index_class = IndexView
+
+    def __init__(self,
+                 route: str = None,
+                 index: Union[Type[generics.GenericAPIView], Type[generic.View]] = None,
+                 name: str = None):
         """
         A router for class-based views.
         It allows registering both list and detail views into a single prefix.
         Then, dynamic URL paths will be reconstructed for each prefix according to the view type.
         In addition, a dynamic get view will be reconstructed for the main end-point of the router.
-        A root end-point can be configured for the router.
+        An index end-point can be configured for the router.
         Otherwise, the end-point will be an empty string as it is common in django.
 
-        :param: root - the root end-point
+        :param: route - the index end-point
+        :param: index - the index view
+        :param: name - the name for the view
         """
-        if root is None:
-            root = ''
-
-        self._root = root
+        self._route = route
+        self._index = index
+        self._name = name
         self._views = []
 
     @property
-    def root(self) -> Callable[[Any], Union[Response, Any]]:
+    def route(self) -> str:
+        if self._route is None:
+            return ''
 
-        @api_view(['GET'])
-        def _root(request):
-            data = {}
+        return str(self._route)
 
-            for prefix, list_view, detail_view in self._views:
-                view_name = f'{prefix}-list'
-                data[prefix] = reverse(view_name, request=request)
-            return Response(data)
+    @property
+    def index(self) -> Union[generic.View, routers.APIRootView]:
+        if self._index:
+            return self._index.as_view()
 
-        return _root
+        self.index_class.views = self.views
+        return self.index_class.as_view()
+
+    @property
+    def name(self) -> str:
+        if self._name is None:
+            return ''
+
+        return str(self._name)
 
     @property
     def views(self) -> List[RoutedView]:
         return self._views.copy()
 
     @property
-    def urls(self):
+    def urls(self) -> List[path]:
 
-        urls = [path(self._root, self.root)]
+        urls = [path(self.route, self.index, name=self.name)]
 
         for prefix, list_view, detail_view in self._views:
 
             if list_view is not None:
-                url = path(prefix, list_view.as_view(), name=f'{prefix}-list')
+                url = path(f'{prefix}/', list_view.as_view(), name=f'{prefix}-list')
                 urls.append(url)
 
             if detail_view is not None:

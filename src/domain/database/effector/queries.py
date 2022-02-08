@@ -1,7 +1,8 @@
 from typing import List
 
-from data import Effector
+from data import Effector, Regulator, RegulatoryInteraction, Source
 import domain.model_api as mapi
+from data.relationships import SourceRelationship
 
 
 def get_effectors() -> List[Effector]:
@@ -51,3 +52,40 @@ def get_last_effector() -> Effector:
     Get the last effector from database using the protrend identifier
     """
     return mapi.get_last_object(Effector, 'protrend_id')
+
+
+def get_effector_sources(protrend_id: str) -> List[Source]:
+    """
+    Get sources connected with this effector
+    """
+    obj = get_effector_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'data_source')
+
+
+def get_effector_sources_relationships(protrend_id: str) -> List[SourceRelationship]:
+    """
+    Get sources relationships connected with this effector
+    """
+    obj = get_effector_by_id(protrend_id)
+    sources = mapi.get_related_objects(obj, 'data_source')
+    relationships = []
+    for source in sources:
+        source_relationships = mapi.get_relationships(source=obj, rel='data_source', target=source)
+        relationships.extend(source_relationships)
+    return relationships
+
+
+def get_effector_regulators(protrend_id: str) -> List[Regulator]:
+    """
+    Get regulators connected with this effector
+    """
+    obj = get_effector_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulator')
+
+
+def get_effector_interactions(protrend_id: str) -> List[RegulatoryInteraction]:
+    """
+    Get the last effector from database using the protrend identifier
+    """
+    obj = get_effector_by_id(protrend_id)
+    return mapi.get_related_objects(obj, 'regulatory_interaction')

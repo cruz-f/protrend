@@ -45,7 +45,10 @@ def update_publication(publication: Publication, **kwargs) -> Publication:
                                 status=status.HTTP_400_BAD_REQUEST)
 
     if 'pmid' in kwargs:
-        _validate_kwargs_by_pmid(kwargs=kwargs, node_cls=Publication, header=_HEADER, entity=_ENTITY)
+        pmid = kwargs['pmid']
+        if pmid != publication.pmid:
+            kwargs = _validate_kwargs_by_pmid(kwargs=kwargs, node_cls=Publication, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
     return mapi.update_object(publication, **kwargs)
 

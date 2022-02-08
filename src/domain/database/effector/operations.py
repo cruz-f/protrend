@@ -24,7 +24,8 @@ def delete_effectors(*effectors: Effector):
     """
     Delete effectors from the database
     """
-    return mapi.delete_objects(*effectors)
+    for effector in effectors:
+        delete_effector(effector)
 
 
 def create_effector(**kwargs) -> Effector:
@@ -45,7 +46,10 @@ def update_effector(effector: Effector, **kwargs) -> Effector:
                                 status=status.HTTP_400_BAD_REQUEST)
 
     if 'name' in kwargs:
-        _validate_kwargs_by_name(kwargs=kwargs, node_cls=Effector, header=_HEADER, entity=_ENTITY)
+        name = kwargs['name']
+        if name != effector.name:
+            kwargs = _validate_kwargs_by_name(kwargs=kwargs, node_cls=Effector, header=_HEADER, entity=_ENTITY)
+            kwargs.pop('protrend_id')
 
     return mapi.update_object(effector, **kwargs)
 
@@ -54,4 +58,10 @@ def delete_effector(effector: Effector) -> Effector:
     """
     Delete the effector from the database
     """
+    from domain.database.regulatory_interaction import delete_interactions
+
+    # first let's delete interactions associated with the organism
+    interactions = mapi.get_related_objects(effector, 'regulatory_interaction')
+    delete_interactions(*interactions)
+
     return mapi.delete_object(effector)

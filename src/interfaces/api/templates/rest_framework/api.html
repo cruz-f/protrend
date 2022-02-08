@@ -1,0 +1,86 @@
+{% extends "rest_framework/base.html" %}
+{% load static %}
+{% block bootstrap_theme %}
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/flatly-bootstrap-theme.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/api/css/navbar.css' %}">
+{% endblock %}
+{% block title %}
+    ProTReND API - {% if name %}{{ name }}{% endif %}
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-default navbar-custom">
+        <div class="container-fluid px-10">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">ProTReND</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right pe-5 text-uppercase">
+                    {% block userlinks %}
+                        {{ block.super }}
+                    {% endblock %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right pe-5">
+                    <li class="text-uppercase"><a href="{% url 'api' %}">Index</a></li>
+                    <li class="text-uppercase"><a href="{% url 'organisms-list' %}">Organisms</a></li>
+                    <li class="text-uppercase"><a href="{% url 'regulators-list' %}">Regulators</a></li>
+                    <li class="text-uppercase"><a href="{% url 'genes-list' %}">Genes</a></li>
+                    <li class="text-uppercase"><a href="{% url 'binding-sites-list' %}">Binding Sites</a></li>
+                    <li class="text-uppercase"><a href="{% url 'interactions-list' %}">Interactions</a></li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Datasets
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'trns-list' %}">TRNs</a></li>
+                            <li class="text-uppercase"><a href="{% url 'organisms-binding-sites-list' %}">Organisms Binding Sites</a></li>
+                            <li class="text-uppercase"><a href="{% url 'regulators-binding-sites-list' %}">Regulators Binding Sites</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Other
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'effectors-list' %}">Effectors</a></li>
+                            <li class="text-uppercase"><a href="{% url 'evidences-list' %}">Evidences</a></li>
+                            <li class="text-uppercase"><a href="{% url 'operons-list' %}">Operons</a></li>
+                            <li class="text-uppercase"><a href="{% url 'pathways-list' %}">Pathways</a></li>
+                            <li class="text-uppercase"><a href="{% url 'publications-list' %}">Publications</a></li>
+                            <li class="text-uppercase"><a href="{% url 'rfams-list' %}">RFAMS</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle text-uppercase"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-expanded="false">Documentation
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="text-uppercase"><a href="{% url 'schema-swagger' %}">Swagger</a></li>
+                            <li class="text-uppercase"><a href="{% url 'schema-redoc' %}">Redoc</a></li>
+                            <li class="text-uppercase"><a href="{% url 'best-practices' %}">Best practices</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}

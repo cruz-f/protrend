@@ -1,14 +1,31 @@
-from neomodel import StringProperty, RelationshipTo, ZeroOrOne
+from neomodel import StringProperty, RelationshipTo, ZeroOrOne, ArrayProperty, IntegerProperty
 
 from constants import choices, help_text
-from .base import BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn
+from .base import BaseNode
 from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
 
 
-class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
+class Regulator(BaseNode):
     # properties
+    locus_tag = StringProperty(required=True, unique_index=True, max_length=100, help_text=help_text.locus_tag)
+    locus_tag_factor = StringProperty(required=True, unique_index=True, max_length=100,
+                                      help_text=help_text.required_name)
+    uniprot_accession = StringProperty(unique_index=True, max_length=50, help_text=help_text.uniprot_accession)
+    uniprot_accession_factor = StringProperty(unique_index=True, max_length=50, help_text=help_text.uniprot_accession)
+    name = StringProperty(max_length=50, help_text=help_text.gene_name)
+    synonyms = ArrayProperty(StringProperty(), help_text=help_text.synonyms)
+    function = StringProperty(help_text=help_text.function)
+    description = StringProperty(help_text=help_text.description)
     mechanism = StringProperty(required=True, choices=choices.mechanism,
                                help_text=help_text.mechanism)
+    ncbi_gene = IntegerProperty(max_length=50, help_text=help_text.ncbi_gene)
+    ncbi_protein = IntegerProperty(max_length=50, help_text=help_text.ncbi_protein)
+    genbank_accession = StringProperty(max_length=50, help_text=help_text.genbank_accession)
+    refseq_accession = StringProperty(max_length=50, help_text=help_text.refseq_accession)
+    sequence = StringProperty(help_text=help_text.sequence)
+    strand = StringProperty(choices=choices.strand, help_text=help_text.strand)
+    start = IntegerProperty(help_text=help_text.start)
+    stop = IntegerProperty(help_text=help_text.stop)
 
     # properties inherited from GeneMixIn, SequenceMixIn, PositionMixIn
 
@@ -25,10 +42,3 @@ class Regulator(BaseNode, GeneMixIn, SequenceMixIn, PositionMixIn):
     tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
-
-    class Meta(BaseNode.Meta):
-        fields = ['protrend_id', 'created', 'updated', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
-                  'function', 'description', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession',
-                  'sequence', 'strand', 'start', 'stop', 'mechanism',
-                  'data_source', 'evidence', 'publication', 'pathway', 'effector', 'regulatory_family',
-                  'organism', 'gene', 'tfbs', 'regulatory_interaction']
