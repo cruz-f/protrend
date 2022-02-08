@@ -77,5 +77,5 @@ def create_operon_relationships(operon: Operon, genes: List[Gene]):
     Create a relationship between operon and genes
     """
     for gene in genes:
-        mapi.create_relationship(source_obj=operon, target='gene', target_obj=gene)
-        mapi.create_relationship(source_obj=gene, target='operon', target_obj=operon)
+        mapi.create_relationship(source=operon, rel='gene', target=gene)
+        mapi.create_relationship(source=gene, rel='operon', target=operon)

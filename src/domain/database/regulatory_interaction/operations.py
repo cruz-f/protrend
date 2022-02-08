@@ -127,43 +127,46 @@ def create_interaction_relationships(interaction: RegulatoryInteraction,
     """
     Create a relationship between interactions and organism regulator gene tfbs effector
     """
-    # organism → regulator; gene; interaction
-    mapi.create_or_none(source_obj=organism, target='regulator', target_obj=regulator)
-    mapi.create_or_none(source_obj=organism, target='gene', target_obj=gene)
-    mapi.create_or_none(source_obj=organism, target='regulatory_interaction', target_obj=interaction)
-
-    # regulator → organism; gene; tfbs; effector; interaction
-    mapi.create_or_none(source_obj=regulator, target='organism', target_obj=organism)
-    mapi.create_or_none(source_obj=regulator, target='gene', target_obj=gene)
+    # organism <-> regulator; gene; tfbs; interaction
+    mapi.create_unique_reverse_relationship(source=organism,  forward_rel='regulator',
+                                            backward_rel='organism', target=regulator)
+    mapi.create_unique_reverse_relationship(source=organism, forward_rel='gene',
+                                            backward_rel='organism', target=gene)
     if tfbs is not None:
-        mapi.create_or_none(source_obj=regulator, target='tfbs', target_obj=tfbs)
+        mapi.create_unique_reverse_relationship(source=organism, forward_rel='tfbs',
+                                                backward_rel='data_organism', target=tfbs)
+    mapi.create_unique_reverse_relationship(source=organism, forward_rel='regulatory_interaction',
+                                            backward_rel='data_organism', target=interaction)
+
+    # regulator <-> gene; tfbs; effector; interaction
+    mapi.create_unique_reverse_relationship(source=regulator, forward_rel='gene',
+                                            backward_rel='regulator', target=gene)
+    if tfbs is not None:
+        mapi.create_unique_reverse_relationship(source=regulator, forward_rel='tfbs',
+                                                backward_rel='regulator', target=tfbs)
     if effector is not None:
-        mapi.create_or_none(source_obj=regulator, target='effector', target_obj=effector)
-    mapi.create_or_none(source_obj=regulator, target='regulatory_interaction', target_obj=interaction)
+        mapi.create_unique_reverse_relationship(source=regulator, forward_rel='effector',
+                                                backward_rel='regulator', target=effector)
+    mapi.create_unique_reverse_relationship(source=regulator, forward_rel='regulatory_interaction',
+                                            backward_rel='data_regulator', target=interaction)
 
-    # gene → organism; regulator; tfbs; interaction
-    mapi.create_or_none(source_obj=gene, target='organism', target_obj=organism)
-    mapi.create_or_none(source_obj=gene, target='regulator', target_obj=regulator)
+    # gene <-> tfbs; interaction
     if tfbs is not None:
-        mapi.create_or_none(source_obj=gene, target='tfbs', target_obj=tfbs)
-    mapi.create_or_none(source_obj=gene, target='regulatory_interaction', target_obj=interaction)
+        mapi.create_unique_reverse_relationship(source=gene, forward_rel='tfbs',
+                                                backward_rel='gene', target=tfbs)
+    mapi.create_unique_reverse_relationship(source=gene, forward_rel='regulatory_interaction',
+                                            backward_rel='data_gene', target=interaction)
 
-    # tfbs → regulator; gene; interaction
+    # tfbs <-> interaction
     if tfbs is not None:
-        mapi.create_or_none(source_obj=tfbs, target='regulator', target_obj=regulator)
-        mapi.create_or_none(source_obj=tfbs, target='gene', target_obj=gene)
-        mapi.create_or_none(source_obj=tfbs, target='regulatory_interaction', target_obj=interaction)
+        mapi.create_unique_reverse_relationship(source=tfbs,
+                                                forward_rel='regulatory_interaction',
+                                                backward_rel='data_tfbs',
+                                                target=interaction)
 
-    # effector → regulator; interaction
+    # effector <-> interaction
     if effector is not None:
-        mapi.create_or_none(source_obj=effector, target='regulator', target_obj=regulator)
-        mapi.create_or_none(source_obj=effector, target='regulatory_interaction', target_obj=interaction)
-
-    # interaction → organism; regulator; gene; tfbs; effector
-    mapi.create_or_none(source_obj=interaction, target='data_organism', target_obj=organism)
-    mapi.create_or_none(source_obj=interaction, target='data_regulator', target_obj=regulator)
-    mapi.create_or_none(source_obj=interaction, target='data_gene', target_obj=gene)
-    if tfbs is not None:
-        mapi.create_or_none(source_obj=interaction, target='data_tfbs', target_obj=tfbs)
-    if effector is not None:
-        mapi.create_or_none(source_obj=interaction, target='data_effector', target_obj=effector)
+        mapi.create_unique_reverse_relationship(source=effector,
+                                                forward_rel='regulatory_interaction',
+                                                backward_rel='data_effector',
+                                                target=interaction)

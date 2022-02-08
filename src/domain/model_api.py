@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Union, Type, Any, List, Dict, Callable
+from typing import Union, Type, Any, List, Dict, Callable, Tuple
 
 from django.db.models import Model, QuerySet
 from django_neomodel import DjangoNode
@@ -25,7 +25,6 @@ def get_query_set(cls: _model_type) -> Union[Any, NodeSet, QuerySet]:
 
 
 def run_or_raise(fn: Callable):
-
     @wraps(fn)
     def wrapper(*args, **kwargs):
         try:
@@ -166,8 +165,8 @@ def delete_object(obj: _model):
 # ------------------------------------------------------------------------------
 # Relationships - SO FAR THE DOMAIN LAYER ONLY SUPPORTS NEOMODEL RELATIONSHIPS
 # ------------------------------------------------------------------------------
-def get_rel_query_set(obj: _model, target: str) -> Union[Any, RelationshipManager]:
-    relationship = getattr(obj, target, None)
+def get_rel_query_set(obj: _model, rel: str) -> Union[Any, RelationshipManager]:
+    relationship = getattr(obj, rel, None)
     if relationship is not None:
         if hasattr(relationship, 'all'):
             return relationship
@@ -179,38 +178,38 @@ def get_rel_query_set(obj: _model, target: str) -> Union[Any, RelationshipManage
 # Relationships Create Read Update and Delete operations
 # ---------------------------------------------------------
 @run_or_raise
-def get_related_objects(obj: _model, target: str) -> SetList[DjangoNode]:
+def get_related_objects(obj: _model, rel: str) -> SetList[DjangoNode]:
     """
     Get all objects connected with this object
     """
-    query_set = get_rel_query_set(obj=obj, target=target)
+    query_set = get_rel_query_set(obj=obj, rel=rel)
     return SetList(query_set.all())
 
 
 @run_or_raise
-def filter_related_objects(obj: _model, target: str, **kwargs) -> SetList[DjangoNode]:
+def filter_related_objects(obj: _model, rel: str, **kwargs) -> SetList[DjangoNode]:
     """
     Get and filter the objects connected with this object
     """
-    query_set = get_rel_query_set(obj=obj, target=target)
+    query_set = get_rel_query_set(obj=obj, rel=rel)
     return SetList(query_set.filter(**kwargs))
 
 
 @run_or_raise
-def order_by_related_objects(obj: _model, target: str, *fields) -> SetList[DjangoNode]:
+def order_by_related_objects(obj: _model, rel: str, *fields) -> SetList[DjangoNode]:
     """
     Get and order by fields the objects connected with this object
     """
-    query_set = get_rel_query_set(obj=obj, target=target)
+    query_set = get_rel_query_set(obj=obj, rel=rel)
     return SetList(query_set.order_by(*fields))
 
 
 @run_or_raise
-def get_related_object(obj: _model, target: str, **kwargs) -> Union[DjangoNode, None]:
+def get_related_object(obj: _model, rel: str, **kwargs) -> Union[DjangoNode, None]:
     """
     Get a specific object (by identifier, etc) connected with this object
     """
-    query_set = get_rel_query_set(obj=obj, target=target)
+    query_set = get_rel_query_set(obj=obj, rel=rel)
 
     try:
         return query_set.get_or_none(**kwargs)
@@ -230,69 +229,95 @@ def get_related_object(obj: _model, target: str, **kwargs) -> Union[DjangoNode, 
 
 
 @run_or_raise
-def get_relationships(source_obj: _model, target: str, target_obj: _model) -> List[StructuredRel]:
+def get_relationships(source: _model, rel: str, target: _model) -> List[StructuredRel]:
     """
     Get all relationships objects between two objects
     """
-    query_set = get_rel_query_set(obj=source_obj, target=target)
-    return list(query_set.all_relationships(target_obj))
+    query_set = get_rel_query_set(obj=source, rel=rel)
+    return list(query_set.all_relationships(target))
 
 
 @run_or_raise
-def delete_relationships(source_obj: _model, target: str, target_obj: _model):
+def delete_relationships(source: _model, rel: str, target: _model):
     """
     Delete all relationships between two objects
     """
-    query_set = get_rel_query_set(obj=source_obj, target=target)
-    return query_set.disconnect(target_obj)
+    query_set = get_rel_query_set(obj=source, rel=rel)
+    return query_set.disconnect(target)
 
 
 @run_or_raise
-def get_relationship(source_obj: _model, target: str, target_obj: _model) -> Union[StructuredRel, None]:
+def get_relationship(source: _model, rel: str, target: _model) -> Union[StructuredRel, None]:
     """
     Get the first relationship object between two nodes
     """
-    query_set = get_rel_query_set(obj=source_obj, target=target)
-    return query_set.relationship(target_obj)
+    query_set = get_rel_query_set(obj=source, rel=rel)
+    return query_set.relationship(target)
 
 
 @run_or_raise
-def is_connected(source_obj: _model, target: str, target_obj: _model) -> Union[StructuredRel, None]:
+def is_connected(source: _model, rel: str, target: _model) -> Union[StructuredRel, None]:
     """
     Get the first relationship object between two nodes
     """
-    query_set = get_rel_query_set(obj=source_obj, target=target)
-    return query_set.is_connected(target_obj)
+    query_set = get_rel_query_set(obj=source, rel=rel)
+    return query_set.is_connected(target)
 
 
 @run_or_raise
-def create_relationship(source_obj: _model, target: str, target_obj: _model, **kwargs) -> Union[StructuredRel, None]:
+def create_relationship(source: _model, rel: str, target: _model, **kwargs) -> Union[StructuredRel, None]:
     """
     Create a relationship object between two objects
     """
-    query_set = get_rel_query_set(obj=source_obj, target=target)
-    return query_set.connect(target_obj, properties=kwargs)
+    query_set = get_rel_query_set(obj=source, rel=rel)
+    return query_set.connect(target, properties=kwargs)
 
 
 @run_or_raise
-def create_or_none(source_obj: _model, target: str, target_obj: _model, **kwargs) -> Union[StructuredRel, None]:
+def create_unique_relationship(source: _model,
+                               rel: str,
+                               target: _model,
+                               **kwargs) -> Union[StructuredRel, None]:
     """
     Create a relationship object between two objects
     """
-    query_set = get_rel_query_set(obj=source_obj, target=target)
+    query_set = get_rel_query_set(obj=source, rel=rel)
 
-    if not query_set.is_connected(target_obj):
-        return query_set.connect(target_obj, properties=kwargs)
+    if not query_set.is_connected(target):
+        return query_set.connect(target, properties=kwargs)
 
     return
 
 
 @run_or_raise
-def update_relationship(source_obj: _model, target: str, target_obj: _model, **kwargs) -> StructuredRel:
+def create_unique_reverse_relationship(source: _model,
+                                       forward_rel: str,
+                                       backward_rel: str,
+                                       target: _model,
+                                       **kwargs) -> Tuple[Union[StructuredRel, None], Union[StructuredRel, None]]:
+    """
+    Create a forward and backward relationship object between two objects if these are not connected
+    """
+    forward_instance = None
+    backward_instance = None
+
+    forward_query_set = get_rel_query_set(obj=source, rel=forward_rel)
+    if not forward_query_set.is_connected(target):
+        forward_instance = forward_query_set.connect(target, properties=kwargs)
+
+    backward_query_set = get_rel_query_set(obj=target, rel=backward_rel)
+    if not backward_query_set.is_connected(source):
+        backward_instance = backward_query_set.connect(source, properties=kwargs)
+
+    return forward_instance, backward_instance
+
+
+@run_or_raise
+def update_relationship(source: _model, rel: str, target: _model, **kwargs) -> StructuredRel:
     """
     Update a relationship object between two objects
     """
-    relationship = get_relationship(source_obj=source_obj, target=target, target_obj=target_obj)
+    relationship = get_relationship(source=source, rel=rel, target=target)
     for attr, value in kwargs.items():
         setattr(relationship, attr, value)
     relationship.save()
@@ -300,8 +325,8 @@ def update_relationship(source_obj: _model, target: str, target_obj: _model, **k
 
 
 @run_or_raise
-def delete_relationship(source_obj: _model, target: str, target_obj: _model):
+def delete_relationship(source: _model, rel: str, target: _model):
     """
     Delete a relationship object between two objects
     """
-    return delete_relationships(source_obj=source_obj, target=target, target_obj=target_obj)
+    return delete_relationships(source=source, rel=rel, target=target)

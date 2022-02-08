@@ -70,7 +70,7 @@ def get_gene_sources_relationships(protrend_id: str) -> List[SourceRelationship]
     sources = mapi.get_related_objects(obj, 'data_source')
     relationships = []
     for source in sources:
-        source_relationships = mapi.get_relationships(source_obj=obj, target='data_source', target_obj=source)
+        source_relationships = mapi.get_relationships(source=obj, rel='data_source', target=source)
         relationships.extend(source_relationships)
     return relationships
 
