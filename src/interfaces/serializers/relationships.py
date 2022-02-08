@@ -37,7 +37,7 @@ class SourceRelationshipSerializer(RelationshipSerializer):
         sources = super(SourceRelationshipSerializer, self).get_attribute(instance)
         relationships = []
         for source in sources:
-            source_relationships = mapi.get_relationships(source_obj=instance, target='data_source', target_obj=source)
+            source_relationships = mapi.get_relationships(source=instance, rel='data_source', target=source)
             for source_rel in source_relationships:
                 source_rel.name = source.name
                 relationships.append(source_rel)
