@@ -1,5 +1,8 @@
 ### Python template
 
+# django configs
+src/conf
+
 # PyCharm idea files
 .idea
 

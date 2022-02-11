@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os.path
 from pathlib import Path
 
+from configuration import Configuration
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3+2+6)*!ftyba@p=x^yh2zr3-ix&1+wq#1#z09%k7(vuymx#x7'
+SECRET_KEY = Configuration.secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = Configuration.debug
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = Configuration.allowed_hosts
 
 # Application definition
 
@@ -42,7 +45,9 @@ INSTALLED_APPS = [
     'interfaces'
 ]
 
+# do not change middleware order
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'protrend.urls'
@@ -80,8 +86,12 @@ WSGI_APPLICATION = 'protrend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': Configuration.users_db_name,
+        'USER': Configuration.users_db_user,
+        'PASSWORD': Configuration.users_db_password,
+        'HOST': Configuration.users_db_ip,
+        'PORT': Configuration.users_db_port,
     }
 }
 
@@ -131,6 +141,29 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# django cache
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": Configuration.cache_url,
+        "TIMEOUT": 60 * 60 * 24 * 180,
+        "KEY_PREFIX": 'protrend_v1',
+        "OPTIONS": {
+            'PASSWORD': Configuration.cache_db_password,
+            "IGNORE_EXCEPTIONS": True,
+            "SOCKET_CONNECT_TIMEOUT": 10,
+            "SOCKET_TIMEOUT": 60 * 30,
+            "CONNECTION_POOL_KWARGS": {"max_connections": 50},
+        },
+    }
+}
+
+# django additional security
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
+SECURE_SSL_REDIRECT = True
+
 # django-rest framework settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -152,7 +185,7 @@ REST_FRAMEWORK = {
 }
 
 # django-neomodel settings
-NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:pass@localhost:7687'
+NEOMODEL_NEO4J_BOLT_URL = Configuration.bolt_url
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50

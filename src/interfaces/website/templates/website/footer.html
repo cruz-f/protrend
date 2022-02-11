@@ -1,0 +1,83 @@
+{% extends "website/navbar.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<body>
+{% block footer %}
+    <div class="container-fluid bg-dark">
+        <div class="container">
+            <footer class="row py-5">
+                <div class="col">
+                    <a href="{% url 'home' %}"
+                       class="d-flex align-items-center mb-3 text-decoration-none text-white">
+                        ProTReND
+                    </a>
+                    <p class="text-white-50">Copyright © 2022 ProTReND. All Rights Reserved.</p>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                    <h5 class="text-uppercase text-white">Data Visualization</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a href="{% url 'home' %}" class="nav-link p-0 text-white-50 text-uppercase">Home</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">Organisms</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">Regulators</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">Interactions</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">Binding Sites</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h5 class="text-uppercase text-white">Data Access</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a href="{% url 'api' %}"
+                               class="nav-link p-0 text-white-50 text-uppercase">Index</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="{% url 'trns-list' %}"
+                               class="nav-link p-0 text-white-50 text-uppercase">TRNs</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="{% url 'interactions-list' %}"
+                               class="nav-link p-0 text-white-50 text-uppercase">Interactions</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="{% url 'organisms-binding-sites-list' %}"
+                               class="nav-link p-0 text-white-50 text-uppercase">Organisms Binding Sites</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="{% url 'regulators-binding-sites-list' %}"
+                               class="nav-link p-0 text-white-50 text-uppercase">Regulators Binding Sites</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h5 class="text-uppercase text-white">Support</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">About</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">FAQs</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white-50 text-uppercase">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </footer>
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>

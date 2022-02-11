@@ -27,8 +27,6 @@ class Regulator(BaseNode):
     start = IntegerProperty(help_text=help_text.start)
     stop = IntegerProperty(help_text=help_text.stop)
 
-    # properties inherited from GeneMixIn, SequenceMixIn, PositionMixIn
-
     # relationships
     data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, model=SourceRelationship)
     evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, model=BaseRelationship)
