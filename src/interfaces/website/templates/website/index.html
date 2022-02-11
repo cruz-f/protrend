@@ -1,19 +1,26 @@
+{% extends "website/footer.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ProTReND</title>
-    <link rel="stylesheet" type="text/css" href="{% static '/website/css/bootstrap.min.css' %}">
-</head>
 <body>
-<div class="contain">
-    <div class="row">
-        <div class="col text-center">
-            <h1>ProTReND Database</h1>
+{% block content %}
+    <div class="container">
+        <div class="row py-5">
+        </div>
+        <div class="row py-5">
+            <div class="col text-center">
+                <h1>ProTReND Database</h1>
+            </div>
+        </div>
+        <div class="row py-5">
+            <div class="col text-center">
+                <h2>ProTReND is currently under maintenance. We promise to be brief</h2>
+            </div>
+        </div>
+        <div class="row py-5">
         </div>
     </div>
-</div>
+{% endblock %}
 <script src="{% static '/website/js/bootstrap.bundle.min.js' %}">
 </script>
 </body>
