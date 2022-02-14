@@ -162,10 +162,10 @@ CACHES = {
 }
 
 # django additional security
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
-SECURE_SSL_REDIRECT = True
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
+# SECURE_SSL_REDIRECT = True
 
 # django-rest framework settings
 REST_FRAMEWORK = {
