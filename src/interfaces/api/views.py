@@ -3,8 +3,6 @@ from typing import Union, List
 
 from django.db.models import Model
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
-from django.views.decorators.vary import vary_on_headers
 from django_neomodel import DjangoNode
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from rest_framework import status, generics, permissions
@@ -34,7 +32,6 @@ class ObjectListMixIn(ExportFileMixin):
     def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
         pass
 
-    @method_decorator(vary_on_headers('User-Agent', 'Cookie', 'Authorization'))
     def get(self: Union['ObjectListMixIn', generics.GenericAPIView], request, *args, **kwargs):
         queryset = self.get_queryset()
         if not queryset:
@@ -115,7 +112,6 @@ class ObjectRetrieveMixIn(ExportFileMixin):
                                     status=status.HTTP_404_NOT_FOUND)
         return obj
 
-    @method_decorator(vary_on_headers('User-Agent', 'Cookie', 'Authorization'))
     def get(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView],
             request,
             protrend_id: str,

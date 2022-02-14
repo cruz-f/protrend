@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 
 # do not change middleware order
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'protrend.urls'
@@ -145,21 +145,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # django cache
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": Configuration.cache_url,
-        "TIMEOUT": 60 * 60 * 24 * 180,
-        "KEY_PREFIX": 'protrend_v1',
-        "OPTIONS": {
-            'PASSWORD': Configuration.cache_db_password,
-            "IGNORE_EXCEPTIONS": True,
-            "SOCKET_CONNECT_TIMEOUT": 10,
-            "SOCKET_TIMEOUT": 60 * 30,
-            "CONNECTION_POOL_KWARGS": {"max_connections": 50},
-        },
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": Configuration.cache_url,
+#         "TIMEOUT": 60 * 60 * 24 * 180,
+#         "KEY_PREFIX": 'protrend_v1',
+#         "OPTIONS": {
+#             'PASSWORD': Configuration.cache_db_password,
+#             "IGNORE_EXCEPTIONS": True,
+#             "CONNECTION_POOL_KWARGS": {"max_connections": 50},
+#         },
+#     }
+# }
 
 # django additional security
 # CSRF_COOKIE_SECURE = True
