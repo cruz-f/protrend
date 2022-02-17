@@ -4,7 +4,7 @@ from django_neomodel import DjangoNode
 from rest_framework import status
 
 import domain.model_api as mapi
-from domain.database.utils import protrend_id_decoder, protrend_id_encoder
+from domain.database.database_utils import protrend_id_decoder, protrend_id_encoder
 from exceptions import ProtrendException
 from transformers import apply_transformers, to_int, to_str, lower, rstrip, lstrip, protrend_hash
 
