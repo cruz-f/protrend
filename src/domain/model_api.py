@@ -7,8 +7,10 @@ from neo4j.exceptions import DriverError, Neo4jError
 from neomodel import NodeSet, MultipleNodesReturned, StructuredRel, RelationshipManager, NeomodelException
 from rest_framework import status
 
+from domain.query import build_identifiers_query, query_db, parse_query_results, build_lazy_query
 from exceptions import ProtrendException
 from set_list import SetList
+
 
 _model_type = Union[Type[DjangoNode], Type[Model]]
 _model = Union[DjangoNode, Model]
@@ -30,7 +32,7 @@ def run_or_raise(fn: Callable):
         try:
             return fn(*args, **kwargs)
 
-        except (AttributeError, NeomodelException, Neo4jError, DriverError):
+        except (AttributeError, IndexError, NeomodelException, Neo4jError, DriverError):
             raise ProtrendException(detail='ProTReND database is currently unavailable. '
                                            'Please try again later or contact the support team',
                                     code='service unavailable',
@@ -49,6 +51,46 @@ def get_objects(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
     """
     query_set = get_query_set(cls)
     return list(query_set.all())
+
+
+@run_or_raise
+def get_identifiers(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
+    """
+    Get objects identifiers from database
+    """
+    query = build_identifiers_query(cls)
+    results, meta = query_db(query)
+    nodes = parse_query_results(node=cls, results=results, meta=meta)
+    return nodes
+
+
+@run_or_raise
+def get_lazy_objects(cls: _model_type, properties: List[str]) -> Union[List[DjangoNode], List[Model]]:
+    """
+    Get objects from database using laziness
+    """
+    query = build_lazy_query(cls, properties)
+    results, meta = query_db(query)
+    nodes = parse_query_results(node=cls, results=results, meta=meta)
+    return nodes
+
+
+@run_or_raise
+def count_objects(cls: _model_type) -> int:
+    """
+    Count objects in the database
+    """
+    query_set = get_query_set(cls)
+    return query_set.count()
+
+
+@run_or_raise
+def slice_objects(cls: _model_type, start: int, stop: int) -> int:
+    """
+    Slice objects in the database
+    """
+    query_set = get_query_set(cls)
+    return query_set[start:stop]
 
 
 @run_or_raise
