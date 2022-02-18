@@ -1,8 +1,8 @@
-from neomodel import StringProperty, ArrayProperty, RelationshipTo, One, IntegerProperty
+from neomodel import StringProperty, ArrayProperty, RelationshipTo, IntegerProperty, ZeroOrOne
 
+from constants import help_text, choices
 from .base import BaseNode
 from .relationships import BASE_REL_TYPE, SourceRelationship, BaseRelationship, SOURCE_REL_TYPE
-from constants import help_text, choices
 
 
 class Operon(BaseNode):
@@ -18,8 +18,8 @@ class Operon(BaseNode):
     stop = IntegerProperty(help_text=help_text.stop)
 
     # relationships
-    data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, cardinality=One, model=SourceRelationship)
-    evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, cardinality=ZeroOrOne, model=SourceRelationship)
+    evidence = RelationshipTo('.evidence.Evidence', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
     publication = RelationshipTo('.publication.Publication', BASE_REL_TYPE, model=BaseRelationship)
-    organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=One, model=BaseRelationship)
+    organism = RelationshipTo('.organism.Organism', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)
     gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
