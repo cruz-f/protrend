@@ -6,7 +6,7 @@ from django.test import TestCase
 import domain.model_api as mapi
 import domain.database as papi
 from interfaces.api.urls import router
-from ..utils import clean_db, disable_throttling
+from ..utils_test_db import clean_db, disable_throttling
 
 
 class ApiTest(TestCase):

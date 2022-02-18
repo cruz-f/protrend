@@ -5,7 +5,7 @@ from django.test import TestCase
 from data import *
 import domain.database as papi
 import domain.model_api as mapi
-from ..utils import clean_db, populate_db
+from ..utils_test_db import clean_db, populate_db
 
 
 class DomainTest(TestCase):

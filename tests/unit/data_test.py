@@ -3,7 +3,7 @@ import unittest
 from django.test import TestCase
 
 from data import *
-from ..utils import clean_db, populate_db
+from ..utils_test_db import clean_db, populate_db
 
 
 class DataTest(TestCase):
