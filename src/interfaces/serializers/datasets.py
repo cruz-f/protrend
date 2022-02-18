@@ -3,6 +3,7 @@ import abc
 from rest_framework import serializers
 
 from constants import help_text, choices
+from interfaces.serializers.base import URLField
 from interfaces.serializers.effector import EffectorHighlightSerializer
 from interfaces.serializers.gene import GeneHighlightSerializer
 from interfaces.serializers.regulator import RegulatorHighlightSerializer
@@ -14,10 +15,10 @@ class TRNsSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='trns-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='trns-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     @abc.abstractmethod
     def create(self, validated_data):
@@ -60,10 +61,10 @@ class OrganismsBindingSitesSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='organisms-binding-sites-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='organisms-binding-sites-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     @abc.abstractmethod
     def create(self, validated_data):
@@ -99,10 +100,10 @@ class RegulatorsBindingSitesSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='regulators-binding-sites-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='regulators-binding-sites-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     @abc.abstractmethod
     def create(self, validated_data):

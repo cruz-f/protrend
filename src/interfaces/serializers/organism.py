@@ -2,10 +2,12 @@ import abc
 
 from rest_framework import serializers, status
 
+import domain.model_api as mapi
 import domain.database as papi
 from constants import help_text
+from data import Organism
 from exceptions import ProtrendException
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import RelationshipSerializer, SourceRelationshipSerializer, \
     SourceHighlightSerializer
 
@@ -30,10 +32,10 @@ class OrganismSerializer(BaseSerializer):
                                                help_text=help_text.assembly_accession)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='organisms-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='organisms-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         return papi.create_organism(**validated_data)
@@ -99,7 +101,7 @@ class OrganismHighlightSerializer(serializers.Serializer):
         pass
 
     def get_attribute(self, instance):
-        organism = papi.get_organism_by_id(instance.organism)
+        organism = mapi.get_object(Organism, protrend_id=instance.organism)
         if organism is None:
             raise ProtrendException(detail=f'Organism with protrend id {instance.organism} not found',
                                     code='get error',

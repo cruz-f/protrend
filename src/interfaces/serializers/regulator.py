@@ -2,10 +2,12 @@ import abc
 
 from rest_framework import serializers, status
 
+import domain.model_api as mapi
 import domain.database as papi
 from constants import help_text, choices
+from data import Regulator
 from exceptions import ProtrendException
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import RelationshipSerializer, SourceHighlightSerializer, \
     SourceRelationshipSerializer
 from interfaces.validation import validate_protein_sequence
@@ -37,10 +39,10 @@ class RegulatorSerializer(BaseSerializer):
     stop = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.stop)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='regulators-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='regulators-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         validated_data = validate_protein_sequence(validated_data)
@@ -124,7 +126,7 @@ class RegulatorHighlightSerializer(serializers.Serializer):
         pass
 
     def get_attribute(self, instance):
-        regulator = papi.get_regulator_by_id(instance.regulator)
+        regulator = mapi.get_object(Regulator, protrend_id=instance.regulator)
         if regulator is None:
             raise ProtrendException(detail=f'Regulator with protrend id {instance.regulator} not found',
                                     code='get error',

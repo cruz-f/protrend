@@ -2,10 +2,12 @@ import abc
 
 from rest_framework import serializers, status
 
+import domain.model_api as mapi
 import domain.database as papi
 from constants import help_text
+from data import Effector
 from exceptions import ProtrendException
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
     RelationshipSerializer
 
@@ -18,10 +20,10 @@ class EffectorSerializer(BaseSerializer):
                                            help_text=help_text.kegg_compounds)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='effectors-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='effectors-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         return papi.create_effector(**validated_data)
@@ -71,7 +73,7 @@ class EffectorHighlightSerializer(serializers.Serializer):
         if instance.effector is None:
             return
 
-        effector = papi.get_effector_by_id(instance.effector)
+        effector = mapi.get_object(Effector, protrend_id=instance.effector)
         if effector is None:
             raise ProtrendException(detail=f'Effector with protrend id {instance.effector} not found',
                                     code='get error',

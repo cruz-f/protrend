@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import domain.database as papi
 from constants import help_text, choices
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.effector import EffectorHighlightSerializer
 from interfaces.serializers.gene import GeneHighlightSerializer
 from interfaces.serializers.organism import OrganismHighlightSerializer
@@ -23,10 +23,10 @@ class RegulatoryInteractionSerializer(BaseSerializer):
                                                 help_text=help_text.regulatory_effect)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='interactions-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='interactions-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         return papi.create_interaction(**validated_data)

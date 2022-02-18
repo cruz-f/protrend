@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import domain.database as papi
 from constants import help_text, choices
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import SourceRelationshipSerializer, RelationshipSerializer, \
     SourceHighlightSerializer
 
@@ -17,10 +17,10 @@ class RegulatoryFamilySerializer(BaseSerializer):
     description = serializers.CharField(required=False, write_only=True, help_text=help_text.generic_description)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='rfams-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='rfams-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         return papi.create_rfam(**validated_data)

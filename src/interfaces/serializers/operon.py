@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import domain.database as papi
 from constants import help_text, choices
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.gene import GeneListSerializer, GeneHighlightSerializer
 from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
     RelationshipSerializer
@@ -22,10 +22,10 @@ class OperonSerializer(BaseSerializer):
     stop = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.stop)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='operons-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='operons-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         validate_operon_genes(validated_data)

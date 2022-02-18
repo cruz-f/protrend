@@ -2,10 +2,12 @@ import abc
 
 from rest_framework import serializers, status
 
+import domain.model_api as mapi
 import domain.database as papi
 from constants import help_text, choices
+from data import TFBS
 from exceptions import ProtrendException
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.organism import OrganismHighlightSerializer
 from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
     RelationshipSerializer
@@ -22,10 +24,10 @@ class TFBSSerializer(BaseSerializer):
     length = serializers.IntegerField(required=True, min_value=0, help_text=help_text.length)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='binding-sites-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='binding-sites-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         validated_data = validate_dna_sequence(validated_data)
@@ -105,7 +107,7 @@ class TFBSHighlightSerializer(serializers.Serializer):
         if instance.tfbs is None:
             return
 
-        tfbs = papi.get_binding_site_by_id(instance.tfbs)
+        tfbs = mapi.get_object(TFBS, protrend_id=instance.tfbs)
         if tfbs is None:
             raise ProtrendException(detail=f'TFBS with protrend id {instance.tfbs} not found',
                                     code='get error',

@@ -19,3 +19,14 @@ class BaseSerializer(serializers.Serializer):
     @abc.abstractmethod
     def update(self, instance, validated_data):
         pass
+
+
+# ----------------------------------------------------------
+# URLField
+# ----------------------------------------------------------
+class URLField(serializers.HyperlinkedIdentityField):
+
+    def get_url(self, obj, view_name, request, format):
+        lookup_value = getattr(obj, self.lookup_field)
+        kwargs = {self.lookup_url_kwarg: lookup_value}
+        return self.reverse(view_name, kwargs=kwargs, request=request, format=format)

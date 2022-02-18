@@ -2,10 +2,12 @@ import abc
 
 from rest_framework import serializers, status
 
+import domain.model_api as mapi
 import domain.database as papi
 from constants import help_text, choices
+from data import Gene
 from exceptions import ProtrendException
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
     RelationshipSerializer
 from interfaces.validation import validate_protein_sequence
@@ -35,10 +37,10 @@ class GeneSerializer(BaseSerializer):
     stop = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.stop)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='genes-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='genes-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         validated_data = validate_protein_sequence(validated_data)
@@ -117,7 +119,7 @@ class GeneHighlightSerializer(serializers.Serializer):
         pass
 
     def get_attribute(self, instance):
-        gene = papi.get_gene_by_id(instance.gene)
+        gene = mapi.get_object(Gene, protrend_id=instance.gene)
         if gene is None:
             raise ProtrendException(detail=f'Gene with protrend id {instance.gene} not found',
                                     code='get error',
@@ -139,7 +141,7 @@ class GeneListSerializer(serializers.ListSerializer):
     def get_attribute(self, instance):
         genes = []
         for gene_id in instance.genes:
-            gene = papi.get_gene_by_id(gene_id)
+            gene = mapi.get_object(Gene, protrend_id=gene_id)
             if gene is None:
                 raise ProtrendException(detail=f'Gene with protrend id {gene_id} not found',
                                         code='get error',

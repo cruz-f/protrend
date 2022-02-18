@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import domain.database as papi
 from constants import help_text
-from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import RelationshipSerializer
 
 
@@ -15,10 +15,10 @@ class PublicationSerializer(BaseSerializer):
     year = serializers.IntegerField(required=False, min_value=0, help_text=help_text.year)
 
     # url
-    url = serializers.HyperlinkedIdentityField(read_only=True,
-                                               view_name='publications-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id')
+    url = URLField(read_only=True,
+                   view_name='publications-detail',
+                   lookup_field='protrend_id',
+                   lookup_url_kwarg='protrend_id')
 
     def create(self, validated_data):
         return papi.create_publication(**validated_data)
