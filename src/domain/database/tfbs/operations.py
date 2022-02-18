@@ -15,12 +15,11 @@ def create_binding_sites(*binding_sites: Dict[str, Any]) -> List[TFBS]:
     """
     Create binding_sites into the database
     """
-    from domain.database.organism.queries import get_organism_by_id
 
     organisms = []
     for site in binding_sites:
         organism = site['organism']
-        obj = get_organism_by_id(organism)
+        obj = mapi.get_object(Organism, protrend_id=organism)
         if obj is None:
             raise ProtrendException(detail=f'The submitted {organism} protrend id for the property organism '
                                            f'was not found in the database.',
@@ -54,10 +53,8 @@ def create_binding_site(**kwargs) -> TFBS:
     """
     Create a given binding_site into the database according to the parameters
     """
-    from domain.database.organism.queries import get_organism_by_id
-
     organism = kwargs['organism']
-    organism_obj = get_organism_by_id(organism)
+    organism_obj = mapi.get_object(Organism, protrend_id=organism)
     if organism_obj is None:
         raise ProtrendException(detail=f'The submitted {organism} protrend id for the property organism '
                                        f'was not found in the database.',

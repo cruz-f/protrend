@@ -13,25 +13,20 @@ _ENTITY = 'RIN'
 
 
 def _validate_submitted_objects(interaction: dict):
-    from domain.database.effector.queries import get_effector_by_id
-    from domain.database.organism.queries import get_organism_by_id
-    from domain.database.regulator.queries import get_regulator_by_id
-    from domain.database.gene.queries import get_gene_by_id
-    from domain.database.tfbs.queries import get_binding_site_by_id
 
     # order matters - do not change dict order
-    lookup_queries = {'organism': get_organism_by_id,
-                      'regulator': get_regulator_by_id,
-                      'gene': get_gene_by_id,
-                      'tfbs': get_binding_site_by_id,
-                      'effector': get_effector_by_id}
+    lookup_queries = {'organism': Organism,
+                      'regulator': Regulator,
+                      'gene': Gene,
+                      'tfbs': TFBS,
+                      'effector': Effector}
 
     objs = []
-    for key, lookup in lookup_queries.items():
+    for key, model_cls in lookup_queries.items():
 
         if key in interaction:
             lookup_value = interaction[key]
-            obj = lookup(lookup_value)
+            obj = mapi.get_object(model_cls, protrend_id=lookup_value)
             if obj is None:
                 raise ProtrendException(detail=f'The submitted {lookup_value} protrend id for the property {key} '
                                                f'was not found in the database.',

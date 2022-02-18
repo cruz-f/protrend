@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union
 
 
 def protrend_id_encoder(header: str, entity: str, integer: Union[str, int]) -> str:
