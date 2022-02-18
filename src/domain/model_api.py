@@ -53,7 +53,7 @@ def get_objects(cls: _model_type) -> NodeQuerySet:
     Get objects from database
     """
     query_set = get_query_set(cls)
-    return NodeQuerySet(query_set)
+    return NodeQuerySet(query_set.all)
 
 
 @run_or_raise
@@ -62,7 +62,7 @@ def get_identifiers(cls: _model_type) -> NodeQuerySet:
     Get objects identifiers from database
     """
     query_set = get_query_set(cls, properties=['protrend_id'])
-    return NodeQuerySet(query_set)
+    return NodeQuerySet(query_set.all)
 
 
 @run_or_raise
@@ -71,7 +71,7 @@ def get_lazy_objects(cls: _model_type, properties: List[str]) -> NodeQuerySet:
     Get objects from database using laziness
     """
     query_set = get_query_set(cls, properties=properties)
-    return NodeQuerySet(query_set)
+    return NodeQuerySet(query_set.all)
 
 
 @run_or_raise
@@ -89,7 +89,7 @@ def slice_objects(cls: _model_type, start: int, stop: int) -> NodeQuerySet:
     Slice objects in the database
     """
     query_set = get_query_set(cls)
-    return NodeQuerySet(query_set[start:stop])
+    return NodeQuerySet(query_set.__getitem__, slice(start, stop))
 
 
 @run_or_raise
@@ -101,7 +101,7 @@ def slice_lazy_objects(cls: _model_type,
     Slice lazy objects in the database
     """
     query_set = get_query_set(cls, properties=properties)
-    return NodeQuerySet(query_set[start:stop])
+    return NodeQuerySet(query_set.__getitem__, slice(start, stop))
 
 
 # TODO: implement the filter lazy objects
@@ -111,7 +111,7 @@ def filter_objects(cls: _model_type, *args, **kwargs) -> NodeQuerySet:
     Get and filter objects from database
     """
     query_set = get_query_set(cls)
-    return NodeQuerySet(query_set.filter(*args, **kwargs))
+    return NodeQuerySet(query_set.filter, *args, **kwargs)
 
 
 @run_or_raise
@@ -120,21 +120,21 @@ def order_by_objects(cls: _model_type, *fields) -> NodeQuerySet:
     Get and order by fields all objects from database
     """
     query_set = get_query_set(cls)
-    return NodeQuerySet(query_set.order_by(*fields))
+    return NodeQuerySet(query_set.order_by, *fields)
 
 
 @run_or_raise
-def create_objects(cls: _model_type, *objects: Dict[str, Any]) -> NodeQuerySet:
+def create_objects(cls: _model_type, *objects: Dict[str, Any]) -> List:
     """
     Create multiple objects into the database from a set of dictionaries
     """
     if hasattr(cls, 'create'):
-        return NodeQuerySet(cls.create(*objects))
+        return list(cls.create(*objects))
 
     if hasattr(cls, 'objects'):
-        return NodeQuerySet([cls(**kwargs).save() for kwargs in objects])
+        return list([cls(**kwargs).save() for kwargs in objects])
 
-    return NodeQuerySet()
+    return []
 
 
 @run_or_raise
@@ -237,7 +237,7 @@ def get_related_objects(obj: _model, rel: str) -> UniqueNodeQuerySet:
     Get all objects connected with this object
     """
     query_set = get_rel_query_set(obj=obj, rel=rel)
-    return UniqueNodeQuerySet(query_set)
+    return UniqueNodeQuerySet(query_set.all)
 
 
 @run_or_raise
@@ -246,7 +246,7 @@ def filter_related_objects(obj: _model, rel: str, **kwargs) -> UniqueNodeQuerySe
     Get and filter the objects connected with this object
     """
     query_set = get_rel_query_set(obj=obj, rel=rel)
-    return UniqueNodeQuerySet(query_set.filter(**kwargs))
+    return UniqueNodeQuerySet(query_set.filter, **kwargs)
 
 
 @run_or_raise
@@ -255,7 +255,7 @@ def order_by_related_objects(obj: _model, rel: str, *fields) -> UniqueNodeQueryS
     Get and order by fields the objects connected with this object
     """
     query_set = get_rel_query_set(obj=obj, rel=rel)
-    return UniqueNodeQuerySet(query_set.order_by(*fields))
+    return UniqueNodeQuerySet(query_set.order_by, *fields)
 
 
 @run_or_raise
@@ -288,7 +288,7 @@ def get_relationships(source: _model, rel: str, target: _model) -> NodeQuerySet:
     Get all relationships objects between two objects
     """
     query_set = get_rel_query_set(obj=source, rel=rel)
-    return NodeQuerySet(query_set.all_relationships(target))
+    return NodeQuerySet(query_set.all_relationships, *(target, ))
 
 
 @run_or_raise

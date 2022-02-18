@@ -132,14 +132,19 @@ T = TypeVar('T')
 
 class NodeQuerySet(List[T]):
 
-    def __init__(self, data=None):
+    def __init__(self, query_set=None, *args, **kwargs):
         super().__init__()
-        if not data:
-            data = []
-        else:
-            data = list(data)
+        self.query_set = query_set
+        self.args = args
+        self.kwargs = kwargs
 
-        self.data = data
+    @property
+    def data(self):
+        if self.query_set is not None:
+            data = self.query_set(*self.args, **self.kwargs)
+            return list(data)
+
+        return []
 
     def __iter__(self):
         return iter(self.data)
@@ -163,7 +168,10 @@ class NodeQuerySet(List[T]):
 
 class UniqueNodeQuerySet(NodeQuerySet):
 
-    def __init__(self, data = None):
-        super(UniqueNodeQuerySet, self).__init__(data)
+    @property
+    def data(self):
+        if self.query_set is not None:
+            data = self.query_set(*self.args, **self.kwargs)
+            return SetList(data)
 
-        self.data = SetList(self.data)
+        return []
