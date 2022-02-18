@@ -10,3 +10,11 @@ def get_lazy_operons() -> List[Operon]:
     """
     lazy_properties = ['protrend_id', 'operon_db_id', 'name', 'function', 'genes']
     return mapi.get_lazy_objects(Operon, lazy_properties)
+
+
+def get_lazy_operons_query_set() -> List[Operon]:
+    """
+    Get operons query set from database
+    """
+    lazy_properties = ['protrend_id', 'operon_db_id', 'name', 'function', 'genes']
+    return mapi.get_query_set(Operon, lazy_properties)

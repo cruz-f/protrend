@@ -10,3 +10,11 @@ def get_lazy_regulators() -> List[Regulator]:
     """
     lazy_properties = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism']
     return mapi.get_lazy_objects(Regulator, lazy_properties)
+
+
+def get_lazy_regulators_query_set() -> List[Regulator]:
+    """
+    Get regulators query set from database
+    """
+    lazy_properties = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism']
+    return mapi.get_query_set(Regulator, lazy_properties)
