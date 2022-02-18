@@ -1,202 +1,26 @@
-from abc import abstractmethod
-from typing import Union, List
+from typing import Union
 
-from django.db.models import Model
 from django.shortcuts import render
-from django_neomodel import DjangoNode
-from drf_renderer_xlsx.renderers import XLSXRenderer
-from rest_framework import status, generics, permissions
+
+import rest_framework.permissions as drf_permissions
+from rest_framework import generics
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
-from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework_csv.renderers import CSVRenderer
+from drf_renderer_xlsx.renderers import XLSXRenderer
+
+from utils import get_header
+
+import data as data_model
 
 import domain.database as papi
+import domain.model_api as mapi
+
+import interfaces.views as views
 import interfaces.renderers as renderers
 import interfaces.serializers as serializers
-from exceptions import ProtrendException
+import interfaces.permissions as permissions
+
 from router import BaseIndexView
-from utils import ExportFileMixin, get_header
-from .permissions import SuperUserOrReadOnly
-
-
-# --------------------------------------------
-# BASE API VIEWS
-# --------------------------------------------
-class ObjectListMixIn(ExportFileMixin):
-    """
-    View to list ProTReND database objects.
-    """
-
-    @abstractmethod
-    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
-        pass
-
-    def get(self: Union['ObjectListMixIn', generics.GenericAPIView], request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if not queryset:
-            return Response([{}], status=status.HTTP_204_NO_CONTENT)
-
-        if request.accepted_renderer.format == 'api':
-
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def get_renderer_context(self: Union['ObjectListMixIn', generics.GenericAPIView]):
-        # noinspection PyUnresolvedReferences
-        context = super().get_renderer_context()
-
-        serializer_cls = self.get_serializer_class()
-        header = get_header(serializer_cls=serializer_cls)
-
-        context['header'] = header
-        return context
-
-
-class ObjectListCreateMixIn(ObjectListMixIn):
-    """
-    View to list and create ProTReND database objects.
-    """
-
-    @abstractmethod
-    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
-        pass
-
-    def post(self: Union['ObjectListCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        error = self.perform_create(serializer)
-        if error is not None:
-            return Response(error.message, status=error.status)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    @staticmethod
-    def perform_create(serializer):
-        try:
-            serializer.save()
-            return
-
-        except ProtrendException as error:
-            return error
-
-    @staticmethod
-    def get_success_headers(data):
-        try:
-            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
-        except (TypeError, KeyError):
-            return {}
-
-
-class ObjectRetrieveMixIn(ExportFileMixin):
-    """
-    View to retrieve ProTReND database objects.
-    """
-
-    @abstractmethod
-    def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
-        pass
-
-    def get_object(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView], protrend_id: str):
-        obj = self.get_queryset(protrend_id)
-        if obj is None:
-            raise ProtrendException(detail='Object not found',
-                                    code='get error',
-                                    status=status.HTTP_404_NOT_FOUND)
-        return obj
-
-    def get(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView],
-            request,
-            protrend_id: str,
-            *args,
-            **kwargs):
-        obj = self.get_object(protrend_id)
-
-        if request.accepted_renderer.format == 'api':
-            serializer = self.get_serializer(obj)
-            return Response(serializer.data)
-
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-
-    def get_renderer_context(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView]):
-        # noinspection PyUnresolvedReferences
-        context = super().get_renderer_context()
-
-        serializer_cls = self.get_serializer_class()
-        header = get_header(serializer_cls=serializer_cls)
-
-        context['header'] = header
-        return context
-
-
-class ObjectRetrieveUpdateDestroy(ObjectRetrieveMixIn):
-    """
-    View to retrieve, update and delete ProTReND database objects.
-    """
-
-    @abstractmethod
-    def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
-        pass
-
-    def put(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView],
-            request,
-            protrend_id: str,
-            *args,
-            **kwargs):
-        partial = kwargs.pop('partial', False)
-        obj = self.get_object(protrend_id)
-
-        serializer = self.get_serializer(obj, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-
-        error = self.perform_update(serializer)
-        if error is not None:
-            return Response(error.message, status=error.status)
-
-        return Response(serializer.data)
-
-    @staticmethod
-    def perform_update(serializer):
-        try:
-            serializer.save()
-            return
-
-        except ProtrendException as error:
-            return error
-
-    def patch(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.put(request, *args, **kwargs)
-
-    def delete(self: Union['ObjectRetrieveUpdateDestroy', generics.GenericAPIView],
-               request,
-               protrend_id: str,
-               *args,
-               **kwargs):
-        obj = self.get_object(protrend_id)
-        serializer = self.get_serializer(obj)
-        error = self.perform_destroy(serializer, obj)
-        if error is not None:
-            return Response(error.message, status=error.status)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @staticmethod
-    def perform_destroy(serializer, obj):
-        try:
-            serializer.delete(obj)
-            return
-
-        except ProtrendException as error:
-            return error
 
 
 # --------------------------------------------
@@ -223,7 +47,7 @@ def best_practices(request):
     return render(request, 'api/best-practices.html')
 
 
-class EffectorList(ObjectListCreateMixIn, generics.GenericAPIView):
+class EffectorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -235,13 +59,15 @@ class EffectorList(ObjectListCreateMixIn, generics.GenericAPIView):
     Note that, we only provide the effector name and potential associated KEGG compounds. We are working on improving the information provided for each effector.
     """
     serializer_class = serializers.EffectorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_effectors()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Effector)
+        return mapi.get_objects(data_model.Effector)
 
 
-class EffectorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class EffectorDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -253,13 +79,13 @@ class EffectorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Note that, we only provide the effector name and potential associated KEGG compounds. We are working on improving the information provided for each effector.
     """
     serializer_class = serializers.EffectorDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_effector_by_id(protrend_id)
+        return mapi.get_object(data_model.Effector, protrend_id=protrend_id)
 
 
-class EvidenceList(ObjectListCreateMixIn, generics.GenericAPIView):
+class EvidenceList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -270,13 +96,15 @@ class EvidenceList(ObjectListCreateMixIn, generics.GenericAPIView):
     We are working on improving the descriptions of all evidences list in ProTReND.
     """
     serializer_class = serializers.EvidenceSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_evidences()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Evidence)
+        return mapi.get_objects(data_model.Evidence)
 
 
-class EvidenceDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class EvidenceDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -287,13 +115,13 @@ class EvidenceDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     We are working on improving the descriptions of all evidences list in ProTReND.
     """
     serializer_class = serializers.EvidenceDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_evidence_by_id(protrend_id)
+        return mapi.get_object(data_model.Evidence, protrend_id=protrend_id)
 
 
-class GeneList(ObjectListCreateMixIn, generics.GenericAPIView):
+class GeneList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -306,13 +134,15 @@ class GeneList(ObjectListCreateMixIn, generics.GenericAPIView):
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
     serializer_class = serializers.GeneSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_genes()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Gene)
+        return papi.get_lazy_genes()
 
 
-class GeneDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class GeneDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -325,13 +155,13 @@ class GeneDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
     serializer_class = serializers.GeneDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_gene_by_id(protrend_id)
+        return mapi.get_object(data_model.Gene, protrend_id=protrend_id)
 
 
-class OperonList(ObjectListCreateMixIn, generics.GenericAPIView):
+class OperonList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -346,13 +176,15 @@ class OperonList(ObjectListCreateMixIn, generics.GenericAPIView):
     We advise you to consult OperonDB for more details.
     """
     serializer_class = serializers.OperonSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_operons()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Operon)
+        return papi.get_lazy_operons()
 
 
-class OperonDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class OperonDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -367,24 +199,24 @@ class OperonDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     We advise you to consult OperonDB for more details.
     """
     serializer_class = serializers.OperonDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_operon_by_id(protrend_id)
+        return mapi.get_object(data_model.Operon, protrend_id=protrend_id)
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
         serializer_cls = self.get_serializer_class()
-        nested_fields = ('genes', )
+        nested_fields = ('genes',)
         header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
 
         context['header'] = header
         return context
 
 
-class OrganismList(ObjectListCreateMixIn, generics.GenericAPIView):
+class OrganismList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -397,13 +229,15 @@ class OrganismList(ObjectListCreateMixIn, generics.GenericAPIView):
     Note that the list of organisms available at ProTReND might contain redundant species due to the ambiguous scientific name found in the collected data sources and NCBI taxonomy misannotations.
     """
     serializer_class = serializers.OrganismSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_organisms()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Organism)
+        return papi.get_lazy_organisms()
 
 
-class OrganismDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class OrganismDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -416,13 +250,13 @@ class OrganismDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Note that the list of organisms available at ProTReND might contain redundant species due to the ambiguous scientific name found in the collected data sources and NCBI taxonomy misannotations.
     """
     serializer_class = serializers.OrganismDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_organism_by_id(protrend_id)
+        return mapi.get_object(data_model.Organism, protrend_id=protrend_id)
 
 
-class PathwayList(ObjectListCreateMixIn, generics.GenericAPIView):
+class PathwayList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -435,13 +269,15 @@ class PathwayList(ObjectListCreateMixIn, generics.GenericAPIView):
     Note that, we only provide the pathway name and potential associated KEGG Pathways. We are working on improving the information provided for each pathway.
     """
     serializer_class = serializers.PathwaySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_pathways()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Pathway)
+        return mapi.get_objects(data_model.Pathway)
 
 
-class PathwayDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class PathwayDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -454,13 +290,13 @@ class PathwayDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Note that, we only provide the pathway name and potential associated KEGG Pathways. We are working on improving the information provided for each pathway.
     """
     serializer_class = serializers.PathwayDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_pathway_by_id(protrend_id)
+        return mapi.get_object(data_model.Pathway, protrend_id=protrend_id)
 
 
-class PublicationList(ObjectListCreateMixIn, generics.GenericAPIView):
+class PublicationList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -471,13 +307,15 @@ class PublicationList(ObjectListCreateMixIn, generics.GenericAPIView):
     Note that, we only provide the main details of each publication. The publication can then be consulted using the DOI or PMID.
     """
     serializer_class = serializers.PublicationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_publications()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Publication)
+        return papi.get_lazy_publications()
 
 
-class PublicationDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class PublicationDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -488,13 +326,13 @@ class PublicationDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Note that, we only provide the main details of each publication. The publication can then be consulted using the DOI or PMID.
     """
     serializer_class = serializers.PublicationDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_publication_by_id(protrend_id)
+        return mapi.get_object(data_model.Publication, protrend_id=protrend_id)
 
 
-class RegulatorList(ObjectListCreateMixIn, generics.GenericAPIView):
+class RegulatorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -508,13 +346,15 @@ class RegulatorList(ObjectListCreateMixIn, generics.GenericAPIView):
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
     serializer_class = serializers.RegulatorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_regulators()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Regulator)
+        return papi.get_lazy_regulators()
 
 
-class RegulatorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class RegulatorDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -528,13 +368,13 @@ class RegulatorDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
     serializer_class = serializers.RegulatorDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_regulator_by_id(protrend_id)
+        return mapi.get_object(data_model.Regulator, protrend_id=protrend_id)
 
 
-class RegulatoryFamilyList(ObjectListCreateMixIn, generics.GenericAPIView):
+class RegulatoryFamilyList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -546,13 +386,15 @@ class RegulatoryFamilyList(ObjectListCreateMixIn, generics.GenericAPIView):
     Note that, we only provide the rfam name and sometimes the rfam identifiers. We are working on improving the information provided for each regulatory family.
     """
     serializer_class = serializers.RegulatoryFamilySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_rfams()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.RegulatoryFamily)
+        return mapi.get_objects(data_model.RegulatoryFamily)
 
 
-class RegulatoryFamilyDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class RegulatoryFamilyDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -564,13 +406,13 @@ class RegulatoryFamilyDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIVie
     Note that, we only provide the rfam name and sometimes the rfam identifiers. We are working on improving the information provided for each regulatory family.
     """
     serializer_class = serializers.RegulatoryFamilyDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_rfam_by_id(protrend_id)
+        return mapi.get_object(data_model.RegulatoryFamily, protrend_id=protrend_id)
 
 
-class InteractionsList(ObjectListCreateMixIn, generics.GenericAPIView):
+class InteractionsList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -588,13 +430,15 @@ class InteractionsList(ObjectListCreateMixIn, generics.GenericAPIView):
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
     serializer_class = serializers.RegulatoryInteractionSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_interactions()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.RegulatoryInteraction)
+        return papi.get_lazy_interactions()
 
 
-class InteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class InteractionDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -612,12 +456,12 @@ class InteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
     serializer_class = serializers.RegulatoryInteractionDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_interaction_by_id(protrend_id)
+        return mapi.get_object(data_model.RegulatoryInteraction, protrend_id=protrend_id)
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -629,7 +473,7 @@ class InteractionDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
         return context
 
 
-class BindingSitesList(ObjectListCreateMixIn, generics.GenericAPIView):
+class BindingSitesList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -641,13 +485,15 @@ class BindingSitesList(ObjectListCreateMixIn, generics.GenericAPIView):
     Note that, a binding site might not be regulator-specific. Although these events are extremely rare, more than one regulator can bind to the same cis-element.
     """
     serializer_class = serializers.TFBSSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_binding_sites()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.TFBS)
+        return papi.get_lazy_binding_sites()
 
 
-class BindingSiteDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
+class BindingSiteDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -659,12 +505,12 @@ class BindingSiteDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
     Note that, a binding site might not be regulator-specific. Although these events are extremely rare, more than one regulator can bind to the same cis-element.
     """
     serializer_class = serializers.TFBSDetailSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, SuperUserOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self, protrend_id: str):
-        return papi.get_binding_site_by_id(protrend_id)
+        return mapi.get_object(data_model.TFBS, protrend_id=protrend_id)
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -676,7 +522,7 @@ class BindingSiteDetail(ObjectRetrieveUpdateDestroy, generics.GenericAPIView):
         return context
 
 
-class TRNs(ObjectListMixIn, generics.GenericAPIView):
+class TRNs(views.ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -693,13 +539,15 @@ class TRNs(ObjectListMixIn, generics.GenericAPIView):
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
     serializer_class = serializers.TRNsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_organisms()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Organism)
+        return mapi.get_identifiers(data_model.Organism)
 
 
-class TRN(ObjectListMixIn, generics.GenericAPIView):
+class TRN(views.ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -716,13 +564,13 @@ class TRN(ObjectListMixIn, generics.GenericAPIView):
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
     serializer_class = serializers.TRNSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
+    def get_queryset(self, paginate: bool = False):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
-        return papi.filter_interactions(organism__exact=organism_id)
+        return mapi.filter_objects(data_model.RegulatoryInteraction, organism__exact=organism_id)
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -734,7 +582,7 @@ class TRN(ObjectListMixIn, generics.GenericAPIView):
         return context
 
 
-class OrganismsBindingSites(ObjectListMixIn, generics.GenericAPIView):
+class OrganismsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -747,13 +595,15 @@ class OrganismsBindingSites(ObjectListMixIn, generics.GenericAPIView):
     such as FASTA.
     """
     serializer_class = serializers.OrganismsBindingSitesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_organisms()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Organism)
+        return mapi.get_identifiers()
 
 
-class OrganismBindingSites(ObjectListMixIn, generics.GenericAPIView):
+class OrganismBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -766,15 +616,15 @@ class OrganismBindingSites(ObjectListMixIn, generics.GenericAPIView):
     such as FASTA
     """
     serializer_class = serializers.OrganismBindingSitesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
-    def get_queryset(self):
+    def get_queryset(self, paginate: bool = False):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
-        return papi.filter_binding_sites(organism__exact=organism_id)
+        return mapi.filter_objects(data_model.TFBS, organism__exact=organism_id)
 
 
-class RegulatorsBindingSites(ObjectListMixIn, generics.GenericAPIView):
+class RegulatorsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -787,13 +637,15 @@ class RegulatorsBindingSites(ObjectListMixIn, generics.GenericAPIView):
     such as FASTA.
     """
     serializer_class = serializers.RegulatorsBindingSitesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        return papi.get_regulators()
+    def get_queryset(self, paginate: bool = False):
+        if paginate:
+            return mapi.get_query_set(data_model.Regulator)
+        return mapi.get_identifiers(data_model.Regulator)
 
 
-class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
+class RegulatorBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -806,19 +658,19 @@ class RegulatorBindingSites(ObjectListMixIn, generics.GenericAPIView):
     such as FASTA
     """
     serializer_class = serializers.RegulatorBindingSitesSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
-    def get_queryset(self):
+    def get_queryset(self, paginate: bool = False):
         regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
-        interactions = papi.filter_interactions(regulator__exact=regulator_id)
+        interactions = mapi.filter_objects(data_model.RegulatoryInteraction, regulator__exact=regulator_id)
 
         unique_interactions = {(interaction.regulator, interaction.tfbs): interaction
                                for interaction in interactions
                                if interaction.tfbs}
         return list(unique_interactions.values())
 
-    def get_renderer_context(self: Union['ObjectListCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.ObjectListMixIn', 'views.ObjectCreateMixIn', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
