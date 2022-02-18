@@ -1,10 +1,11 @@
 from functools import lru_cache
-from typing import Type, List, Tuple, Union
+from typing import Type, List, Tuple, Union, TypeVar
 
 from django_neomodel import DjangoNode
 from neomodel import db
 
 from domain.lazy import build_lazy_node, LazyNodeMeta
+from set_list import SetList
 
 
 def query_db(query: str) -> Tuple[List, List]:
@@ -95,7 +96,7 @@ class LazyQuerySet:
 
     def __contains__(self, obj):
         if not hasattr(obj, 'protrend_id'):
-            raise ValueError("Expecting DjangoNode saved instance")
+            raise ValueError('Expecting Protrend node saved instance')
 
         query = f'MATCH ({self.lower_node_label}:{self.node_label}) RETURN {self.lower_node_label}.protrend_id'
         results, meta = query_db(query)
@@ -124,3 +125,45 @@ class LazyQuerySet:
             return self.parse_query_results(results, meta)[0]
 
         raise ValueError("Expecting slice or int")
+
+
+T = TypeVar('T')
+
+
+class NodeQuerySet(List[T]):
+
+    def __init__(self, data=None):
+        super().__init__()
+        if not data:
+            data = []
+        else:
+            data = list(data)
+
+        self.data = data
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __bool__(self):
+        return len(self.data) > 0
+
+    def __nonzero__(self):
+        return len(self.data) > 0
+
+    def __contains__(self, obj):
+        if not hasattr(obj, 'protrend_id'):
+            raise ValueError('Expecting Protrend node saved instance')
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+
+class UniqueNodeQuerySet(NodeQuerySet):
+
+    def __init__(self, data = None):
+        super(UniqueNodeQuerySet, self).__init__(data)
+
+        self.data = SetList(self.data)
