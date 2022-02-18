@@ -1,10 +1,9 @@
-from typing import List
-
 import domain.model_api as mapi
 from data import Gene
+from domain.query import NodeQuerySet
 
 
-def get_lazy_genes() -> List[Gene]:
+def get_lazy_genes() -> NodeQuerySet[Gene]:
     """
     Get genes list from database
     """
@@ -12,7 +11,7 @@ def get_lazy_genes() -> List[Gene]:
     return mapi.get_lazy_objects(Gene, lazy_properties)
 
 
-def get_lazy_genes_query_set() -> List[Gene]:
+def get_lazy_genes_query_set() -> NodeQuerySet[Gene]:
     """
     Get genes query set from database
     """

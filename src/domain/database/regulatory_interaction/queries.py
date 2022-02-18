@@ -1,10 +1,9 @@
-from typing import List
-
 import domain.model_api as mapi
 from data import RegulatoryInteraction
+from domain.query import NodeQuerySet
 
 
-def get_lazy_interactions() -> List[RegulatoryInteraction]:
+def get_lazy_interactions() -> NodeQuerySet[RegulatoryInteraction]:
     """
     Get interactions list from database
     """
@@ -12,7 +11,7 @@ def get_lazy_interactions() -> List[RegulatoryInteraction]:
     return mapi.get_lazy_objects(RegulatoryInteraction, lazy_properties)
 
 
-def get_lazy_interactions_query_set() -> List[RegulatoryInteraction]:
+def get_lazy_interactions_query_set() -> NodeQuerySet[RegulatoryInteraction]:
     """
     Get interactions query set from database
     """

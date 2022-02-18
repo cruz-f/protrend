@@ -1,10 +1,9 @@
-from typing import List
-
 import domain.model_api as mapi
 from data import Organism
+from domain.query import NodeQuerySet
 
 
-def get_lazy_organisms() -> List[Organism]:
+def get_lazy_organisms() -> NodeQuerySet[Organism]:
     """
     Get organisms list from database
     """
@@ -12,7 +11,7 @@ def get_lazy_organisms() -> List[Organism]:
     return mapi.get_lazy_objects(Organism, lazy_properties)
 
 
-def get_lazy_organisms_query_set() -> List[Organism]:
+def get_lazy_organisms_query_set() -> NodeQuerySet[Organism]:
     """
     Get organisms query set from database
     """

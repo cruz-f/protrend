@@ -1,10 +1,9 @@
-from typing import List
-
 import domain.model_api as mapi
 from data import TFBS
+from domain.query import NodeQuerySet
 
 
-def get_lazy_binding_sites() -> List[TFBS]:
+def get_lazy_binding_sites() -> NodeQuerySet[TFBS]:
     """
     Get binding_sites list from database
     """
@@ -12,7 +11,7 @@ def get_lazy_binding_sites() -> List[TFBS]:
     return mapi.get_lazy_objects(TFBS, lazy_properties)
 
 
-def get_lazy_binding_sites_query_set() -> List[TFBS]:
+def get_lazy_binding_sites_query_set() -> NodeQuerySet[TFBS]:
     """
     Get binding_sites query set from database
     """

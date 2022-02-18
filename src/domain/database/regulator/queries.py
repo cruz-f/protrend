@@ -1,10 +1,9 @@
-from typing import List
-
 import domain.model_api as mapi
 from data import Regulator
+from domain.query import NodeQuerySet
 
 
-def get_lazy_regulators() -> List[Regulator]:
+def get_lazy_regulators() -> NodeQuerySet[Regulator]:
     """
     Get regulators list from database
     """
@@ -12,7 +11,7 @@ def get_lazy_regulators() -> List[Regulator]:
     return mapi.get_lazy_objects(Regulator, lazy_properties)
 
 
-def get_lazy_regulators_query_set() -> List[Regulator]:
+def get_lazy_regulators_query_set() -> NodeQuerySet[Regulator]:
     """
     Get regulators query set from database
     """
