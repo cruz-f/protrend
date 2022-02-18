@@ -1,4 +1,4 @@
-from .queries import (get_lazy_interactions)
+from .queries import (get_lazy_interactions, get_lazy_interactions_query_set)
 from .operations import (create_interaction,
                          create_interactions,
                          delete_interaction,
