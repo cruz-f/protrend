@@ -1,4 +1,5 @@
 from .generic import (ObjectListMixIn,
                       ObjectCreateMixIn,
                       ObjectRetrieveMixIn,
-                      ObjectUpdateDestroyMixIn)
+                      ObjectUpdateDestroyMixIn,
+                      is_api)

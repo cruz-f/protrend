@@ -61,8 +61,8 @@ class EffectorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gene
     serializer_class = serializers.EffectorSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
+    def get_queryset(self):
+        if views.is_api(self.request):
             return mapi.get_query_set(data_model.Effector)
         return mapi.get_objects(data_model.Effector)
 
@@ -98,8 +98,8 @@ class EvidenceList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gene
     serializer_class = serializers.EvidenceSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
+    def get_queryset(self):
+        if views.is_api(self.request):
             return mapi.get_query_set(data_model.Evidence)
         return mapi.get_objects(data_model.Evidence)
 
@@ -136,9 +136,9 @@ class GeneList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericA
     serializer_class = serializers.GeneSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Gene)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_genes_query_set()
         return papi.get_lazy_genes()
 
 
@@ -178,9 +178,9 @@ class OperonList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Generi
     serializer_class = serializers.OperonSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Operon)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_operons_query_set()
         return papi.get_lazy_operons()
 
 
@@ -231,9 +231,9 @@ class OrganismList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gene
     serializer_class = serializers.OrganismSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Organism)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_organisms_query_set()
         return papi.get_lazy_organisms()
 
 
@@ -271,8 +271,8 @@ class PathwayList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gener
     serializer_class = serializers.PathwaySerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
+    def get_queryset(self):
+        if views.is_api(self.request):
             return mapi.get_query_set(data_model.Pathway)
         return mapi.get_objects(data_model.Pathway)
 
@@ -309,9 +309,9 @@ class PublicationList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.G
     serializer_class = serializers.PublicationSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Publication)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_publications_query_set()
         return papi.get_lazy_publications()
 
 
@@ -348,9 +348,9 @@ class RegulatorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gen
     serializer_class = serializers.RegulatorSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Regulator)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_regulators_query_set()
         return papi.get_lazy_regulators()
 
 
@@ -388,8 +388,8 @@ class RegulatoryFamilyList(views.ObjectListMixIn, views.ObjectCreateMixIn, gener
     serializer_class = serializers.RegulatoryFamilySerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
+    def get_queryset(self):
+        if views.is_api(self.request):
             return mapi.get_query_set(data_model.RegulatoryFamily)
         return mapi.get_objects(data_model.RegulatoryFamily)
 
@@ -432,9 +432,9 @@ class InteractionsList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.
     serializer_class = serializers.RegulatoryInteractionSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.RegulatoryInteraction)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_interactions_query_set()
         return papi.get_lazy_interactions()
 
 
@@ -487,9 +487,9 @@ class BindingSitesList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.
     serializer_class = serializers.TFBSSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.TFBS)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_binding_sites_query_set()
         return papi.get_lazy_binding_sites()
 
 
@@ -541,9 +541,9 @@ class TRNs(views.ObjectListMixIn, generics.GenericAPIView):
     serializer_class = serializers.TRNsSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Organism)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_organisms_query_set()
         return mapi.get_identifiers(data_model.Organism)
 
 
@@ -566,7 +566,7 @@ class TRN(views.ObjectListMixIn, generics.GenericAPIView):
     serializer_class = serializers.TRNSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
+    def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
         return mapi.filter_objects(data_model.RegulatoryInteraction, organism__exact=organism_id)
 
@@ -597,9 +597,9 @@ class OrganismsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     serializer_class = serializers.OrganismsBindingSitesSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Organism)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_organisms_query_set()
         return mapi.get_identifiers(data_model.Organism)
 
 
@@ -619,7 +619,7 @@ class OrganismBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
-    def get_queryset(self, paginate: bool = False):
+    def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
         return mapi.filter_objects(data_model.TFBS, organism__exact=organism_id)
 
@@ -639,9 +639,9 @@ class RegulatorsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     serializer_class = serializers.RegulatorsBindingSitesSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self, paginate: bool = False):
-        if paginate:
-            return mapi.get_query_set(data_model.Regulator)
+    def get_queryset(self):
+        if views.is_api(self.request):
+            return papi.get_lazy_regulators_query_set()
         return mapi.get_identifiers(data_model.Regulator)
 
 
@@ -661,7 +661,7 @@ class RegulatorBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
-    def get_queryset(self, paginate: bool = False):
+    def get_queryset(self):
         regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
         interactions = mapi.filter_objects(data_model.RegulatoryInteraction, regulator__exact=regulator_id)
 

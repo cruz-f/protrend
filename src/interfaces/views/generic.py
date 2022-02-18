@@ -11,6 +11,15 @@ from exceptions import ProtrendException
 from utils import ExportFileMixin, get_header
 
 
+def is_api(request) -> bool:
+    if request.accepted_renderer.format == 'api':
+        return True
+    if request.query_params.get('page', False):
+        return True
+
+    return False
+
+
 # --------------------------------------------
 # BASE API VIEWS
 # --------------------------------------------
@@ -20,27 +29,23 @@ class ObjectListMixIn(ExportFileMixin):
     """
 
     @abstractmethod
-    def get_queryset(self, paginate: bool = False) -> Union[List[DjangoNode], List[Model]]:
+    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
         pass
 
     def get(self: Union['ObjectListMixIn', generics.GenericAPIView], request, *args, **kwargs):
-        if request.accepted_renderer.format == 'api':
-            queryset = self.get_queryset(paginate=True)
-            page = self.paginate_queryset(queryset)
-
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-            serializer = self.get_serializer(queryset, many=True)
-            if not serializer.data:
-                return Response([{}], status=status.HTTP_204_NO_CONTENT)
-
-            return Response(serializer.data)
-
         queryset = self.get_queryset()
+
         if not queryset:
             return Response([{}], status=status.HTTP_204_NO_CONTENT)
+
+        if is_api(request):
+            page = self.paginate_queryset(queryset)
+
+            if not page:
+                return Response([{}], status=status.HTTP_204_NO_CONTENT)
+
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -62,7 +67,7 @@ class ObjectCreateMixIn:
     """
 
     @abstractmethod
-    def get_queryset(self, paginate: bool = False) -> Union[List[DjangoNode], List[Model]]:
+    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
         pass
 
     def post(self: Union['ObjectCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
