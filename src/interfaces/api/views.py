@@ -600,7 +600,7 @@ class OrganismsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
     def get_queryset(self, paginate: bool = False):
         if paginate:
             return mapi.get_query_set(data_model.Organism)
-        return mapi.get_identifiers()
+        return mapi.get_identifiers(data_model.Organism)
 
 
 class OrganismBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
