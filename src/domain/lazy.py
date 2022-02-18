@@ -25,18 +25,18 @@ class LazyProperty:
 
 
 class LazyNodeMeta(type):
-    def __new__(mcs, name, bases, namespace, meta=None):
-        if meta is None:
-            meta = []
+    def __new__(mcs, name, bases, namespace, properties=None):
+        if properties is None:
+            properties = []
 
         cls = super(LazyNodeMeta, mcs).__new__(mcs, name, bases, namespace)
 
-        for attr in meta:
+        for attr in properties:
             setattr(cls, attr, LazyProperty(attr))
-        setattr(cls, 'meta', meta)
+        setattr(cls, 'properties', properties)
         return cls
 
-    def __init__(cls, name, bases, namespace, meta=None):
+    def __init__(cls, name, bases, namespace, *args, **kwargs):
         super(LazyNodeMeta, cls).__init__(name, bases, namespace)
 
 
@@ -56,8 +56,8 @@ class LazyNode:
         return
 
 
-def build_lazy_node(node: Type[DjangoNode], meta: List[str]) -> Union[type, LazyNodeMeta]:
+def build_lazy_node(node: Type[DjangoNode], properties: List[str]) -> Union[type, LazyNodeMeta]:
     name = f'Lazy{node.__label__}'
     bases = (LazyNode,)
-    cls = LazyNodeMeta(name=name, bases=bases, namespace={}, meta=meta)
+    cls = LazyNodeMeta(name=name, bases=bases, namespace={}, properties=properties)
     return cls

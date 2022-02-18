@@ -7,7 +7,7 @@ from neo4j.exceptions import DriverError, Neo4jError
 from neomodel import NodeSet, MultipleNodesReturned, StructuredRel, RelationshipManager, NeomodelException
 from rest_framework import status
 
-from domain.query import build_identifiers_query, query_db, parse_query_results, build_lazy_query
+from domain.query import LazyQuerySet
 from exceptions import ProtrendException
 from set_list import SetList
 
@@ -16,7 +16,10 @@ _model_type = Union[Type[DjangoNode], Type[Model]]
 _model = Union[DjangoNode, Model]
 
 
-def get_query_set(cls: _model_type) -> Union[Any, NodeSet, QuerySet]:
+def get_query_set(cls: _model_type, properties: List[str] = None) -> Union[Any, NodeSet, QuerySet, LazyQuerySet]:
+    if properties:
+        return LazyQuerySet(cls, properties)
+
     if hasattr(cls, 'nodes'):
         return cls.nodes
 
@@ -50,7 +53,7 @@ def get_objects(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
     Get objects from database
     """
     query_set = get_query_set(cls)
-    return list(query_set.all())
+    return list(query_set)
 
 
 @run_or_raise
@@ -58,10 +61,8 @@ def get_identifiers(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
     """
     Get objects identifiers from database
     """
-    query = build_identifiers_query(cls)
-    results, meta = query_db(query)
-    nodes = parse_query_results(node=cls, results=results, meta=meta)
-    return nodes
+    query_set = get_query_set(cls, properties=['protrend_id'])
+    return list(query_set)
 
 
 @run_or_raise
@@ -69,10 +70,8 @@ def get_lazy_objects(cls: _model_type, properties: List[str]) -> Union[List[Djan
     """
     Get objects from database using laziness
     """
-    query = build_lazy_query(cls, properties)
-    results, meta = query_db(query)
-    nodes = parse_query_results(node=cls, results=results, meta=meta)
-    return nodes
+    query_set = get_query_set(cls, properties=properties)
+    return list(query_set)
 
 
 @run_or_raise
@@ -85,7 +84,7 @@ def count_objects(cls: _model_type) -> int:
 
 
 @run_or_raise
-def slice_objects(cls: _model_type, start: int, stop: int) -> int:
+def slice_objects(cls: _model_type, start: int, stop: int) -> Union[List[DjangoNode], List[Model]]:
     """
     Slice objects in the database
     """
@@ -93,6 +92,19 @@ def slice_objects(cls: _model_type, start: int, stop: int) -> int:
     return query_set[start:stop]
 
 
+@run_or_raise
+def slice_lazy_objects(cls: _model_type,
+                       properties: List[str],
+                       start: int,
+                       stop: int) -> Union[List[DjangoNode], List[Model]]:
+    """
+    Slice lazy objects in the database
+    """
+    query_set = get_query_set(cls, properties=properties)
+    return query_set[start:stop]
+
+
+# TODO: implement the filter lazy objects
 @run_or_raise
 def filter_objects(cls: _model_type, *args, **kwargs) -> Union[List[DjangoNode], List[Model]]:
     """
