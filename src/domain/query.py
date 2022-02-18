@@ -1,9 +1,10 @@
-from typing import Type, List, Tuple
+from functools import lru_cache
+from typing import Type, List, Tuple, Union
 
 from django_neomodel import DjangoNode
 from neomodel import db
 
-from domain.lazy import build_lazy_node
+from domain.lazy import build_lazy_node, LazyNodeMeta
 
 
 def query_db(query: str) -> Tuple[List, List]:
@@ -25,25 +26,101 @@ def parse_meta(meta: List[str]) -> List[str]:
     return parsed_meta
 
 
-def parse_query_results(node: Type[DjangoNode], results: List, meta: List = None) -> List[DjangoNode]:
-    cls = build_lazy_node(node=node, meta=meta)
+class LazyQuerySet:
 
-    nodes = []
-    for row in results:
-        kwargs = {attr: val for attr, val in zip(meta, row)}
-        instance = cls(**kwargs)
-        nodes.append(instance)
-    return nodes
+    def __init__(self, node: Type[DjangoNode], properties: List[str]):
+        self.node = node
+        self.properties = properties
+        self.limit = 1
+        self.skip = 0
 
+    @property
+    def node_label(self) -> str:
+        return self.node.__label__
 
-def build_lazy_query(node: Type[DjangoNode], properties: List[str]) -> str:
-    label = node.__label__
-    lower_label = node.__label__.lower()
-    query = f'MATCH ({lower_label}:{label}) RETURN '
-    return_query = ', '.join(f'{lower_label}.{prop}' for prop in properties)
-    final_query = query + return_query
-    return final_query
+    @property
+    def lower_node_label(self) -> str:
+        return self.node_label.lower()
 
+    @property
+    @lru_cache()
+    def lazy_node_cls(self) -> Union[type, LazyNodeMeta]:
+        return build_lazy_node(self.node, self.properties)
 
-def build_identifiers_query(node: Type[DjangoNode]) -> str:
-    return build_lazy_query(node, ['protrend_id'])
+    @property
+    def lazy_query(self) -> str:
+        query = f'MATCH ({self.lower_node_label}:{self.node_label}) RETURN '
+        return_query = ', '.join(f'{self.lower_node_label}.{prop}' for prop in self.properties)
+        final_query = query + return_query
+        return final_query
+
+    @property
+    def count_query(self) -> str:
+        return f'MATCH ({self.lower_node_label}:{self.node_label}) RETURN count({self.lower_node_label})'
+
+    @property
+    def skip_limit_lazy_query(self) -> str:
+        skip = f' SKIP {int(self.skip)}'
+        limit = f' LIMIT {int(self.limit)}'
+        return self.lazy_query + skip + limit
+
+    def parse_query_results(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
+        nodes = []
+        for row in results:
+            kwargs = {attr: val for attr, val in zip(meta, row)}
+            lazy_node = self.lazy_node_cls(**kwargs)
+            nodes.append(lazy_node)
+        return nodes
+
+    def all(self) -> List[DjangoNode]:
+        results, meta = query_db(self.lazy_query)
+        return self.parse_query_results(results, meta)
+
+    def count(self) -> int:
+        results, _ = query_db(self.count_query)
+        return int(results[0][0])
+
+    def __iter__(self):
+        return (node for node in self.all())
+
+    def __len__(self):
+        results, _ = query_db(self.count_query)
+        return int(results[0][0])
+
+    def __bool__(self):
+        return self.count() > 0
+
+    def __nonzero__(self):
+        return self.count() > 0
+
+    def __contains__(self, obj):
+        if not hasattr(obj, 'protrend_id'):
+            raise ValueError("Expecting DjangoNode saved instance")
+
+        query = f'MATCH ({self.lower_node_label}:{self.node_label}) RETURN {self.lower_node_label}.protrend_id'
+        results, meta = query_db(query)
+        nodes = self.parse_query_results(results, meta)
+        identifiers = [node.protrend_id for node in nodes]
+        return obj.protrend_id in identifiers
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            if key.stop and key.start:
+                self.limit = key.stop - key.start
+                self.skip = key.start
+            elif key.stop:
+                self.limit = key.stop
+            elif key.start:
+                self.skip = key.start
+
+            results, meta = query_db(self.skip_limit_lazy_query)
+            return self.parse_query_results(results, meta)
+
+        elif isinstance(key, int):
+            self.skip = key
+            self.limit = 1
+
+            results, meta = query_db(self.skip_limit_lazy_query)
+            return self.parse_query_results(results, meta)[0]
+
+        raise ValueError("Expecting slice or int")
