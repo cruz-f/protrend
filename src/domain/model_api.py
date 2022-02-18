@@ -7,7 +7,7 @@ from neo4j.exceptions import DriverError, Neo4jError
 from neomodel import NodeSet, MultipleNodesReturned, StructuredRel, RelationshipManager, NeomodelException
 from rest_framework import status
 
-from domain.query import LazyQuerySet
+from domain.query import LazyQuerySet, NodeQuerySet, UniqueNodeQuerySet
 from exceptions import ProtrendException
 from set_list import SetList
 
@@ -48,30 +48,30 @@ def run_or_raise(fn: Callable):
 # Bulk Object Create Read Update and Delete operations
 # ---------------------------------------------------------
 @run_or_raise
-def get_objects(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
+def get_objects(cls: _model_type) -> NodeQuerySet:
     """
     Get objects from database
     """
     query_set = get_query_set(cls)
-    return list(query_set)
+    return NodeQuerySet(query_set)
 
 
 @run_or_raise
-def get_identifiers(cls: _model_type) -> Union[List[DjangoNode], List[Model]]:
+def get_identifiers(cls: _model_type) -> NodeQuerySet:
     """
     Get objects identifiers from database
     """
     query_set = get_query_set(cls, properties=['protrend_id'])
-    return list(query_set)
+    return NodeQuerySet(query_set)
 
 
 @run_or_raise
-def get_lazy_objects(cls: _model_type, properties: List[str]) -> Union[List[DjangoNode], List[Model]]:
+def get_lazy_objects(cls: _model_type, properties: List[str]) -> NodeQuerySet:
     """
     Get objects from database using laziness
     """
     query_set = get_query_set(cls, properties=properties)
-    return list(query_set)
+    return NodeQuerySet(query_set)
 
 
 @run_or_raise
@@ -84,57 +84,57 @@ def count_objects(cls: _model_type) -> int:
 
 
 @run_or_raise
-def slice_objects(cls: _model_type, start: int, stop: int) -> Union[List[DjangoNode], List[Model]]:
+def slice_objects(cls: _model_type, start: int, stop: int) -> NodeQuerySet:
     """
     Slice objects in the database
     """
     query_set = get_query_set(cls)
-    return query_set[start:stop]
+    return NodeQuerySet(query_set[start:stop])
 
 
 @run_or_raise
 def slice_lazy_objects(cls: _model_type,
                        properties: List[str],
                        start: int,
-                       stop: int) -> Union[List[DjangoNode], List[Model]]:
+                       stop: int) -> NodeQuerySet:
     """
     Slice lazy objects in the database
     """
     query_set = get_query_set(cls, properties=properties)
-    return query_set[start:stop]
+    return NodeQuerySet(query_set[start:stop])
 
 
 # TODO: implement the filter lazy objects
 @run_or_raise
-def filter_objects(cls: _model_type, *args, **kwargs) -> Union[List[DjangoNode], List[Model]]:
+def filter_objects(cls: _model_type, *args, **kwargs) -> NodeQuerySet:
     """
     Get and filter objects from database
     """
     query_set = get_query_set(cls)
-    return list(query_set.filter(*args, **kwargs))
+    return NodeQuerySet(query_set.filter(*args, **kwargs))
 
 
 @run_or_raise
-def order_by_objects(cls: _model_type, *fields) -> Union[List[DjangoNode], List[Model]]:
+def order_by_objects(cls: _model_type, *fields) -> NodeQuerySet:
     """
     Get and order by fields all objects from database
     """
     query_set = get_query_set(cls)
-    return list(query_set.order_by(*fields))
+    return NodeQuerySet(query_set.order_by(*fields))
 
 
 @run_or_raise
-def create_objects(cls: _model_type, *objects: Dict[str, Any]) -> Union[List[DjangoNode], List[Model]]:
+def create_objects(cls: _model_type, *objects: Dict[str, Any]) -> NodeQuerySet:
     """
     Create multiple objects into the database from a set of dictionaries
     """
     if hasattr(cls, 'create'):
-        return cls.create(*objects)
+        return NodeQuerySet(cls.create(*objects))
 
     if hasattr(cls, 'objects'):
-        return [cls(**kwargs).save() for kwargs in objects]
+        return NodeQuerySet([cls(**kwargs).save() for kwargs in objects])
 
-    return []
+    return NodeQuerySet()
 
 
 @run_or_raise
@@ -232,30 +232,30 @@ def get_rel_query_set(obj: _model, rel: str) -> Union[Any, RelationshipManager]:
 # Relationships Create Read Update and Delete operations
 # ---------------------------------------------------------
 @run_or_raise
-def get_related_objects(obj: _model, rel: str) -> SetList[DjangoNode]:
+def get_related_objects(obj: _model, rel: str) -> UniqueNodeQuerySet:
     """
     Get all objects connected with this object
     """
     query_set = get_rel_query_set(obj=obj, rel=rel)
-    return SetList(query_set.all())
+    return UniqueNodeQuerySet(query_set)
 
 
 @run_or_raise
-def filter_related_objects(obj: _model, rel: str, **kwargs) -> SetList[DjangoNode]:
+def filter_related_objects(obj: _model, rel: str, **kwargs) -> UniqueNodeQuerySet:
     """
     Get and filter the objects connected with this object
     """
     query_set = get_rel_query_set(obj=obj, rel=rel)
-    return SetList(query_set.filter(**kwargs))
+    return UniqueNodeQuerySet(query_set.filter(**kwargs))
 
 
 @run_or_raise
-def order_by_related_objects(obj: _model, rel: str, *fields) -> SetList[DjangoNode]:
+def order_by_related_objects(obj: _model, rel: str, *fields) -> UniqueNodeQuerySet:
     """
     Get and order by fields the objects connected with this object
     """
     query_set = get_rel_query_set(obj=obj, rel=rel)
-    return SetList(query_set.order_by(*fields))
+    return UniqueNodeQuerySet(query_set.order_by(*fields))
 
 
 @run_or_raise
@@ -283,12 +283,12 @@ def get_related_object(obj: _model, rel: str, **kwargs) -> Union[DjangoNode, Non
 
 
 @run_or_raise
-def get_relationships(source: _model, rel: str, target: _model) -> List[StructuredRel]:
+def get_relationships(source: _model, rel: str, target: _model) -> NodeQuerySet:
     """
     Get all relationships objects between two objects
     """
     query_set = get_rel_query_set(obj=source, rel=rel)
-    return list(query_set.all_relationships(target))
+    return NodeQuerySet(query_set.all_relationships(target))
 
 
 @run_or_raise
@@ -310,7 +310,7 @@ def get_relationship(source: _model, rel: str, target: _model) -> Union[Structur
 
 
 @run_or_raise
-def is_connected(source: _model, rel: str, target: _model) -> Union[StructuredRel, None]:
+def is_connected(source: _model, rel: str, target: _model) -> bool:
     """
     Get the first relationship object between two nodes
     """
