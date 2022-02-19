@@ -1,6 +1,7 @@
 from typing import Union, Tuple, Type
 
 from rest_framework import views, serializers
+from rest_framework.serializers import ListSerializer
 
 
 class ExportFileMixin:
@@ -63,6 +64,9 @@ def get_header(serializer_cls: Type[serializers.Serializer], nested_fields: Tupl
     for key, value in serializer.fields.items():
 
         if key in nested_fields:
+
+            if hasattr(value, 'child'):
+                value = value.child
 
             for sub_key in value.fields.keys():
                 nested_key = f'{key}.{sub_key}'

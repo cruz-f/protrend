@@ -209,7 +209,7 @@ class OperonDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, ge
         context = super().get_renderer_context()
 
         serializer_cls = self.get_serializer_class()
-        nested_fields = ('genes',)
+        nested_fields = ('genes', )
         header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
 
         context['header'] = header
