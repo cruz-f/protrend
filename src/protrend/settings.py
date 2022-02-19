@@ -32,6 +32,7 @@ ALLOWED_HOSTS = Configuration.allowed_hosts
 # Application definition
 
 INSTALLED_APPS = [
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +48,6 @@ INSTALLED_APPS = [
 
 # do not change middleware order
 MIDDLEWARE = [
-    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,7 +55,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'protrend.urls'
@@ -144,27 +143,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# django cache
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": Configuration.cache_url,
-#         "TIMEOUT": 60 * 60 * 24 * 180,
-#         "KEY_PREFIX": 'protrend_v1',
-#         "OPTIONS": {
-#             'PASSWORD': Configuration.cache_db_password,
-#             "IGNORE_EXCEPTIONS": True,
-#             "CONNECTION_POOL_KWARGS": {"max_connections": 50},
-#         },
-#     }
-# }
-
-# django additional security
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
-# SECURE_SSL_REDIRECT = True
-
 # django-rest framework settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -190,3 +168,7 @@ NEOMODEL_NEO4J_BOLT_URL = Configuration.bolt_url
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50
+
+# django admin interface by GRAPPELLI
+GRAPPELLI_ADMIN_TITLE = 'ProTReND Admin Area'
+GRAPPELLI_SWITCH_USER = True
