@@ -1,0 +1,117 @@
+{% extends "website/footer.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/table.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-start">
+                {% include "website/protrend_bread_crumb.html" with child="Organisms" only %}
+            </div>
+        </div>
+        <div class="row align-items-center pt-3">
+            <div class="col align-self-center">
+                <h2 class="text-uppercase blue-color">
+                    Organisms
+                </h2>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-8 align-self-center">
+                <p class="py-1">
+                    ProTReND comprises a list of organisms classified with the scientific name and taxonomy identifier
+                    from NCBI.
+                    In addition, ProTReND contains several details for each organism,
+                    including the species and strain of the organism.
+                    Regarding the genomic sequences, we provide the GenBank accession, the RefSeq accession,
+                    and NCBI Assembly accession that can be used to obtain both protein and genome sequences from the
+                    NCBI databases.
+                </p>
+                <p class="py-1">
+                    In this view, one can consult all regulators, genes, interactions and binding sites associated with
+                    a given organism. For that, just open the organism dedicated webpage.
+                </p>
+                <p class="py-1">
+                    Note that, the list of organisms available at ProTReND might contain redundant species,
+                    due to the ambiguous scientific name found in the collected data sources,
+                    and incorrect NCBI taxonomy classifications.
+                </p>
+            </div>
+            <div class="col-4 align-self-center">
+                <img src="{% static 'website/images/bacteria.jpg' %}"
+                     class="img-fluid"
+                     alt="organisms">
+            </div>
+        </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Networks <i class="bi bi-bezier2 ps-2"></i>
+                </h5>
+                <p class="text-justify pb-3">
+                    ProTReND Transcriptional Regulatory Networks are composed by regulatory interactions
+                    between regulators and target genes. ProTReND also comprehends whenever possible
+                    the DNA <i>cis</i>-element, namely the Transcription Factor Binding Site (TFBS),
+                    where the regulator binds to control the expression of the target gene.
+                    In addition, the effector that either binds to the regulator or influences the regulatory state
+                    of this protein is also available for some regulatory interactions.
+                </p>
+                <ul class="nav nav-tabs" id="tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-uppercase"
+                                id="networks-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#networks"
+                                type="button"
+                                role="tab"
+                                aria-controls="networks"
+                                aria-selected="true">networks</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="statistics-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#statistics"
+                                type="button"
+                                role="tab"
+                                aria-controls="statistics"
+                                aria-selected="false">statistics</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="network-tab">
+                    <div class="tab-pane fade show active"
+                         id="networks"
+                         role="tabpanel"
+                         aria-labelledby="networks-tab">
+                        {% include "website/protrend_table.html" with objs=organisms fields=organism_table_fields only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="statistics"
+                         role="tabpanel"
+                         aria-labelledby="statistics-tab">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js">
+    </script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
+    </script>
+{% endblock %}
+</html>
