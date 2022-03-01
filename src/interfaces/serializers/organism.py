@@ -12,6 +12,21 @@ from interfaces.serializers.relationships import RelationshipSerializer, SourceR
     SourceHighlightSerializer
 
 
+class OrganismQuery(BaseSerializer):
+    # properties
+    name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
+    ncbi_taxonomy = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_taxonomy)
+    species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
+    strain = serializers.CharField(required=False, max_length=150, help_text=help_text.strain)
+    refseq_accession = serializers.CharField(required=False, max_length=50,
+                                             help_text=help_text.refseq_accession)
+    genbank_accession = serializers.CharField(required=False, max_length=50,
+                                              help_text=help_text.genbank_accession)
+    assembly_accession = serializers.CharField(required=False, max_length=50,
+                                               help_text=help_text.assembly_accession)
+
+
+
 class OrganismSerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)

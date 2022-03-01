@@ -15,7 +15,8 @@ from .gene import (GeneDetailSerializer,
                    GeneSerializer)
 from .operon import (OperonDetailSerializer,
                      OperonSerializer)
-from .organism import (OrganismDetailSerializer,
+from .organism import (OrganismQuery,
+                       OrganismDetailSerializer,
                        OrganismHighlightSerializer,
                        OrganismSerializer)
 from .pathway import (PathwayDetailSerializer,
