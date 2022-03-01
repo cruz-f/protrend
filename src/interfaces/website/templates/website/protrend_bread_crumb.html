@@ -1,0 +1,12 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        {% if child and sub_child %}
+            <li class="breadcrumb-item"><a href="{% url child|lower %}">{{ child }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ sub_child }}</li>
+        {% endif %}
+        {% if child and not sub_child %}
+            <li class="breadcrumb-item active"><a href="{% url child|lower %}">{{ child }}</a></li>
+        {% endif %}
+    </ol>
+</nav>
