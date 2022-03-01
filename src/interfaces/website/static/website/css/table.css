@@ -1,0 +1,33 @@
+.table>thead>tr {
+    background-color: #0d6efd!important;
+    color: #ffffff;
+    border-top-width: 0!important;
+}
+
+.table>thead>tr>th {
+    border: 0;
+}
+
+.table>tbody>tr:hover {
+    background-color: rgba(141, 188, 255, 0.25) !important;
+    color: #0d6efd!important;
+}
+
+.table>tbody {
+    padding-top: 2rem!important;
+    padding-bottom: 2rem!important;
+}
+
+
+.table>tbody>tr>td {
+    border: 0;
+    padding-top: 0.8rem!important;
+    padding-bottom: 0.8rem!important;
+}
+
+.bootstrap-table .fixed-table-toolbar .search {
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    min-width: 25rem!important;
+}

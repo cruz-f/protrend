@@ -1,0 +1,29 @@
+{% if source == 'uniprot' %}
+    <a role="button"
+       class="btn rounded-pill btn-outline-success"
+       rel="nofollow" target="_blank"
+       href="https://beta.uniprot.org/uniprotkb/{{ obj.uniprot_accession }}">
+        {{ obj.uniprot_accession }}
+        <i class="bi bi-box-arrow-up-right ps-2"></i>
+    </a>
+{% elif source == 'ncbi' %}
+    <a role="button"
+       class="btn rounded-pill btn-outline-success"
+       rel="nofollow" target="_blank"
+       href="https://www.ncbi.nlm.nih.gov/gene/{{ obj.ncbi_gene }}">
+        {{ obj.ncbi_gene }}
+        <i class="bi bi-box-arrow-up-right ps-2"></i>
+    </a>
+{% elif source == 'protrend' %}
+{#    TODO: then fix this #}
+    {% if obj.protrend_id %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url redirect obj.protrend_id %}">
+            {{ obj.protrend_id }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% else %}
+        {{ obj }}
+    {% endif %}
+{% endif %}
