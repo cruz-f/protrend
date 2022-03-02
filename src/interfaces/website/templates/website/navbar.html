@@ -2,9 +2,14 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+{% block navbar_style %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/navbar.css' %}">
+{% endblock %}
 <body>
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand navbar-brand-color" href="{% url 'home' %}">
                 ProTReND
@@ -21,22 +26,27 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto me-3 mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active text-uppercase" href="#">Organisms</a>
+                        <a class="nav-link {% if active_page == 'organisms' %} active {% endif %} text-uppercase"
+                           href="{% url 'organisms' %}">
+                            Organisms
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-uppercase" href="#">Regulators</a>
+                        <a class="nav-link {% if active_page == 'regulators' %} active {% endif %} text-uppercase" href="#">Regulators</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-uppercase" href="#">Interactions</a>
+                        <a class="nav-link {% if active_page == 'tfbs' %} active {% endif %} text-uppercase" href="#">Binding Sites</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-uppercase" href="#">Binding Sites</a>
+                        <a class="nav-link {% if active_page == 'interactions' %} active {% endif %} text-uppercase" href="#">Interactions</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success text-uppercase me-5" type="submit">Search</button>
-                </form>
+                {% if active_page != 'home' %}
+                    <form class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success text-uppercase me-5" type="submit">Search</button>
+                    </form>
+                {% endif %}
                 <form class="d-flex">
                     <button class="btn btn-outline-primary text-uppercase" type="submit">Log In</button>
                 </form>

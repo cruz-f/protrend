@@ -1,0 +1,93 @@
+{% load get_item %}
+<table class="table table-hover table-borderless"
+       data-toggle="table"
+
+       data-search="true"
+       data-regex-search="true"
+       data-search-accent-neutralise="true"
+       data-search-highlight="true"
+       data-search-time-out="1000"
+
+       data-sort-reset="true"
+
+       data-show-pagination-switch="true"
+       data-show-toggle="true"
+       data-show-fullscreen="true"
+       data-show-columns="true"
+       data-show-columns-toggle-all="true"
+       data-show-export="true"
+
+       data-buttons-class="primary"
+
+       data-id-field="id"
+
+       data-pagination="true"
+       data-page-size="25"
+       data-page-list="[25, 50, 100, all]">
+    <thead>
+    <tr>
+        {% for field, table_config in fields.items %}
+            <th class="text-uppercase" data-field="{{ field }}" data-sortable="{{ table_config.sortable }}">
+                {{ table_config.column }}
+            </th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for obj in objs %}
+        <tr>
+            {% for field, table_config in fields.items %}
+                {% if table_config.type == 'attr' %}
+                    <td class="text-uppercase">
+                        {{ obj|get_item:field }}
+                    </td>
+                {% elif 'dropdown' in table_config.type %}
+                    {% if table_config.type == 'ncbi-dropdown' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_dropdown.html" with obj=obj source="ncbi" redirect='ncbi' only %}
+                        </td>
+                    {% elif table_config.type == 'uniprot-dropdown' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_dropdown.html" with obj=obj source="uniprot" redirect='uniprot' only %}
+                        </td>
+                    {% elif table_config.type == 'organism-dropdown' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_dropdown.html" with obj=obj source="detail" redirect='organism' only %}
+                        </td>
+                    {% elif table_config.type == 'organism-download-dropdown' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_dropdown.html" with obj=obj source="download" redirect='trns-detail' only %}
+                        </td>
+                    {% endif %}
+                {% elif 'btn' in table_config.type %}
+                    {% if table_config.type == 'ncbi-btn' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_button.html" with obj=obj source="ncbi" redirect='ncbi' only %}
+                        </td>
+                    {% elif table_config.type == 'uniprot-btn' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_button.html" with obj=obj source="uniprot" redirect='uniprot' only %}
+                        </td>
+                    {% elif table_config.type == 'regulator-btn' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_button.html" with obj=obj source="protrend" redirect='regulator' only %}
+                        </td>
+                    {% elif table_config.type == 'gene-btn' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_button.html" with obj=obj source="protrend" redirect='gene' only %}
+                        </td>
+                    {% elif table_config.type == 'binding-btn' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_button.html" with obj=obj source="protrend" redirect='binding' only %}
+                        </td>
+                    {% elif table_config.type == 'interaction-btn' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_button.html" with obj=obj source="protrend" redirect='interaction' only %}
+                        </td>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

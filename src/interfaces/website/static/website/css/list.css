@@ -1,0 +1,9 @@
+.border-right {
+  border-right-color: #0a53be;
+  border-right-width: 3px;
+}
+
+.table-custom {
+  border-collapse: separate!important;
+  border-spacing: 1rem 1rem!important;
+}

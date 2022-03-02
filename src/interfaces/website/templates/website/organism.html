@@ -1,0 +1,381 @@
+{% extends "website/footer.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/table.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-start">
+                {% include "website/protrend_bread_crumb.html" with child="Organisms" sub_child=organism.protrend_id only %}
+            </div>
+        </div>
+        <div class="row align-items-center pt-3">
+            <div class="col-sm-10 align-self-center">
+                <h2 class="text-uppercase blue-color">
+                    {{ organism.name }}
+                </h2>
+            </div>
+            <div class="col-sm-2 align-self-center">
+                {% include "website/protrend_dropdown.html" with obj=organism source="download" redirect='trns-detail' larger=True only %}
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <h5 id="details" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                Details <i class="bi bi-clipboard-data ps-2"></i>
+            </h5>
+            <div class="col-6 align-self-center">
+                <div class="table-responsive">
+                    <table class="table-custom table-borderless">
+                        <tbody>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">identifier</td>
+                            <td>{{ organism.protrend_id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">scientific name</td>
+                            <td>{{ organism.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">species</td>
+                            <td>{% if organism.species %}{{ organism.species }}{% else %}NA{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">strain</td>
+                            <td>{% if organism.strain %}{{ organism.strain }}{% else %}NA{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">Taxonomy</td>
+                            <td>
+                                {% if organism.ncbi_taxonomy %}
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-primary"
+                                       rel="nofollow" target="_blank"
+                                       href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ organism.ncbi_taxonomy }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI taxonomy page">
+                                        {{ organism.ncbi_taxonomy }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-success"
+                                       rel="nofollow" target="_blank"
+                                       href="https://beta.uniprot.org/taxonomy/{{ organism.ncbi_taxonomy }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt taxonomy page">
+                                        {{ organism.ncbi_taxonomy }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">RefSeq Accession</td>
+                            <td>
+                                {% if organism.refseq_accession %}
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-primary"
+                                       rel="nofollow" target="_blank"
+                                       href="https://www.ncbi.nlm.nih.gov/refseq/?term={{ organism.refseq_accession }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="RefSeq page">
+                                        {{ organism.refseq_accession }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-success"
+                                       rel="nofollow" target="_blank"
+                                       href="{{ organism.refseq_ftp }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="RefSeq FTP">
+                                        {{ organism.refseq_accession }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">GenBank Accession</td>
+                            <td>
+                                {% if organism.genbank_accession %}
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-primary"
+                                       rel="nofollow" target="_blank"
+                                       href="https://www.ncbi.nlm.nih.gov/search/all/?term={{ organism.genbank_accession }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="GenBank page">
+                                        {{ organism.genbank_accession }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-success"
+                                       rel="nofollow" target="_blank"
+                                       href="{{ organism.genbank_ftp }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="GenBank FTP">
+                                        {{ organism.genbank_accession }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">Assembly Accession</td>
+                            <td>
+                                {% if organism.assembly_accession %}
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-primary"
+                                       rel="nofollow" target="_blank"
+                                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ organism.ncbi_assembly }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="Assembly page">
+                                        {{ organism.ncbi_assembly }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-success"
+                                       rel="nofollow" target="_blank"
+                                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ organism.assembly_accession }}"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="Assembly page">
+                                        {{ organism.assembly_accession }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">uniprot proteomes</td>
+                            <td>
+                                {% if organism.ncbi_taxonomy %}
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-primary"
+                                       rel="nofollow" target="_blank"
+                                       href="https://beta.uniprot.org/proteomes?query=(taxonomy_id:{{ organism.ncbi_taxonomy }})"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt proteomes page">
+                                        {{ organism.ncbi_taxonomy }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                    <a role="button"
+                                       class="btn rounded-pill btn-outline-success"
+                                       rel="nofollow" target="_blank"
+                                       href="https://beta.uniprot.org/uniprotkb?query=(taxonomy_id:{{ organism.ncbi_taxonomy }})"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt proteins page">
+                                        {{ organism.ncbi_taxonomy }}
+                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                    </a>
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-6 align-self-center">
+                <ul class="nav nav-tabs" id="graph-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-uppercase"
+                                id="distribution-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#distribution"
+                                type="button"
+                                role="tab"
+                                aria-controls="distribution"
+                                aria-selected="true">trn distribution</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="regulator-degree-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#regulator-degree"
+                                type="button"
+                                role="tab"
+                                aria-controls="regulator-degree"
+                                aria-selected="false">Regulators-Genes</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="gene-degree-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#gene-degree"
+                                type="button"
+                                role="tab"
+                                aria-controls="gene-degree"
+                                aria-selected="false">Genes-Regulators</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="graph-tab-content">
+                    <div class="tab-pane fade show active"
+                         id="distribution"
+                         role="tabpanel"
+                         aria-labelledby="distribution-tab">
+                        <canvas id="OrganismTRN" class="canvas-md"></canvas>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="regulator-degree"
+                         role="tabpanel"
+                         aria-labelledby="regulator-degree-tab">
+                        <canvas id="OrganismRegulatorsGenes" class="canvas-md"></canvas>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="gene-degree"
+                         role="tabpanel"
+                         aria-labelledby="gene-degree-tab">
+                        <canvas id="OrganismGenesRegulators" class="canvas-md"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="sources" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Source <i class="bi bi-collection ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        {% for source in organism.data_source %}
+                            <div class="col-sm-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-uppercase">{{ source.name }}</h5>
+                                        <p class="card-text">
+                                            The organism named {{ organism.name }}
+                                            has been retrieved from {{ source.name }}.
+                                            {% if source.external_identifier %}
+                                                This organism is referred by the following external identifier
+                                                {{ source.external_identifier }} in {{ source.name }}
+                                            {% else %}
+                                                This organism is available at {{ source.url }}.
+                                            {% endif %}
+                                        </p>
+                                        <a class="btn rounded-pill btn-outline-success text-uppercase"
+                                           rel="nofollow" target="_blank"
+                                           href="{{ source.url }}">
+                                            Consult {{ source.name }} <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 id="networks" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Network <i class="bi bi-bezier2 ps-2"></i>
+                </h5>
+                <p class="text-justify pb-3">
+                    ProTReND Transcriptional Regulatory Networks are composed by regulatory interactions
+                    between regulators and target genes. ProTReND also comprehends whenever possible
+                    the DNA <i>cis</i>-element, namely the Transcription Factor Binding Site (TFBS),
+                    where the regulator binds to control the expression of the target gene.
+                    In addition, the effector that either binds to the regulator or influences the regulatory state
+                    of this protein is also available for some regulatory interactions.
+                </p>
+                <ul class="nav nav-tabs" id="tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-uppercase"
+                                id="regulators-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#regulators"
+                                type="button"
+                                role="tab"
+                                aria-controls="regulators"
+                                aria-selected="true">Regulators</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="genes-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#genes"
+                                type="button"
+                                role="tab"
+                                aria-controls="genes"
+                                aria-selected="false">Genes</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="bindings-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#bindings"
+                                type="button"
+                                role="tab"
+                                aria-controls="bindings"
+                                aria-selected="false">Binding sites</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="interactions-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#interactions"
+                                type="button"
+                                role="tab"
+                                aria-controls="interactions"
+                                aria-selected="false">Interactions</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="network-tab">
+                    <div class="tab-pane fade show active"
+                         id="regulators"
+                         role="tabpanel"
+                         aria-labelledby="regulators-tab">
+                        {% include "website/protrend_table.html" with objs=organism.regulator fields=organism_regulators_table_fields only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="genes"
+                         role="tabpanel"
+                         aria-labelledby="genes-tab">
+                        {% include "website/protrend_table.html" with objs=organism.gene fields=organism_genes_table_fields only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="bindings"
+                         role="tabpanel"
+                         aria-labelledby="bindings-tab">
+                        {% include "website/protrend_table.html" with objs=organism.tfbs fields=organism_bindings_table_fields only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="interactions"
+                         role="tabpanel"
+                         aria-labelledby="interactions-tab">
+                        {% include "website/protrend_table.html" with objs=organism.regulatory_interaction fields=organism_interactions_table_fields only %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js">
+    </script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <script src="{% static 'website/js/getChart.js' %}">
+    </script>
+    {{ OrganismTRNChartData|json_script:'OrganismTRNChartData' }}
+    {{ OrganismRegulatorsGenesChartData|json_script:'OrganismRegulatorsGenesChartData' }}
+    {{ OrganismGenesRegulatorsChartData|json_script:'OrganismGenesRegulatorsChartData' }}
+    <script>
+        const OrganismTRNChart = getChart('OrganismTRN', 'OrganismTRNChartData')
+        const OrganismRegulatorsGenesChart = getChart('OrganismRegulatorsGenes', 'OrganismRegulatorsGenesChartData')
+        const OrganismGenesRegulatorsChart = getChart('OrganismGenesRegulators', 'OrganismGenesRegulatorsChartData')
+    </script>
+{% endblock %}
+</html>

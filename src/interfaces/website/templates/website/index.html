@@ -4,24 +4,132 @@
 <html lang="en">
 <body>
 {% block content %}
-    <div class="container">
-        <div class="row py-5">
-        </div>
-        <div class="row py-5">
-            <div class="col text-center">
-                <h1>ProTReND Database</h1>
+    <div class="container-fluid">
+        <div class="row blue-linear-bg">
+            <div class="col">
+                <div class="container">
+                    <div class="row align-items-center mt-5 py-5">
+                        <div class="col align-self-center">
+                            <h3 class="text-uppercase text-white">
+                                Welcome to the Protrend database
+                            </h3>
+                            <h5 class="text-uppercase text-white-50 py-3">
+                                A comprehensive collection of prokaryotic transcriptional regulatory networks
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="row align-items-center mb-5 py-5">
+                        <div class="col align-self-center">
+                            <h5 class="text-uppercase text-white text-center">
+                                Find a regulatory interaction
+                            </h5>
+                            <form class="d-flex py-3 px-5 mx-5">
+                                <input class="form-control form-control-lg me-2"
+                                       type="search" placeholder="lexA" aria-label="Search">
+                                <button class="btn btn-outline-light me-5"
+                                        type="submit">
+                                    <i class="bi bi-search font-size-xl"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row py-5">
-            <div class="col text-center">
-                <h2>ProTReND is currently under maintenance. We promise to be brief</h2>
+        <div class="row">
+            <div class="col">
+                <div class="container">
+                    <div class="row align-items-center pt-5">
+                        <div class="col align-self-center text-center">
+                            <h3 class="text-uppercase blue-color">
+                                Access the hub of regulatory interactions
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-5">
+                        <div class="col align-self-center">
+                            <div class="container">
+                                <div class="row row-cols-1 row-cols-md-4 g-4">
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <img src="{% static 'website/images/bacteria.jpg' %}"
+                                                 class="card-img-top"
+                                                 alt="organisms">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Organisms</h5>
+                                                <p class="card-text text-justify">
+                                                    Consult the list of all prokaryotes available at ProTReND.
+                                                    Organisms are listed by the scientific name and NCBI taxonomy identifier
+                                                </p>
+                                            </div>
+                                            <a href="{% url 'organisms' %}" class="btn btn-primary text-uppercase">
+                                                Go to organisms
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <img src="{% static 'website/images/regulator.jpg' %}"
+                                                 class="card-img-top"
+                                                 alt="regulator">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Regulators</h5>
+                                                <p class="card-text text-justify">
+                                                    Consult the list of all regulators available at ProTReND.
+                                                    Regulators are listed by the locus tag, UniProt accession,
+                                                    and both NCBI gene and protein identifiers
+                                                </p>
+                                            </div>
+                                            <a href="#" class="btn btn-primary text-uppercase">
+                                                Go to regulators
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <img src="{% static 'website/images/dna.jpg' %}"
+                                                 class="card-img-top"
+                                                 alt="dna">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Binding Sites</h5>
+                                                <p class="card-text text-justify">
+                                                    Consult the list of all Transcription Factor Binding Sites (TFBSs)
+                                                    available at ProTReND.
+                                                    Binding sites are listed by the organism, DNA sequence,
+                                                    and genomic coordinates.
+                                                </p>
+                                            </div>
+                                            <a href="#" class="btn btn-primary text-uppercase">
+                                                Go to binding sites
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <img src="{% static 'website/images/interaction.jpg' %}"
+                                                 class="card-img-top"
+                                                 alt="interaction">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Interactions</h5>
+                                                <p class="card-text text-justify">
+                                                    Consult the list of all interactions available at ProTReND.
+                                                    Regulatory interactions are listed by the organism, regulator,
+                                                    gene, binding site, and effector
+                                                </p>
+                                            </div>
+                                            <a href="#" class="btn btn-primary text-uppercase">
+                                                Go to interactions
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row py-5">
         </div>
     </div>
 {% endblock %}
-<script src="{% static '/website/js/bootstrap.bundle.min.js' %}">
-</script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+.blue-color {
+    color: #0a53be!important;
+}
+
+.blue-color-50 {
+    color: rgba(10, 83, 190, 0.5)!important;
+}
+
+.font-size-m {
+    font-size: 0.8rem!important;
+}
+
+.font-size-l {
+    font-size: 1.2rem!important;
+}
+
+.font-size-xl {
+    font-size: 1.5rem!important;
+}
+
+.font-size-xxl {
+    font-size: 2rem!important;
+}
+
+.blue-linear-bg {
+    background: rgb(2,0,36);
+    background: linear-gradient(135deg, rgba(2,0,36,1) 5%, rgba(16,63,119,1) 50%, rgb(1, 130, 155) 90%);
+}
+
+.text-justify {
+    text-align: justify!important;
+}
