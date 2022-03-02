@@ -4,8 +4,8 @@ from rest_framework import status
 
 import domain.database as papi
 import domain.model_api as mapi
-from application.table import (OrganismTable, OrganismRegulatorsTable, OrganismGenesTable, OrganismBindingsTable,
-                               OrganismInteractionsTable)
+import application.charts as charts
+import application.tables as tables
 from data import Organism
 from exceptions import ProtrendException
 from interfaces.serializers import OrganismQuery, OrganismDetailSerializer
@@ -29,12 +29,25 @@ class OrganismsView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        obj = context.pop('object_list')
-        obj_dict = self.get_serialized_queryset(obj)
-        context[self.context_object_name] = obj_dict
+        objs = context.pop('object_list')
+        objs_dict = self.get_serialized_queryset(objs)
+        context[self.context_object_name] = objs_dict
 
         # tables
-        context[OrganismTable.context] = OrganismTable.context_dict()
+        context[tables.OrganismsTable.context] = tables.OrganismsTable.context_dict()
+
+        # charts
+        org_regs = charts.OrganismsRegulatorsChart(objects=objs)
+        context[org_regs.context] = org_regs.config
+
+        top_chart = charts.OrganismsRegulatorsTopChart(objects=objs)
+        context[top_chart.context] = top_chart.config
+
+        taxa_chart = charts.OrganismsTaxaChart(objects=objs)
+        context[taxa_chart.context] = taxa_chart.config
+
+        ext_chart = charts.OrganismsExternalChart(objects=objs)
+        context[ext_chart.context] = ext_chart.config
 
         # active page
         context['active_page'] = 'organisms'
@@ -65,10 +78,20 @@ class OrganismView(generic.DetailView):
         context[self.context_object_name] = obj_dict
 
         # tables
-        context[OrganismRegulatorsTable.context] = OrganismRegulatorsTable.context_dict()
-        context[OrganismGenesTable.context] = OrganismGenesTable.context_dict()
-        context[OrganismBindingsTable.context] = OrganismBindingsTable.context_dict()
-        context[OrganismInteractionsTable.context] = OrganismInteractionsTable.context_dict()
+        context[tables.OrganismRegulatorsTable.context] = tables.OrganismRegulatorsTable.context_dict()
+        context[tables.OrganismGenesTable.context] = tables.OrganismGenesTable.context_dict()
+        context[tables.OrganismBindingsTable.context] = tables.OrganismBindingsTable.context_dict()
+        context[tables.OrganismInteractionsTable.context] = tables.OrganismInteractionsTable.context_dict()
+
+        # charts
+        trn_chart = charts.OrganismTRNChart(objects=obj)
+        context[trn_chart.context] = trn_chart.config
+
+        regs_genes_chart = charts.OrganismRegulatorsGenesChart(objects=obj)
+        context[regs_genes_chart.context] = regs_genes_chart.config
+
+        genes_regs_chart = charts.OrganismGenesRegulatorsChart(objects=obj)
+        context[genes_regs_chart.context] = genes_regs_chart.config
 
         # active page
         context['active_page'] = 'organisms'
