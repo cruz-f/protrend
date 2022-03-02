@@ -54,6 +54,10 @@
                         <td class="text-uppercase">
                             {% include "website/protrend_dropdown.html" with obj=obj source="detail" redirect='organism' only %}
                         </td>
+                    {% elif table_config.type == 'organism-download-dropdown' %}
+                        <td class="text-uppercase">
+                            {% include "website/protrend_dropdown.html" with obj=obj source="download" redirect='trns-detail' only %}
+                        </td>
                     {% endif %}
                 {% elif 'btn' in table_config.type %}
                     {% if table_config.type == 'ncbi-btn' %}
