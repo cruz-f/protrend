@@ -105,5 +105,52 @@
                 </a>
             </li>
         </ul>
+    {% elif source == 'download' %}
+        {% if larger %}
+            <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                    type="button"
+                    id="DownloadDropDown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <i class="bi bi-download"></i>
+                download
+            </button>
+        {% else %}
+            <button class="btn btn-outline-primary dropdown-toggle text-uppercase"
+                    type="button"
+                    id="DownloadDropDown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <i class="bi bi-download"></i>
+                download
+            </button>
+        {% endif %}
+        <ul class="dropdown-menu"
+            aria-labelledby="DownloadropDown">
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=api">
+                    api
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=json">
+                    json
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=csv">
+                    csv
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=xlsx">
+                    xlsx
+                </a>
+            </li>
+        </ul>
     {% endif %}
 </div>
