@@ -1,25 +1,12 @@
-class Table:
-    context = ''
-    fields = ()
-    columns = ()
-    sortable = ()
-    types = ()
-
-    @classmethod
-    def context_dict(cls):
-        return {field: {'field': field,
-                        'column': col,
-                        'sortable': sort,
-                        'type': type_}
-                for field, col, sort, type_ in zip(cls.fields, cls.columns, cls.sortable, cls.types)}
+from .table import Table
 
 
-class OrganismTable(Table):
+class OrganismsTable(Table):
     context = 'organism_table_fields'
-    fields = ('protrend_id', 'name', 'ncbi', 'uniprot', 'detail')
-    columns = ('protrend id', 'name', 'ncbi', 'uniprot', 'detail')
-    sortable = ('true', 'true', 'false', 'false', 'false')
-    types = ('attr', 'attr', 'ncbi-dropdown', 'uniprot-dropdown', 'organism-dropdown')
+    fields = ('protrend_id', 'name', 'ncbi', 'uniprot', 'download', 'detail')
+    columns = ('protrend id', 'name', 'ncbi', 'uniprot', 'download', 'detail')
+    sortable = ('true', 'true', 'false', 'false', 'false', 'false')
+    types = ('attr', 'attr', 'ncbi-dropdown', 'uniprot-dropdown', 'organism-download-dropdown', 'organism-dropdown')
 
 
 class OrganismRegulatorsTable(Table):
@@ -52,11 +39,3 @@ class OrganismInteractionsTable(Table):
     columns = ('protrend id', 'regulator', 'gene', 'regulatory effect')
     sortable = ('true', 'true', 'true', 'true')
     types = ('interaction-btn', 'regulator-btn', 'gene-btn', 'attr')
-
-
-class RegulatorTable(Table):
-    context = 'regulator_table_fields'
-    fields = ('protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene', 'detail')
-    columns = ('protrend id', 'locus tag', 'name', 'uniprot', 'ncbi', 'detail')
-    sortable = ('true', 'true', 'true', 'true', 'true', 'false')
-    types = ('attr', 'attr', 'attr', 'uniprot-btn', 'ncbi-btn', 'regulator-dropdown')
