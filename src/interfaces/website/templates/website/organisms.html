@@ -9,6 +9,10 @@
 
     <link rel="stylesheet"
           type="text/css"
+          href="{% static 'website/css/canvas.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
           href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
 {% endblock %}
 {% block content %}
@@ -55,7 +59,7 @@
         <div class="row align-items-center py-5">
             <div class="col align-self-center">
                 <h5 class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
-                    Networks <i class="bi bi-bezier2 ps-2"></i>
+                    Networks and Statistics <i class="bi bi-bezier2 ps-2"></i>
                 </h5>
                 <p class="text-justify pb-3">
                     ProTReND Transcriptional Regulatory Networks are composed by regulatory interactions
@@ -78,13 +82,43 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link text-uppercase"
-                                id="statistics-tab"
+                                id="regulator-frequency-tab"
                                 data-bs-toggle="tab"
-                                data-bs-target="#statistics"
+                                data-bs-target="#regulator-frequency"
                                 type="button"
                                 role="tab"
-                                aria-controls="statistics"
-                                aria-selected="false">statistics</button>
+                                aria-controls="regulator-frequency"
+                                aria-selected="false">organisms-regulators</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="top-frequency-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#top-frequency"
+                                type="button"
+                                role="tab"
+                                aria-controls="top-frequency"
+                                aria-selected="false">top 10 organisms</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="distribution-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#distribution"
+                                type="button"
+                                role="tab"
+                                aria-controls="distribution"
+                                aria-selected="false">taxa</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="annotation-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#annotation"
+                                type="button"
+                                role="tab"
+                                aria-controls="annotation"
+                                aria-selected="false">external links</button>
                     </li>
                 </ul>
                 <div class="tab-content pt-3" id="network-tab">
@@ -95,9 +129,52 @@
                         {% include "website/protrend_table.html" with objs=organisms fields=organism_table_fields only %}
                     </div>
                     <div class="tab-pane fade"
-                         id="statistics"
+                         id="regulator-frequency"
                          role="tabpanel"
-                         aria-labelledby="statistics-tab">
+                         aria-labelledby="regulator-frequency-tab">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                    <canvas id="OrganismsRegulatorsGenes" class="canvas-md"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="top-frequency"
+                         role="tabpanel"
+                         aria-labelledby="top-frequency-tab">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                    <canvas id="OrganismsRegulatorsTop" class="canvas-md"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="distribution"
+                         role="tabpanel"
+                         aria-labelledby="distribution-tab">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                    <canvas id="OrganismsTaxa" class="canvas-md"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="annotation"
+                         role="tabpanel"
+                         aria-labelledby="annotation-tab">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                    <canvas id="OrganismsExternal" class="canvas-md"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,6 +189,20 @@
     <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
     </script>
     <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <script src="{% static 'website/js/getChart.js' %}">
+    </script>
+    {{ OrganismsRegulatorsChartData|json_script:'OrganismsRegulatorsChartData' }}
+    {{ OrganismsRegulatorsTopChartData|json_script:'OrganismsRegulatorsTopChartData' }}
+    {{ OrganismsTaxaChartData|json_script:'OrganismsTaxaChartData' }}
+    {{ OrganismsExternalChartData|json_script:'OrganismsExternalChartData' }}
+    <script>
+        const OrganismsRegulatorsGenesChart = getChart('OrganismsRegulatorsGenes', 'OrganismsRegulatorsChartData')
+        const OrganismsRegulatorsTopChart = getChart('OrganismsRegulatorsTop', 'OrganismsRegulatorsTopChartData')
+        const OrganismsTaxaChart = getChart('OrganismsTaxa', 'OrganismsTaxaChartData')
+        const OrganismsExternalChart = getChart('OrganismsExternal', 'OrganismsExternalChartData')
     </script>
 {% endblock %}
 </html>
