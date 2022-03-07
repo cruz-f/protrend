@@ -21,6 +21,20 @@ class NeoQuerySet:
         self.fields = fields
         self.limit = 1
         self.skip = 0
+        self._data = None
+        self._query = None
+
+    @property
+    def data(self):
+        if self._data:
+            return self._data
+
+        if not self._query:
+            self.all()
+
+        results, meta = query_db(self._query)
+        self._data = self.parse_query_results(results, meta)
+        return self._data
 
     @property
     def label(self) -> str:
@@ -88,10 +102,9 @@ class NeoQuerySet:
 
         return nodes
 
-    def all(self) -> List[DjangoNode]:
-        all_query = f'{self.match_clause} {self.return_clause}'
-        results, meta = query_db(all_query)
-        return self.parse_query_results(results, meta)
+    def all(self):
+        self._query = f'{self.match_clause} {self.return_clause}'
+        return self
 
     def count(self) -> int:
         count_query = f'{self.match_clause} {self.return_count_clause}'
@@ -104,12 +117,11 @@ class NeoQuerySet:
 
     def filter(self, **kwargs):
         where_clause = self.where_clause(**kwargs)
-        all_query = f'{self.match_clause} {where_clause} {self.return_clause}'
-        results, meta = query_db(all_query)
-        return self.parse_query_results(results, meta)
+        self._query = f'{self.match_clause} {where_clause} {self.return_clause}'
+        return self
 
     def __iter__(self):
-        return (node for node in self.all())
+        return iter(self.data)
 
     def __len__(self):
         return self.count()
@@ -140,7 +152,7 @@ class NeoQuerySet:
             elif key.start:
                 self.skip = key.start
 
-            query = f'MATCH {self.node_clause} {self.return_clause} {self.skip_limit_clause}'
+            query = f'{self.match_clause} {self.return_clause} {self.skip_limit_clause}'
             results, meta = query_db(query)
             return self.parse_query_results(results, meta)
 
@@ -148,7 +160,7 @@ class NeoQuerySet:
             self.skip = key
             self.limit = 1
 
-            query = f'MATCH {self.node_clause} {self.return_clause} {self.skip_limit_clause}'
+            query = f'{self.match_clause} {self.return_clause} {self.skip_limit_clause}'
             results, meta = query_db(query)
             return self.parse_query_results(results, meta)[0]
 
@@ -258,6 +270,36 @@ class NeoLinkedQuerySet(NeoQuerySet):
 
     def __nonzero__(self):
         return super(NeoLinkedQuerySet, self).__nonzero__()
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            if key.stop and key.start:
+                self.limit = key.stop - key.start
+                self.skip = key.start
+            elif key.stop:
+                self.limit = key.stop
+            elif key.start:
+                self.skip = key.start
+
+            query = f'MATCH {self.node_clause} ' \
+                    f'WITH {self.lower_label} {self.skip_limit_clause} ' \
+                    f'MATCH ({self.lower_label}){self.connection_clause}{self.link_clause} ' \
+                    f'{self.return_clause}'
+            results, meta = query_db(query)
+            return self.parse_query_results(results, meta)
+
+        elif isinstance(key, int):
+            self.skip = key
+            self.limit = 1
+
+            query = f'MATCH {self.node_clause} ' \
+                    f'WITH {self.lower_label} {self.skip_limit_clause} ' \
+                    f'MATCH ({self.lower_label}){self.connection_clause}{self.link_clause} ' \
+                    f'{self.return_clause}'
+            results, meta = query_db(query)
+            return self.parse_query_results(results, meta)[0]
+
+        raise ValueError("Expecting slice or int")
 
 
 class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
