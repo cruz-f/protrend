@@ -76,6 +76,10 @@ class NeoQuerySet:
     def match_clause(self) -> str:
         return f'MATCH {self.node_clause}'
 
+    @property
+    def slice_query(self) -> str:
+        return f'{self.match_clause} {self.return_clause} {self.skip_limit_clause}'
+
     def where_clause(self, **kwargs):
         where_clauses = []
         for key, value in kwargs.items():
@@ -152,19 +156,20 @@ class NeoQuerySet:
             elif key.start:
                 self.skip = key.start
 
-            query = f'{self.match_clause} {self.return_clause} {self.skip_limit_clause}'
-            results, meta = query_db(query)
-            return self.parse_query_results(results, meta)
-
         elif isinstance(key, int):
             self.skip = key
             self.limit = 1
 
-            query = f'{self.match_clause} {self.return_clause} {self.skip_limit_clause}'
-            results, meta = query_db(query)
-            return self.parse_query_results(results, meta)[0]
+        else:
+            raise ValueError("Expecting slice or int")
 
-        raise ValueError("Expecting slice or int")
+        results, meta = query_db(self.slice_query)
+        results = self.parse_query_results(results, meta)
+
+        if isinstance(key, int):
+            return results[0]
+
+        return results
 
 
 class NeoLinkedQuerySet(NeoQuerySet):
@@ -191,8 +196,14 @@ class NeoLinkedQuerySet(NeoQuerySet):
         self.link_fields = link_fields
 
     @property
+    @lru_cache()
     def link_label(self) -> str:
         relationship = getattr(self.node, self.link)
+
+        if 'node_class' not in relationship.definition:
+            # noinspection PyProtectedMember
+            relationship._lookup_node_class()
+
         return relationship.definition['node_class'].__label__
 
     @property
@@ -222,8 +233,18 @@ class NeoLinkedQuerySet(NeoQuerySet):
     def match_clause(self) -> str:
         return f'MATCH {self.node_clause}{self.connection_clause}{self.link_clause}'
 
+    @property
+    def slice_query(self) -> str:
+        return f'MATCH {self.node_clause} ' \
+                f'WITH {self.lower_label} {self.skip_limit_clause} ' \
+                f'MATCH ({self.lower_label}){self.connection_clause}{self.link_clause} ' \
+                f'{self.return_clause}'
+
     def parse_query_results(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
-        source_meta, _, link_meta, key_fn = query_meta(meta)
+        source_meta, _, link_meta, key_fn = query_meta(meta,
+                                                       source_label=self.lower_label,
+                                                       rel_label='',
+                                                       target_label=self.lower_link_label)
 
         n_source = len(source_meta)
 
@@ -231,13 +252,16 @@ class NeoLinkedQuerySet(NeoQuerySet):
 
         results = sorted(results, key=key_fn)
 
-        for _, group in groupby(results, key_fn):
-            fields = list(zip(*group))
-            source_fields = fields[:n_source]
-            link_fields = fields[n_source:]
+        for fields, group in groupby(results, key_fn):
+            kwargs = {attr: field for attr, field in zip(source_meta, fields)}
 
-            kwargs = {attr: value for attr, value in zip(source_meta, source_fields)}
-            link_kwargs = {attr: value for attr, value in zip(link_meta, link_fields)}
+            values = list(group)
+
+            link_kwargs = []
+            for value in values:
+                link_values = value[n_source:]
+                link_kwarg = {attr: field for attr, field in zip(link_meta, link_values)}
+                link_kwargs.append(link_kwarg)
 
             kwargs[self.link] = link_kwargs
 
@@ -270,36 +294,6 @@ class NeoLinkedQuerySet(NeoQuerySet):
 
     def __nonzero__(self):
         return super(NeoLinkedQuerySet, self).__nonzero__()
-
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            if key.stop and key.start:
-                self.limit = key.stop - key.start
-                self.skip = key.start
-            elif key.stop:
-                self.limit = key.stop
-            elif key.start:
-                self.skip = key.start
-
-            query = f'MATCH {self.node_clause} ' \
-                    f'WITH {self.lower_label} {self.skip_limit_clause} ' \
-                    f'MATCH ({self.lower_label}){self.connection_clause}{self.link_clause} ' \
-                    f'{self.return_clause}'
-            results, meta = query_db(query)
-            return self.parse_query_results(results, meta)
-
-        elif isinstance(key, int):
-            self.skip = key
-            self.limit = 1
-
-            query = f'MATCH {self.node_clause} ' \
-                    f'WITH {self.lower_label} {self.skip_limit_clause} ' \
-                    f'MATCH ({self.lower_label}){self.connection_clause}{self.link_clause} ' \
-                    f'{self.return_clause}'
-            results, meta = query_db(query)
-            return self.parse_query_results(results, meta)[0]
-
-        raise ValueError("Expecting slice or int")
 
 
 class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
@@ -342,7 +336,10 @@ class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
         return node_factory(fields=self.fields, link=self.link, link_fields=self.link_fields)
 
     def parse_query_results(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
-        source_meta, rel_meta, link_meta, key_fn = query_meta(meta)
+        source_meta, rel_meta, link_meta, key_fn = query_meta(meta,
+                                                              source_label=self.lower_label,
+                                                              rel_label=self.rel_label,
+                                                              target_label=self.lower_link_label)
 
         n_source = len(source_meta)
         n_source_rel = n_source + len(rel_meta)
@@ -351,17 +348,21 @@ class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
 
         results = sorted(results, key=key_fn)
 
-        for _, group in groupby(results, key_fn):
-            fields = list(zip(*group))
-            source_fields = fields[:n_source]
-            rel_fields = fields[n_source:n_source_rel]
-            link_fields = fields[n_source_rel:]
+        for fields, group in groupby(results, key_fn):
+            kwargs = {attr: field for attr, field in zip(source_meta, fields)}
 
-            kwargs = {attr: value for attr, value in zip(source_meta, source_fields)}
-            rel_kwargs = {attr: value for attr, value in zip(rel_meta, rel_fields)}
-            link_kwargs = {attr: value for attr, value in zip(link_meta, link_fields)}
+            values = list(group)
 
-            link_kwargs['relationship'] = rel_kwargs
+            link_kwargs = []
+            for value in values:
+                rel_values = value[n_source:n_source_rel]
+                link_values = value[n_source_rel:]
+
+                link_kwarg = {attr: field for attr, field in zip(link_meta, link_values)}
+                rel_kwarg = {attr: field for attr, field in zip(rel_meta, rel_values)}
+                link_kwarg['relationship'] = rel_kwarg
+                link_kwargs.append(link_kwarg)
+
             kwargs[self.link] = link_kwargs
 
             node_instance = self.node_cls(**kwargs)
