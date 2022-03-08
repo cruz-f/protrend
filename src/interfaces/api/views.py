@@ -10,8 +10,8 @@ from drf_renderer_xlsx.renderers import XLSXRenderer
 
 from utils import get_header
 
-import data as data_model
-
+import data as data
+import domain.dpi as dpi
 import interfaces.views as views
 import interfaces.renderers as renderers
 import interfaces.serializers as serializers
@@ -55,13 +55,11 @@ class EffectorList(views.APIListView, views.APICreateView, generics.GenericAPIVi
 
     Note that, we only provide the effector name and potential associated KEGG compounds. We are working on improving the information provided for each effector.
     """
-    serializer_class = serializers.EffectorSerializer
+    serializer_class = serializers.EffectorListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return mapi.get_query_set(data_model.Effector)
-        return mapi.get_objects(data_model.Effector)
+        return dpi.get_objects(cls=data.Effector, fields=['protrend_id', 'name', 'kegg_compound'])
 
 
 class EffectorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -78,8 +76,16 @@ class EffectorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics
     serializer_class = serializers.EffectorDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Effector, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'regulator': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.Effector,
+                                         fields=['protrend_id', 'name', 'kegg_compound'],
+                                         links=['data_source', 'regulator', 'regulatory_interaction'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
 
 class EvidenceList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -92,13 +98,11 @@ class EvidenceList(views.APIListView, views.APICreateView, generics.GenericAPIVi
 
     We are working on improving the descriptions of all evidences list in ProTReND.
     """
-    serializer_class = serializers.EvidenceSerializer
+    serializer_class = serializers.EvidenceListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return mapi.get_query_set(data_model.Evidence)
-        return mapi.get_objects(data_model.Evidence)
+        return dpi.get_objects(cls=data.Evidence, fields=['protrend_id', 'name', 'description'])
 
 
 class EvidenceDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -114,8 +118,13 @@ class EvidenceDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics
     serializer_class = serializers.EvidenceDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Evidence, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'tfbs': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        return dpi.get_all_linked_object(cls=data.Evidence,
+                                         fields=['protrend_id', 'name', 'description'],
+                                         links=['tfbs', 'regulatory_interaction'],
+                                         links_fields=links_fields)
 
 
 class GeneList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -130,13 +139,14 @@ class GeneList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     Several details are available for each gene including for instance locus tag, name, synonyms, and function. The corresponding protein sequence and genomic coordinates can also be consulted in the REST API.
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
-    serializer_class = serializers.GeneSerializer
+    serializer_class = serializers.GeneListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_genes_query_set()
-        return papi.get_lazy_genes()
+        return dpi.get_objects(cls=data.Gene, fields=['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
+                                                      'function', 'description', 'ncbi_gene', 'ncbi_protein',
+                                                      'genbank_accession', 'refseq_accession', 'sequence',
+                                                      'strand', 'start', 'stop'])
 
 
 class GeneDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -154,8 +164,23 @@ class GeneDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.Gen
     serializer_class = serializers.GeneDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Gene, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'organism': ['protrend_id'],
+                        'operon': ['protrend_id'],
+                        'regulator': ['protrend_id'],
+                        'tfbs': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.Gene,
+                                         fields=['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
+                                                 'function', 'description', 'ncbi_gene', 'ncbi_protein',
+                                                 'genbank_accession', 'refseq_accession', 'sequence',
+                                                 'strand', 'start', 'stop'],
+                                         links=['data_source', 'organism', 'operon', 'regulator', 'tfbs',
+                                                'regulatory_interaction'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
 
 class OperonList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -172,13 +197,12 @@ class OperonList(views.APIListView, views.APICreateView, generics.GenericAPIView
     All operons have been retrieved from OperonDB (https://operondb.jp/). Hence, one can consult the OperonDB identifier for each operon listed in ProTReND.
     We advise you to consult OperonDB for more details.
     """
-    serializer_class = serializers.OperonSerializer
+    serializer_class = serializers.OperonListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_operons_query_set()
-        return papi.get_lazy_operons()
+        return dpi.get_objects(cls=data.Operon, fields=['protrend_id', 'operon_db_id', 'name', 'function', 'genes', 'strand',
+                                                        'start', 'stop'])
 
 
 class OperonDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -198,15 +222,24 @@ class OperonDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.G
     serializer_class = serializers.OperonDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Operon, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'organism': ['protrend_id'],
+                        'gene': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.Operon,
+                                         fields=['protrend_id', 'operon_db_id', 'name', 'function', 'genes', 'strand',
+                                                 'start', 'stop'],
+                                         links=['data_source', 'organism', 'gene'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
     def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
         serializer_cls = self.get_serializer_class()
-        nested_fields = ('genes', )
+        nested_fields = ('genes',)
         header = get_header(serializer_cls=serializer_cls, nested_fields=nested_fields)
 
         context['header'] = header
@@ -225,13 +258,13 @@ class OrganismList(views.APIListView, views.APICreateView, generics.GenericAPIVi
 
     Note that the list of organisms available at ProTReND might contain redundant species due to the ambiguous scientific name found in the collected data sources and NCBI taxonomy misannotations.
     """
-    serializer_class = serializers.OrganismSerializer
+    serializer_class = serializers.OrganismListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_organisms_query_set()
-        return papi.get_lazy_organisms()
+        return dpi.get_objects(cls=data.Organism, fields=['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain',
+                                                          'refseq_accession', 'refseq_ftp', 'genbank_accession',
+                                                          'genbank_ftp', 'ncbi_assembly', 'assembly_accession'])
 
 
 class OrganismDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -249,8 +282,20 @@ class OrganismDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics
     serializer_class = serializers.OrganismDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Organism, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'regulator': ['protrend_id'],
+                        'gene': ['protrend_id'],
+                        'tfbs': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.Organism,
+                                         fields=['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain',
+                                                 'refseq_accession', 'refseq_ftp', 'genbank_accession',
+                                                 'genbank_ftp', 'ncbi_assembly', 'assembly_accession'],
+                                         links=['data_source', 'regulator', 'gene', 'tfbs', 'regulatory_interaction'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
 
 class PathwayList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -265,13 +310,11 @@ class PathwayList(views.APIListView, views.APICreateView, generics.GenericAPIVie
 
     Note that, we only provide the pathway name and potential associated KEGG Pathways. We are working on improving the information provided for each pathway.
     """
-    serializer_class = serializers.PathwaySerializer
+    serializer_class = serializers.PathwayListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return mapi.get_query_set(data_model.Pathway)
-        return mapi.get_objects(data_model.Pathway)
+        return dpi.get_objects(cls=data.Pathway, fields=['protrend_id', 'name', 'kegg_pathways'])
 
 
 class PathwayDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -289,8 +332,16 @@ class PathwayDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.
     serializer_class = serializers.PathwayDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Pathway, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'regulator': ['protrend_id'],
+                        'gene': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.Pathway,
+                                         fields=['protrend_id', 'name', 'kegg_pathways'],
+                                         links=['data_source', 'regulator', 'gene'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
 
 class PublicationList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -303,13 +354,11 @@ class PublicationList(views.APIListView, views.APICreateView, generics.GenericAP
 
     Note that, we only provide the main details of each publication. The publication can then be consulted using the DOI or PMID.
     """
-    serializer_class = serializers.PublicationSerializer
+    serializer_class = serializers.PublicationListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_publications_query_set()
-        return papi.get_lazy_publications()
+        return dpi.get_objects(cls=data.Publication, fields=['protrend_id', 'pmid', 'doi', 'title', 'author', 'year'])
 
 
 class PublicationDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -325,8 +374,13 @@ class PublicationDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
     serializer_class = serializers.PublicationDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Publication, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'tfbs': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        return dpi.get_all_linked_object(cls=data.Publication,
+                                         fields=['protrend_id', 'pmid', 'doi', 'title', 'author', 'year'],
+                                         links=['tfbs', 'regulatory_interaction'],
+                                         links_fields=links_fields)
 
 
 class RegulatorList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -342,13 +396,14 @@ class RegulatorList(views.APIListView, views.APICreateView, generics.GenericAPIV
     Most regulators are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers.
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
-    serializer_class = serializers.RegulatorSerializer
+    serializer_class = serializers.RegulatorListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_regulators_query_set()
-        return papi.get_lazy_regulators()
+        return dpi.get_objects(cls=data.Regulator, fields=['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
+                                                           'mechanism', 'function', 'description', 'ncbi_gene',
+                                                           'ncbi_protein', 'genbank_accession', 'refseq_accession',
+                                                           'sequence', 'strand', 'start', 'stop'])
 
 
 class RegulatorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -367,8 +422,23 @@ class RegulatorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generic
     serializer_class = serializers.RegulatorDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.Regulator, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'organism': ['protrend_id'],
+                        'effector': ['protrend_id'],
+                        'gene': ['protrend_id'],
+                        'tfbs': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.Regulator,
+                                         fields=['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
+                                                 'mechanism', 'function', 'description', 'ncbi_gene',
+                                                 'ncbi_protein', 'genbank_accession', 'refseq_accession',
+                                                 'sequence', 'strand', 'start', 'stop'],
+                                         links=['data_source', 'organism', 'effector', 'gene', 'tfbs',
+                                                'regulatory_interaction'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
 
 class RegulatoryFamilyList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -382,13 +452,11 @@ class RegulatoryFamilyList(views.APIListView, views.APICreateView, generics.Gene
 
     Note that, we only provide the rfam name and sometimes the rfam identifiers. We are working on improving the information provided for each regulatory family.
     """
-    serializer_class = serializers.RegulatoryFamilySerializer
+    serializer_class = serializers.RegulatoryFamilyListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return mapi.get_query_set(data_model.RegulatoryFamily)
-        return mapi.get_objects(data_model.RegulatoryFamily)
+        return dpi.get_objects(cls=data.RegulatoryFamily, fields=['protrend_id', 'name', 'mechanism', 'rfam', 'description'])
 
 
 class RegulatoryFamilyDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -405,8 +473,15 @@ class RegulatoryFamilyDetail(views.APIRetrieveView, views.APIUpdateDestroyView, 
     serializer_class = serializers.RegulatoryFamilyDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.RegulatoryFamily, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'regulator': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.RegulatoryFamily,
+                                         fields=['protrend_id', 'name', 'mechanism', 'rfam', 'description'],
+                                         links=['data_source', 'regulator'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
 
 class InteractionsList(views.APIListView, views.APICreateView, generics.GenericAPIView):
@@ -426,13 +501,12 @@ class InteractionsList(views.APIListView, views.APICreateView, generics.GenericA
      - the effector which can bind or not to a regulator altering the regulatory action of this element
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
-    serializer_class = serializers.RegulatoryInteractionSerializer
+    serializer_class = serializers.RegulatoryInteractionListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_interactions_query_set()
-        return papi.get_lazy_interactions()
+        return dpi.get_objects(cls=data.RegulatoryInteraction, fields=['protrend_id', 'organism', 'regulator', 'gene', 'tfbs',
+                                                                       'effector', 'regulatory_effect'])
 
 
 class InteractionDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -455,8 +529,23 @@ class InteractionDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
     serializer_class = serializers.RegulatoryInteractionDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.RegulatoryInteraction, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'evidence': ['protrend_id'],
+                        'publication': ['protrend_id'],
+                        'data_organism': ['protrend_id'],
+                        'data_effector': ['protrend_id'],
+                        'data_regulator': ['protrend_id'],
+                        'data_gene': ['protrend_id'],
+                        'data_tfbs': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.RegulatoryInteraction,
+                                         fields=['protrend_id', 'organism', 'regulator', 'gene', 'tfbs',
+                                                 'effector', 'regulatory_effect'],
+                                         links=['data_source', 'evidence', 'publication', 'data_organism',
+                                                'data_effector', 'data_regulator', 'data_gene', 'data_tfbs'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
     def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
@@ -481,13 +570,11 @@ class BindingSitesList(views.APIListView, views.APICreateView, generics.GenericA
 
     Note that, a binding site might not be regulator-specific. Although these events are extremely rare, more than one regulator can bind to the same cis-element.
     """
-    serializer_class = serializers.TFBSSerializer
+    serializer_class = serializers.TFBSListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_binding_sites_query_set()
-        return papi.get_lazy_binding_sites()
+        return dpi.get_objects(cls=data.TFBS, fields=['protrend_id', 'organism', 'sequence', 'strand', 'start', 'stop', 'length'])
 
 
 class BindingSiteDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
@@ -504,8 +591,21 @@ class BindingSiteDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
     serializer_class = serializers.TFBSDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
 
-    def get_queryset(self, protrend_id: str):
-        return mapi.get_object(data_model.TFBS, protrend_id=protrend_id)
+    def get_queryset(self):
+        links_fields = {'data_source': ['name', 'url'],
+                        'evidence': ['protrend_id'],
+                        'publication': ['protrend_id'],
+                        'data_organism': ['protrend_id'],
+                        'regulator': ['protrend_id'],
+                        'gene': ['protrend_id'],
+                        'regulatory_interaction': ['protrend_id']}
+        rels_fields = {'data_source': ['name', 'url']}
+        return dpi.get_all_linked_object(cls=data.TFBS,
+                                         fields=['protrend_id', 'organism', 'sequence', 'strand', 'start', 'stop', 'length'],
+                                         links=['data_source', 'evidence', 'publication', 'data_organism',
+                                                'regulator', 'gene', 'regulatory_interaction'],
+                                         links_fields=links_fields,
+                                         rels_fields=rels_fields)
 
     def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
@@ -535,13 +635,11 @@ class TRNs(views.APIListView, generics.GenericAPIView):
      - the effector which can bind or not to a regulator altering the regulatory action of this element
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
-    serializer_class = serializers.TRNsSerializer
+    serializer_class = serializers.TRNListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_organisms_query_set()
-        return mapi.get_identifiers(data_model.Organism)
+        return dpi.get_identifiers(cls=data.Organism)
 
 
 class TRN(views.APIListView, generics.GenericAPIView):
@@ -560,12 +658,16 @@ class TRN(views.APIListView, generics.GenericAPIView):
      - the effector which can bind or not to a regulator altering the regulatory action of this element
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
-    serializer_class = serializers.TRNSerializer
+    serializer_class = serializers.TRNDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
-        return mapi.filter_objects(data_model.RegulatoryInteraction, organism__exact=organism_id)
+        return dpi.filter_objects(cls=data.RegulatoryInteraction,
+                                  fields=['protrend_id', 'regulatory_effect', 'regulator', 'gene', 'tfbs', 'effector'],
+                                  link='data_regulator',
+                                  link_fields=['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'mechanism'],
+                                  organism__exact=organism_id)
 
     def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
@@ -591,13 +693,11 @@ class OrganismsBindingSites(views.APIListView, generics.GenericAPIView):
     The TFBS Dataset API allows one to retrieve all TFBSs associated with a single organism in several standard formats,
     such as FASTA.
     """
-    serializer_class = serializers.OrganismsBindingSitesSerializer
+    serializer_class = serializers.OrganismBindingSitesListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_organisms_query_set()
-        return mapi.get_identifiers(data_model.Organism)
+        return dpi.get_identifiers(cls=data.Organism)
 
 
 class OrganismBindingSites(views.APIListView, generics.GenericAPIView):
@@ -612,13 +712,15 @@ class OrganismBindingSites(views.APIListView, generics.GenericAPIView):
     The TFBS Dataset API allows one to retrieve all TFBSs associated with a single organism in several standard formats,
     such as FASTA
     """
-    serializer_class = serializers.OrganismBindingSitesSerializer
+    serializer_class = serializers.OrganismBindingSitesDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
     def get_queryset(self):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
-        return mapi.filter_objects(data_model.TFBS, organism__exact=organism_id)
+        return dpi.filter_objects(cls=data.TFBS,
+                                  fields=['protrend_id', 'sequence', 'strand', 'start', 'stop'],
+                                  organism__exact=organism_id)
 
 
 class RegulatorsBindingSites(views.APIListView, generics.GenericAPIView):
@@ -633,13 +735,11 @@ class RegulatorsBindingSites(views.APIListView, generics.GenericAPIView):
     The Regulator-TFBS Dataset API allows one to retrieve all TFBSs associated with a single regulator in several standard formats,
     such as FASTA.
     """
-    serializer_class = serializers.RegulatorsBindingSitesSerializer
+    serializer_class = serializers.RegulatorBindingSitesListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        if views.is_api(self.request):
-            return papi.get_lazy_regulators_query_set()
-        return mapi.get_identifiers(data_model.Regulator)
+        return dpi.get_identifiers(cls=data.Regulator)
 
 
 class RegulatorBindingSites(views.APIListView, generics.GenericAPIView):
@@ -654,18 +754,17 @@ class RegulatorBindingSites(views.APIListView, generics.GenericAPIView):
     The Regulator-TFBS Dataset API allows one to retrieve all TFBSs associated with a single regulator in several standard formats,
     such as FASTA
     """
-    serializer_class = serializers.RegulatorBindingSitesSerializer
+    serializer_class = serializers.RegulatorBindingSitesDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
 
     def get_queryset(self):
         regulator_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
-        interactions = mapi.filter_objects(data_model.RegulatoryInteraction, regulator__exact=regulator_id)
-
-        unique_interactions = {(interaction.regulator, interaction.tfbs): interaction
-                               for interaction in interactions
-                               if interaction.tfbs}
-        return list(unique_interactions.values())
+        return dpi.get_object(cls=data.Regulator,
+                              fields=['protrend_id'],
+                              link='tfbs',
+                              link_fields=['protrend_id', 'sequence', 'strand', 'start', 'stop'],
+                              protrend_id=regulator_id)
 
     def get_renderer_context(self: Union['views.APIListView', 'views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
