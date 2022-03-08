@@ -1,5 +1,5 @@
-from .generic import (ObjectListMixIn,
-                      ObjectCreateMixIn,
-                      ObjectRetrieveMixIn,
-                      ObjectUpdateDestroyMixIn,
+from .generic import (APIListView,
+                      APICreateView,
+                      APIRetrieveView,
+                      APIUpdateDestroyView,
                       is_api)

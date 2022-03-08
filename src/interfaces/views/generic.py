@@ -1,12 +1,12 @@
 from abc import abstractmethod
-from typing import Union, List
+from typing import Union
 
-from django.db.models import Model
-from django_neomodel import DjangoNode
+from neomodel import NodeSet
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
+from domain.neo import NeoLinkedQuerySet, NeoQuerySet, NeoHyperLinkedQuerySet
 from exceptions import ProtrendException
 from utils import ExportFileMixin, get_header
 
@@ -23,20 +23,18 @@ def is_api(request) -> bool:
 # --------------------------------------------
 # BASE API VIEWS
 # --------------------------------------------
-class ObjectListMixIn(ExportFileMixin):
+class APIListView(ExportFileMixin):
     """
     View to list ProTReND database objects.
     """
 
     @abstractmethod
-    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
+    def get_queryset(self) -> Union[None, NodeSet, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
         pass
 
-    def get(self: Union['ObjectListMixIn', generics.GenericAPIView], request, *args, **kwargs):
+    # noinspection PyUnusedLocal
+    def get(self: Union['APIListView', generics.GenericAPIView], request, *args, **kwargs):
         queryset = self.get_queryset()
-
-        if not queryset:
-            return Response([{}], status=status.HTTP_204_NO_CONTENT)
 
         if is_api(request):
             page = self.paginate_queryset(queryset)
@@ -48,9 +46,13 @@ class ObjectListMixIn(ExportFileMixin):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
+
+        if not serializer.data:
+            return Response([{}], status=status.HTTP_204_NO_CONTENT)
+
         return Response(serializer.data)
 
-    def get_renderer_context(self: Union['ObjectListMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['APIListView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -61,16 +63,17 @@ class ObjectListMixIn(ExportFileMixin):
         return context
 
 
-class ObjectCreateMixIn:
+class APICreateView:
     """
     View to list and create ProTReND database objects.
     """
 
     @abstractmethod
-    def get_queryset(self) -> Union[List[DjangoNode], List[Model]]:
+    def get_queryset(self) -> Union[None, NodeSet, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
         pass
 
-    def post(self: Union['ObjectCreateMixIn', generics.GenericAPIView], request, *args, **kwargs):
+    # noinspection PyUnusedLocal
+    def post(self: Union['APICreateView', generics.GenericAPIView], request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -98,38 +101,36 @@ class ObjectCreateMixIn:
             return {}
 
 
-class ObjectRetrieveMixIn(ExportFileMixin):
+class APIRetrieveView(ExportFileMixin):
     """
     View to retrieve ProTReND database objects.
     """
 
     @abstractmethod
-    def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
+    def get_queryset(self) -> Union[None, NodeSet, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
         pass
 
-    def get_object(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView], protrend_id: str):
-        obj = self.get_queryset(protrend_id)
+    def get_object(self: Union['APIRetrieveView', generics.GenericAPIView], protrend_id: str):
+        queryset = self.get_queryset()
+        obj = queryset.get(protrend_id=protrend_id)
+
         if obj is None:
             raise ProtrendException(detail='Object not found',
                                     code='get error',
                                     status=status.HTTP_404_NOT_FOUND)
         return obj
 
-    def get(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView],
+    # noinspection PyUnusedLocal
+    def get(self: Union['APIRetrieveView', generics.GenericAPIView],
             request,
             protrend_id: str,
             *args,
             **kwargs):
         obj = self.get_object(protrend_id)
-
-        if request.accepted_renderer.format == 'api':
-            serializer = self.get_serializer(obj)
-            return Response(serializer.data)
-
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 
-    def get_renderer_context(self: Union['ObjectRetrieveMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['APIRetrieveView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -140,16 +141,17 @@ class ObjectRetrieveMixIn(ExportFileMixin):
         return context
 
 
-class ObjectUpdateDestroyMixIn:
+class APIUpdateDestroyView:
     """
     View to retrieve, update and delete ProTReND database objects.
     """
 
     @abstractmethod
-    def get_queryset(self, protrend_id: str) -> Union[DjangoNode, Model]:
+    def get_queryset(self) -> Union[None, NodeSet, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
         pass
 
-    def put(self: Union['ObjectUpdateDestroyMixIn', 'ObjectRetrieveMixIn', generics.GenericAPIView],
+    # noinspection PyUnusedLocal
+    def put(self: Union['APIUpdateDestroyView', 'APIRetrieveView', generics.GenericAPIView],
             request,
             protrend_id: str,
             *args,
@@ -179,7 +181,8 @@ class ObjectUpdateDestroyMixIn:
         kwargs['partial'] = True
         return self.put(request, *args, **kwargs)
 
-    def delete(self: Union['ObjectUpdateDestroyMixIn', 'ObjectRetrieveMixIn', generics.GenericAPIView],
+    # noinspection PyUnusedLocal
+    def delete(self: Union['APIUpdateDestroyView', 'APIRetrieveView', generics.GenericAPIView],
                request,
                protrend_id: str,
                *args,

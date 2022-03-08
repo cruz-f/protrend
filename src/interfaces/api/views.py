@@ -12,9 +12,6 @@ from utils import get_header
 
 import data as data_model
 
-import domain.database as papi
-import domain.model_api as mapi
-
 import interfaces.views as views
 import interfaces.renderers as renderers
 import interfaces.serializers as serializers
@@ -47,7 +44,7 @@ def best_practices(request):
     return render(request, 'api/best-practices.html')
 
 
-class EffectorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class EffectorList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -67,7 +64,7 @@ class EffectorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gene
         return mapi.get_objects(data_model.Effector)
 
 
-class EffectorDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class EffectorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -85,7 +82,7 @@ class EffectorDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, 
         return mapi.get_object(data_model.Effector, protrend_id=protrend_id)
 
 
-class EvidenceList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class EvidenceList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -104,7 +101,7 @@ class EvidenceList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gene
         return mapi.get_objects(data_model.Evidence)
 
 
-class EvidenceDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class EvidenceDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -121,7 +118,7 @@ class EvidenceDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, 
         return mapi.get_object(data_model.Evidence, protrend_id=protrend_id)
 
 
-class GeneList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class GeneList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -142,7 +139,7 @@ class GeneList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericA
         return papi.get_lazy_genes()
 
 
-class GeneDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class GeneDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -161,7 +158,7 @@ class GeneDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, gene
         return mapi.get_object(data_model.Gene, protrend_id=protrend_id)
 
 
-class OperonList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class OperonList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -184,7 +181,7 @@ class OperonList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Generi
         return papi.get_lazy_operons()
 
 
-class OperonDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class OperonDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -204,7 +201,7 @@ class OperonDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, ge
     def get_queryset(self, protrend_id: str):
         return mapi.get_object(data_model.Operon, protrend_id=protrend_id)
 
-    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -216,7 +213,7 @@ class OperonDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, ge
         return context
 
 
-class OrganismList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class OrganismList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -237,7 +234,7 @@ class OrganismList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gene
         return papi.get_lazy_organisms()
 
 
-class OrganismDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class OrganismDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -256,7 +253,7 @@ class OrganismDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, 
         return mapi.get_object(data_model.Organism, protrend_id=protrend_id)
 
 
-class PathwayList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class PathwayList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -277,7 +274,7 @@ class PathwayList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gener
         return mapi.get_objects(data_model.Pathway)
 
 
-class PathwayDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class PathwayDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -296,7 +293,7 @@ class PathwayDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, g
         return mapi.get_object(data_model.Pathway, protrend_id=protrend_id)
 
 
-class PublicationList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class PublicationList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -315,7 +312,7 @@ class PublicationList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.G
         return papi.get_lazy_publications()
 
 
-class PublicationDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class PublicationDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -332,7 +329,7 @@ class PublicationDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixI
         return mapi.get_object(data_model.Publication, protrend_id=protrend_id)
 
 
-class RegulatorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class RegulatorList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -354,7 +351,7 @@ class RegulatorList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.Gen
         return papi.get_lazy_regulators()
 
 
-class RegulatorDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class RegulatorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -374,7 +371,7 @@ class RegulatorDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn,
         return mapi.get_object(data_model.Regulator, protrend_id=protrend_id)
 
 
-class RegulatoryFamilyList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class RegulatoryFamilyList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -394,7 +391,7 @@ class RegulatoryFamilyList(views.ObjectListMixIn, views.ObjectCreateMixIn, gener
         return mapi.get_objects(data_model.RegulatoryFamily)
 
 
-class RegulatoryFamilyDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class RegulatoryFamilyDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -412,7 +409,7 @@ class RegulatoryFamilyDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestro
         return mapi.get_object(data_model.RegulatoryFamily, protrend_id=protrend_id)
 
 
-class InteractionsList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class InteractionsList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -438,7 +435,7 @@ class InteractionsList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.
         return papi.get_lazy_interactions()
 
 
-class InteractionDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class InteractionDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -461,7 +458,7 @@ class InteractionDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixI
     def get_queryset(self, protrend_id: str):
         return mapi.get_object(data_model.RegulatoryInteraction, protrend_id=protrend_id)
 
-    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -473,7 +470,7 @@ class InteractionDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixI
         return context
 
 
-class BindingSitesList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.GenericAPIView):
+class BindingSitesList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -493,7 +490,7 @@ class BindingSitesList(views.ObjectListMixIn, views.ObjectCreateMixIn, generics.
         return papi.get_lazy_binding_sites()
 
 
-class BindingSiteDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixIn, generics.GenericAPIView):
+class BindingSiteDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -510,7 +507,7 @@ class BindingSiteDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixI
     def get_queryset(self, protrend_id: str):
         return mapi.get_object(data_model.TFBS, protrend_id=protrend_id)
 
-    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -522,7 +519,7 @@ class BindingSiteDetail(views.ObjectRetrieveMixIn, views.ObjectUpdateDestroyMixI
         return context
 
 
-class TRNs(views.ObjectListMixIn, generics.GenericAPIView):
+class TRNs(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -547,7 +544,7 @@ class TRNs(views.ObjectListMixIn, generics.GenericAPIView):
         return mapi.get_identifiers(data_model.Organism)
 
 
-class TRN(views.ObjectListMixIn, generics.GenericAPIView):
+class TRN(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -570,7 +567,7 @@ class TRN(views.ObjectListMixIn, generics.GenericAPIView):
         organism_id = self.kwargs.get('protrend_id', self.request.query_params.get('protrend_id', None))
         return mapi.filter_objects(data_model.RegulatoryInteraction, organism__exact=organism_id)
 
-    def get_renderer_context(self: Union['views.ObjectListMixIn, views.ObjectCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
@@ -582,7 +579,7 @@ class TRN(views.ObjectListMixIn, generics.GenericAPIView):
         return context
 
 
-class OrganismsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
+class OrganismsBindingSites(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -603,7 +600,7 @@ class OrganismsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
         return mapi.get_identifiers(data_model.Organism)
 
 
-class OrganismBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
+class OrganismBindingSites(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -624,7 +621,7 @@ class OrganismBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
         return mapi.filter_objects(data_model.TFBS, organism__exact=organism_id)
 
 
-class RegulatorsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
+class RegulatorsBindingSites(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -645,7 +642,7 @@ class RegulatorsBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
         return mapi.get_identifiers(data_model.Regulator)
 
 
-class RegulatorBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
+class RegulatorBindingSites(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -670,7 +667,7 @@ class RegulatorBindingSites(views.ObjectListMixIn, generics.GenericAPIView):
                                if interaction.tfbs}
         return list(unique_interactions.values())
 
-    def get_renderer_context(self: Union['views.ObjectListMixIn', 'views.ObjectCreateMixIn', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView', 'views.APICreateView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 
