@@ -1,24 +1,27 @@
-import abc
-
 from rest_framework import serializers
 
 from constants import help_text
-
-
 # --------------------------------------
 # Base Serializer
 # --------------------------------------
+from domain import dpi
+
+
 class BaseSerializer(serializers.Serializer):
+    _data_model = None
+
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
-    @abc.abstractmethod
     def create(self, validated_data):
-        pass
+        return dpi.create_objects(cls=self._data_model, values=(validated_data, ))
 
-    @abc.abstractmethod
     def update(self, instance, validated_data):
-        pass
+        return dpi.update_objects((instance,), (validated_data,))
+
+    # noinspection PyMethodMayBeStatic
+    def delete(self, instance):
+        return dpi.delete_objects((instance,))
 
 
 # ----------------------------------------------------------

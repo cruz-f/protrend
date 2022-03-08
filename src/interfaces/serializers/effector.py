@@ -1,22 +1,21 @@
 import abc
 
-from rest_framework import serializers, status
+from rest_framework import serializers
 
-import domain.model_api as mapi
-import domain.database as papi
 from constants import help_text
 from data import Effector
-from exceptions import ProtrendException
 from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
-    RelationshipSerializer
+from interfaces.serializers.relationships import (SourceRelationshipSerializer,
+                                                  SourceField,
+                                                  RelationshipSerializer)
 
 
-class EffectorSerializer(BaseSerializer):
+class EffectorListSerializer(BaseSerializer):
+    _data_model = Effector
+
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
-    kegg_compounds = serializers.ListField(child=serializers.CharField(required=False),
-                                           required=False,
+    kegg_compounds = serializers.ListField(child=serializers.CharField(required=False), required=False,
                                            help_text=help_text.kegg_compounds)
 
     # url
@@ -25,23 +24,13 @@ class EffectorSerializer(BaseSerializer):
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
-    def create(self, validated_data):
-        return papi.create_effector(**validated_data)
 
-    def update(self, instance, validated_data):
-        return papi.update_effector(instance, **validated_data)
-
-    @staticmethod
-    def delete(instance):
-        return papi.delete_effector(instance)
-
-
-class EffectorDetailSerializer(EffectorSerializer):
+class EffectorDetailSerializer(EffectorListSerializer):
     url = None
 
     # relationships
     data_source = SourceRelationshipSerializer(read_only=True,
-                                               child=SourceHighlightSerializer(read_only=True))
+                                               child=SourceField(read_only=True))
     regulator = RelationshipSerializer(read_only=True,
                                        child=serializers.HyperlinkedRelatedField(
                                            read_only=True,
@@ -56,7 +45,7 @@ class EffectorDetailSerializer(EffectorSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class EffectorHighlightSerializer(serializers.Serializer):
+class EffectorField(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
@@ -68,15 +57,3 @@ class EffectorHighlightSerializer(serializers.Serializer):
     @abc.abstractmethod
     def update(self, instance, validated_data):
         pass
-
-    def get_attribute(self, instance):
-        if instance.effector is None:
-            return
-
-        effector = mapi.get_object(Effector, protrend_id=instance.effector)
-        if effector is None:
-            raise ProtrendException(detail=f'Effector with protrend id {instance.effector} not found',
-                                    code='get error',
-                                    status=status.HTTP_404_NOT_FOUND)
-
-        return effector

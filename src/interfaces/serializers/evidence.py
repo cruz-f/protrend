@@ -1,12 +1,14 @@
 from rest_framework import serializers
 
-import domain.database as papi
 from constants import help_text
+from data import Evidence
 from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import RelationshipSerializer
 
 
-class EvidenceSerializer(BaseSerializer):
+class EvidenceListSerializer(BaseSerializer):
+    _data_model = Evidence
+
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
     description = serializers.CharField(required=False, help_text=help_text.generic_description)
@@ -17,18 +19,8 @@ class EvidenceSerializer(BaseSerializer):
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
-    def create(self, validated_data):
-        return papi.create_evidence(**validated_data)
 
-    def update(self, instance, validated_data):
-        return papi.update_evidence(instance, **validated_data)
-
-    @staticmethod
-    def delete(instance):
-        return papi.delete_evidence(instance)
-
-
-class EvidenceDetailSerializer(EvidenceSerializer):
+class EvidenceDetailSerializer(EvidenceListSerializer):
     url = None
 
     # relationships

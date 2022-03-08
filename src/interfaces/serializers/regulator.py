@@ -1,19 +1,18 @@
 import abc
 
-from rest_framework import serializers, status
+from rest_framework import serializers
 
-import domain.model_api as mapi
-import domain.database as papi
 from constants import help_text, choices
 from data import Regulator
-from exceptions import ProtrendException
 from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.relationships import RelationshipSerializer, SourceHighlightSerializer, \
-    SourceRelationshipSerializer
+from interfaces.serializers.relationships import (RelationshipSerializer, SourceField,
+                                                  SourceRelationshipSerializer)
 from interfaces.validation import validate_protein_sequence
 
 
-class RegulatorSerializer(BaseSerializer):
+class RegulatorListSerializer(BaseSerializer):
+    _data_model = Regulator
+
     # properties
     locus_tag = serializers.CharField(required=True, max_length=50, help_text=help_text.locus_tag)
     uniprot_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.uniprot_accession)
@@ -23,6 +22,8 @@ class RegulatorSerializer(BaseSerializer):
                                      help_text=help_text.synonyms)
     mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
                                         help_text=help_text.mechanism)
+
+    # write-only
     function = serializers.CharField(required=False, write_only=True, help_text=help_text.function)
     description = serializers.CharField(required=False, write_only=True, help_text=help_text.description)
     ncbi_gene = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.ncbi_gene)
@@ -44,21 +45,14 @@ class RegulatorSerializer(BaseSerializer):
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
-    def create(self, validated_data):
-        validated_data = validate_protein_sequence(validated_data)
-        return papi.create_regulator(**validated_data)
-
-    def update(self, instance, validated_data):
-        validated_data = validate_protein_sequence(validated_data, instance)
-        return papi.update_regulator(instance, **validated_data)
-
-    @staticmethod
-    def delete(instance):
-        return papi.delete_regulator(instance)
+    def validate(self, attrs):
+        validated_data = validate_protein_sequence(attrs)
+        return validated_data
 
 
-class RegulatorDetailSerializer(RegulatorSerializer):
+class RegulatorDetailSerializer(RegulatorListSerializer):
     url = None
+
     function = serializers.CharField(required=False, help_text=help_text.function)
     description = serializers.CharField(required=False, help_text=help_text.description)
     mechanism = serializers.ChoiceField(required=False,
@@ -75,7 +69,7 @@ class RegulatorDetailSerializer(RegulatorSerializer):
 
     # relationships
     data_source = SourceRelationshipSerializer(read_only=True,
-                                               child=SourceHighlightSerializer(read_only=True))
+                                               child=SourceField(read_only=True))
     organism = RelationshipSerializer(read_only=True,
                                       child=serializers.HyperlinkedRelatedField(
                                           read_only=True,
@@ -108,7 +102,7 @@ class RegulatorDetailSerializer(RegulatorSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class RegulatorHighlightSerializer(serializers.Serializer):
+class RegulatorField(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     locus_tag = serializers.CharField(read_only=True, max_length=50, help_text=help_text.locus_tag)
@@ -124,12 +118,3 @@ class RegulatorHighlightSerializer(serializers.Serializer):
     @abc.abstractmethod
     def update(self, instance, validated_data):
         pass
-
-    def get_attribute(self, instance):
-        regulator = mapi.get_object(Regulator, protrend_id=instance.regulator)
-        if regulator is None:
-            raise ProtrendException(detail=f'Regulator with protrend id {instance.regulator} not found',
-                                    code='get error',
-                                    status=status.HTTP_404_NOT_FOUND)
-
-        return regulator

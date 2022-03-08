@@ -1,35 +1,35 @@
-from .datasets import (TRNsSerializer,
-                       TRNSerializer,
-                       OrganismsBindingSitesSerializer,
-                       OrganismBindingSitesSerializer,
-                       RegulatorsBindingSitesSerializer,
-                       RegulatorBindingSitesSerializer)
+from .datasets import (TRNListSerializer,
+                       TRNDetailSerializer,
+                       OrganismBindingSitesListSerializer,
+                       OrganismBindingSitesDetailSerializer,
+                       RegulatorBindingSitesListSerializer,
+                       RegulatorBindingSitesDetailSerializer)
 from .effector import (EffectorDetailSerializer,
-                       EffectorHighlightSerializer,
-                       EffectorSerializer)
+                       EffectorField,
+                       EffectorListSerializer)
 from .evidence import (EvidenceDetailSerializer,
-                       EvidenceSerializer)
+                       EvidenceListSerializer)
 from .gene import (GeneDetailSerializer,
-                   GeneHighlightSerializer,
-                   GeneListSerializer,
-                   GeneSerializer)
+                   GeneField,
+                   GeneListField,
+                   GeneListSerializer)
 from .operon import (OperonDetailSerializer,
-                     OperonSerializer)
-from .organism import (OrganismQuery,
-                       OrganismDetailSerializer,
-                       OrganismHighlightSerializer,
-                       OrganismSerializer)
+                     OperonListSerializer)
+from .organism import (OrganismDetailSerializer,
+                       OrganismField,
+                       OrganismListSerializer,
+                       OrganismsSerializer)
 from .pathway import (PathwayDetailSerializer,
-                      PathwaySerializer)
+                      PathwayListSerializer)
 from .publication import (PublicationDetailSerializer,
-                          PublicationSerializer)
+                          PublicationListSerializer)
 from .regulator import (RegulatorDetailSerializer,
-                        RegulatorHighlightSerializer,
-                        RegulatorSerializer)
+                        RegulatorField,
+                        RegulatorListSerializer)
 from .regulatory_family import (RegulatoryFamilyDetailSerializer,
-                                RegulatoryFamilySerializer)
+                                RegulatoryFamilyListSerializer)
 from .regulatory_interaction import (RegulatoryInteractionDetailSerializer,
-                                     RegulatoryInteractionSerializer)
+                                     RegulatoryInteractionListSerializer)
 from .tfbs import (TFBSDetailSerializer,
-                   TFBSHighlightSerializer,
-                   TFBSSerializer)
+                   TFBSField,
+                   TFBSListSerializer)

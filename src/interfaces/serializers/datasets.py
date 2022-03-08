@@ -4,13 +4,13 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from interfaces.serializers.base import URLField
-from interfaces.serializers.effector import EffectorHighlightSerializer
-from interfaces.serializers.gene import GeneHighlightSerializer
-from interfaces.serializers.regulator import RegulatorHighlightSerializer
-from interfaces.serializers.tfbs import TFBSHighlightSerializer
+from interfaces.serializers.effector import EffectorField
+from interfaces.serializers.gene import GeneField
+from interfaces.serializers.regulator import RegulatorField
+from interfaces.serializers.tfbs import TFBSField
 
 
-class TRNsSerializer(serializers.Serializer):
+class TRNListSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
@@ -33,15 +33,15 @@ class TRNsSerializer(serializers.Serializer):
         pass
 
 
-class TRNSerializer(serializers.Serializer):
+class TRNDetailSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
                                                 help_text=help_text.regulatory_effect)
-    regulator = RegulatorHighlightSerializer(read_only=True)
-    gene = GeneHighlightSerializer(read_only=True)
-    tfbs = TFBSHighlightSerializer(read_only=True)
-    effector = EffectorHighlightSerializer(read_only=True)
+    regulator = RegulatorField(read_only=True)
+    gene = GeneField(read_only=True)
+    tfbs = TFBSField(read_only=True)
+    effector = EffectorField(read_only=True)
 
     @abc.abstractmethod
     def create(self, validated_data):
@@ -56,7 +56,7 @@ class TRNSerializer(serializers.Serializer):
         pass
 
 
-class OrganismsBindingSitesSerializer(serializers.Serializer):
+class OrganismBindingSitesListSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
@@ -79,7 +79,7 @@ class OrganismsBindingSitesSerializer(serializers.Serializer):
         pass
 
 
-class OrganismBindingSitesSerializer(serializers.Serializer):
+class OrganismBindingSitesDetailSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
     strand = serializers.ChoiceField(read_only=True, choices=choices.strand, help_text=help_text.strand)
@@ -95,7 +95,7 @@ class OrganismBindingSitesSerializer(serializers.Serializer):
         pass
 
 
-class RegulatorsBindingSitesSerializer(serializers.Serializer):
+class RegulatorBindingSitesListSerializer(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
@@ -118,9 +118,9 @@ class RegulatorsBindingSitesSerializer(serializers.Serializer):
         pass
 
 
-class RegulatorBindingSitesSerializer(serializers.Serializer):
-    regulator = RegulatorHighlightSerializer(read_only=True)
-    tfbs = TFBSHighlightSerializer(read_only=True)
+class RegulatorBindingSitesDetailSerializer(serializers.Serializer):
+    regulator = RegulatorField(read_only=True)
+    tfbs = TFBSField(read_only=True)
 
     @abc.abstractmethod
     def create(self, validated_data):

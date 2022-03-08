@@ -1,12 +1,14 @@
 from rest_framework import serializers
 
-import domain.database as papi
 from constants import help_text
+from data import Publication
 from interfaces.serializers.base import BaseSerializer, URLField
 from interfaces.serializers.relationships import RelationshipSerializer
 
 
-class PublicationSerializer(BaseSerializer):
+class PublicationListSerializer(BaseSerializer):
+    _data_model = Publication
+
     # properties
     pmid = serializers.IntegerField(required=True, min_value=0, help_text=help_text.pmid)
     doi = serializers.CharField(required=False, max_length=250, help_text=help_text.doi)
@@ -20,18 +22,8 @@ class PublicationSerializer(BaseSerializer):
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
-    def create(self, validated_data):
-        return papi.create_publication(**validated_data)
 
-    def update(self, instance, validated_data):
-        return papi.update_publication(instance, **validated_data)
-
-    @staticmethod
-    def delete(instance):
-        return papi.delete_publication(instance)
-
-
-class PublicationDetailSerializer(PublicationSerializer):
+class PublicationDetailSerializer(PublicationListSerializer):
     url = None
 
     # relationships

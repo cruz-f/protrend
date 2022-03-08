@@ -1,20 +1,19 @@
 import abc
 
-from rest_framework import serializers, status
+from rest_framework import serializers
 
-import domain.model_api as mapi
-import domain.database as papi
 from constants import help_text, choices
 from data import TFBS
-from exceptions import ProtrendException
 from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.organism import OrganismHighlightSerializer
-from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
-    RelationshipSerializer
+from interfaces.serializers.organism import OrganismField
+from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
+                                                  RelationshipSerializer)
 from interfaces.validation import validate_dna_sequence
 
 
-class TFBSSerializer(BaseSerializer):
+class TFBSListSerializer(BaseSerializer):
+    _data_model = TFBS
+
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     sequence = serializers.CharField(required=True, help_text=help_text.tfbs_sequence)
@@ -29,26 +28,18 @@ class TFBSSerializer(BaseSerializer):
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
-    def create(self, validated_data):
-        validated_data = validate_dna_sequence(validated_data)
-        return papi.create_binding_site(**validated_data)
-
-    def update(self, instance, validated_data):
-        validated_data = validate_dna_sequence(validated_data, instance)
-        return papi.update_binding_site(instance, **validated_data)
-
-    @staticmethod
-    def delete(instance):
-        return papi.delete_binding_site(instance)
+    def validate(self, attrs):
+        validated_data = validate_dna_sequence(attrs)
+        return validated_data
 
 
-class TFBSDetailSerializer(TFBSSerializer):
+class TFBSDetailSerializer(TFBSListSerializer):
     url = None
-    organism = OrganismHighlightSerializer(read_only=True)
+    organism = OrganismField(read_only=True)
 
     # relationships
     data_source = SourceRelationshipSerializer(read_only=True,
-                                               child=SourceHighlightSerializer(read_only=True))
+                                               child=SourceField(read_only=True))
     evidence = RelationshipSerializer(read_only=True,
                                       child=serializers.HyperlinkedRelatedField(
                                           read_only=True,
@@ -87,7 +78,7 @@ class TFBSDetailSerializer(TFBSSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class TFBSHighlightSerializer(serializers.Serializer):
+class TFBSField(serializers.Serializer):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
@@ -102,15 +93,3 @@ class TFBSHighlightSerializer(serializers.Serializer):
     @abc.abstractmethod
     def update(self, instance, validated_data):
         pass
-
-    def get_attribute(self, instance):
-        if instance.tfbs is None:
-            return
-
-        tfbs = mapi.get_object(TFBS, protrend_id=instance.tfbs)
-        if tfbs is None:
-            raise ProtrendException(detail=f'TFBS with protrend id {instance.tfbs} not found',
-                                    code='get error',
-                                    status=status.HTTP_404_NOT_FOUND)
-
-        return tfbs

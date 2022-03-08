@@ -1,18 +1,20 @@
 from rest_framework import serializers
 
-import domain.database as papi
 from constants import help_text, choices
+from data import RegulatoryInteraction
 from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.effector import EffectorHighlightSerializer
-from interfaces.serializers.gene import GeneHighlightSerializer
-from interfaces.serializers.organism import OrganismHighlightSerializer
-from interfaces.serializers.regulator import RegulatorHighlightSerializer
-from interfaces.serializers.relationships import SourceRelationshipSerializer, SourceHighlightSerializer, \
-    RelationshipSerializer
-from interfaces.serializers.tfbs import TFBSHighlightSerializer
+from interfaces.serializers.effector import EffectorField
+from interfaces.serializers.gene import GeneField
+from interfaces.serializers.organism import OrganismField
+from interfaces.serializers.regulator import RegulatorField
+from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
+                                                  RelationshipSerializer)
+from interfaces.serializers.tfbs import TFBSField
 
 
-class RegulatoryInteractionSerializer(BaseSerializer):
+class RegulatoryInteractionListSerializer(BaseSerializer):
+    _data_model = RegulatoryInteraction
+
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
@@ -28,28 +30,19 @@ class RegulatoryInteractionSerializer(BaseSerializer):
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
-    def create(self, validated_data):
-        return papi.create_interaction(**validated_data)
 
-    def update(self, instance, validated_data):
-        return papi.update_interaction(instance, **validated_data)
-
-    @staticmethod
-    def delete(instance):
-        return papi.delete_interaction(instance)
-
-
-class RegulatoryInteractionDetailSerializer(RegulatoryInteractionSerializer):
+class RegulatoryInteractionDetailSerializer(RegulatoryInteractionListSerializer):
     url = None
-    organism = OrganismHighlightSerializer(read_only=True)
-    regulator = RegulatorHighlightSerializer(read_only=True)
-    gene = GeneHighlightSerializer(read_only=True)
-    tfbs = TFBSHighlightSerializer(read_only=True)
-    effector = EffectorHighlightSerializer(read_only=True)
+
+    organism = OrganismField(read_only=True)
+    regulator = RegulatorField(read_only=True)
+    gene = GeneField(read_only=True)
+    tfbs = TFBSField(read_only=True)
+    effector = EffectorField(read_only=True)
 
     # relationships
     data_source = SourceRelationshipSerializer(read_only=True,
-                                               child=SourceHighlightSerializer(read_only=True))
+                                               child=SourceField(read_only=True))
     evidence = RelationshipSerializer(read_only=True,
                                       child=serializers.HyperlinkedRelatedField(
                                           read_only=True,
