@@ -30,48 +30,48 @@ _model = Union[DjangoNode, BaseNode]
 
 
 def object_validation(cls: _model_type,
-                      objects: tuple,
-                      validators: List[Callable] = None):
+                      values: Tuple,
+                      validators: Tuple[Callable] = None):
     if validators:
-        return [validator(obj) for obj in objects for validator in validators]
+        return [validator(obj) for obj in values for validator in validators]
 
     if cls is Effector:
-        return name_validation(values=objects, node_cls=Effector, header='PRT', entity='EFC')
+        return name_validation(values=values, node_cls=Effector, header='PRT', entity='EFC')
 
     elif cls is Evidence:
-        return name_validation(values=objects, node_cls=Evidence, header='PRT', entity='EVI')
+        return name_validation(values=values, node_cls=Evidence, header='PRT', entity='EVI')
 
     elif cls is Gene:
-        objects = locus_tag_validation(values=objects, node_cls=Gene, header='PRT', entity='GEN')
-        return uniprot_accession_validation(values=objects, node_cls=Gene)
+        values = locus_tag_validation(values=values, node_cls=Gene, header='PRT', entity='GEN')
+        return uniprot_accession_validation(values=values, node_cls=Gene)
 
     elif cls is Operon:
-        return operon_db_validation(values=objects, node_cls=Operon, header='PRT', entity='OPN')
+        return operon_db_validation(values=values, node_cls=Operon, header='PRT', entity='OPN')
 
     elif cls is Organism:
-        objects = name_validation(values=objects, node_cls=Organism, header='PRT', entity='ORG')
-        return ncbi_taxonomy_validation(values=objects, node_cls=Organism)
+        values = name_validation(values=values, node_cls=Organism, header='PRT', entity='ORG')
+        return ncbi_taxonomy_validation(values=values, node_cls=Organism)
 
     elif cls is Pathway:
-        return name_validation(values=objects, node_cls=Pathway, header='PRT', entity='PTH')
+        return name_validation(values=values, node_cls=Pathway, header='PRT', entity='PTH')
 
     elif cls is Publication:
-        return pmid_validation(values=objects, node_cls=Publication, header='PRT', entity='PUB')
+        return pmid_validation(values=values, node_cls=Publication, header='PRT', entity='PUB')
 
     elif cls is Regulator:
-        objects = locus_tag_validation(values=objects, node_cls=Regulator, header='PRT', entity='REG')
-        return uniprot_accession_validation(values=objects, node_cls=Regulator)
+        values = locus_tag_validation(values=values, node_cls=Regulator, header='PRT', entity='REG')
+        return uniprot_accession_validation(values=values, node_cls=Regulator)
 
     elif cls is RegulatoryFamily:
-        return name_validation(values=objects, node_cls=RegulatoryFamily, header='PRT', entity='RFAM')
+        return name_validation(values=values, node_cls=RegulatoryFamily, header='PRT', entity='RFAM')
 
     elif cls is RegulatoryInteraction:
-        return interaction_validation(values=objects, node_cls=RegulatoryInteraction, header='PRT', entity='RIN')
+        return interaction_validation(values=values, node_cls=RegulatoryInteraction, header='PRT', entity='RIN')
 
     elif cls is TFBS:
-        return binding_site_validation(values=objects, node_cls=TFBS, header='PRT', entity='TBS')
+        return binding_site_validation(values=values, node_cls=TFBS, header='PRT', entity='TBS')
 
-    return objects
+    return values
 
 
 # TODO: missing custom interaction and binding site creation and update
@@ -80,18 +80,18 @@ def object_validation(cls: _model_type,
 # ---------------------------------------------------------
 @raise_exception
 def create_objects(cls: _model_type,
-                   *objects: Dict[str, Any],
-                   validators: List[Callable]) -> List:
+                   values: Tuple[Dict[str, Any]],
+                   validators: Tuple[Callable]) -> List:
     """
     Create multiple objects into the database from a set of dictionaries
     """
-    objects = object_validation(cls, objects, validators)
-    return list(cls.create(*objects))
+    values = object_validation(cls, values, validators)
+    return list(cls.create(*values))
 
 
 @raise_exception
-def update_objects(objects: List[_model],
-                   values: List[Dict[str, Any]]) -> List:
+def update_objects(objects: Tuple[_model],
+                   values: Tuple[Dict[str, Any]]) -> List:
     """
     Update multiple objects into the database from a set of dictionaries
     """
@@ -99,11 +99,11 @@ def update_objects(objects: List[_model],
         for attr, value in kwargs.items():
             setattr(obj, attr, value)
         obj.save()
-    return objects
+    return list(objects)
 
 
 @raise_exception
-def delete_objects(*objects: _model):
+def delete_objects(objects: Tuple[_model]):
     """
     Delete multiple objects from the database calling the delete method of these objects
     """
