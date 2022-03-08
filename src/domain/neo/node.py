@@ -8,6 +8,16 @@ class BaseNode:
         for attr, kwarg in kwargs.items():
             setattr(self, attr, kwarg)
 
+    def __str__(self):
+        if hasattr(self, 'fields'):
+            fields = ', '.join(f'{field}: {getattr(self, field)}' for field in self.fields)
+            return f'{{{fields}}}'
+
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class NodeMeta(type):
     def __new__(mcs,
@@ -18,35 +28,40 @@ class NodeMeta(type):
                 link: str = None,
                 link_fields: List[str] = None,
                 rel_fields: List[str] = None):
+        # the new node class
         cls = super(NodeMeta, mcs).__new__(mcs, name, bases, namespace)
 
-        if fields is None:
-            fields = []
+        # the new node class fields
+        if fields is not None:
+            for field in fields:
+                setattr(cls, field, NodeField(field))
+            setattr(cls, 'fields', fields)
 
-        if link_fields is None:
-            link_fields = []
+        # a new node class is created for a given link (target node)
+        if link is not None:
+            link_cls = super(NodeMeta, mcs).__new__(mcs, name, bases, namespace)
+            setattr(cls, link, NodeLinkField(link, link_cls))
+            setattr(cls, 'link_fields', link_fields)
 
-        if rel_fields is None:
-            rel_fields = []
+            rel_cls = super(NodeMeta, mcs).__new__(mcs, name, bases, namespace)
+            setattr(link_cls, 'relationship', NodeRelationshipField('relationship', rel_cls))
+            setattr(cls, 'rel_fields', rel_fields)
 
-        # node's fields
-        for field in fields:
-            setattr(cls, field, NodeField(field))
-        setattr(cls, 'fields', fields)
+            # the new node class fields for the link
+            if link_fields is not None:
 
-        # links' fields
-        link_cls = super(NodeMeta, mcs).__new__(mcs, name, bases, namespace)
-        for field in link_fields:
-            setattr(link_cls, field, NodeField(field))
-        setattr(cls, link, NodeLinkField(link, link_cls))
-        setattr(cls, 'link_fields', link_fields)
+                for field in link_fields:
+                    setattr(link_cls, field, NodeField(field))
 
-        # rels' fields
-        rel_cls = super(NodeMeta, mcs).__new__(mcs, name, bases, namespace)
-        for field in rel_fields:
-            setattr(rel_cls, field, NodeField(field))
-        setattr(link_cls, 'relationship', NodeRelationshipField('relationship', rel_cls))
-        setattr(cls, 'link_fields', link_fields)
+                setattr(link_cls, 'fields', link_fields)
+
+            # the new relationship class fields for the link
+            if rel_fields is not None:
+
+                for field in rel_fields:
+                    setattr(rel_cls, field, NodeField(field))
+
+                setattr(rel_cls, 'fields', rel_fields)
 
         return cls
 
