@@ -7,7 +7,9 @@ from .queries import (
     get_object,
     get_objects,
     get_query_set,
-    order_by_objects
+    order_by_objects,
+    get_all_linked_objects,
+    get_all_linked_object
 )
 from .operations import (
     create_objects,

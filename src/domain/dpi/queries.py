@@ -21,7 +21,7 @@ def get_query_set(cls: _model_type,
     if not rel_fields:
         return NeoLinkedQuerySet(node=cls, fields=fields, link=link, link_fields=link_fields)
 
-    return NeoHyperLinkedQuerySet(node=cls, fields=fields, link=link, link_fields=link_fields)
+    return NeoHyperLinkedQuerySet(node=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
 
 
 # ---------------------------------------------------------
@@ -43,7 +43,55 @@ def get_objects(cls: _model_type,
 
 
 @raise_exception
-def get_identifiers(cls: _model_type, link: str = None) -> Union[None, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
+def get_all_linked_objects(cls: _model_type,
+                           fields: List[str] = None,
+                           links: List[str] = None,
+                           links_fields: Dict[str, List[str]] = None,
+                           rels_fields: Dict[str, List[str]] = None) -> Union[None,
+                                                                              NeoQuerySet,
+                                                                              NeoLinkedQuerySet,
+                                                                              NeoHyperLinkedQuerySet]:
+    """
+    Get an object from the database of a given node type.
+    If links are requested,
+    the links/relationships fields will be also retrieved from all objects related with each single object
+    """
+    if 'protrend_id' not in fields:
+        fields = ['protrend_id'] + fields
+
+    link = links[0]
+    link_fields = links_fields[link]
+    rel_fields = rels_fields[link]
+
+    query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
+    objects = {obj.protrend_id: obj for obj in query_set}
+
+    for link in links[1:]:
+        link_fields = links_fields[link]
+        rel_fields = rels_fields[link]
+        query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
+
+        for new_object in query_set:
+
+            if new_object.protrend_id in objects:
+                obj_link = getattr(new_object, link)
+                obj = objects[new_object.protrend_id]
+                setattr(obj, link, obj_link)
+            else:
+                objects[new_object.protrend_id] = new_object
+
+    link = links[0]
+    link_fields = links_fields[link]
+    rel_fields = rels_fields[link]
+
+    query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
+    query_set._data = list(objects.values())
+    return query_set
+
+
+@raise_exception
+def get_identifiers(cls: _model_type, link: str = None) -> Union[None, NeoQuerySet, NeoLinkedQuerySet,
+                                                                 NeoHyperLinkedQuerySet]:
     """
     Get all objects identifiers from the database of a given node type.
     If a link is requested,
@@ -122,11 +170,54 @@ def get_object(cls: _model_type,
     the link/relationship fields will be also retrieved from all objects related with each single object
     """
     query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
-    objs = query_set.get(**kwargs)
+    query_set = query_set.get(**kwargs)
 
-    if len(objs) == 1:
-        return objs[0]
+    if len(query_set.data) == 1:
+        return query_set.data[0]
     return
+
+
+@raise_exception
+def get_all_linked_object(cls: _model_type,
+                          fields: List[str] = None,
+                          links: List[str] = None,
+                          links_fields: Dict[str, List[str]] = None,
+                          rels_fields: Dict[str, List[str]] = None,
+                          **kwargs) -> Union[None, _model]:
+    """
+    Get an object from the database of a given node type.
+    If links are requested,
+    the links/relationships fields will be also retrieved from all objects related with each single object
+    """
+    if 'protrend_id' not in fields:
+        fields = ['protrend_id'] + fields
+
+    link = links[0]
+    link_fields = links_fields[link]
+    rel_fields = rels_fields[link]
+
+    query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
+    query_set = query_set.filter(**kwargs)
+
+    if len(query_set.data) == 1:
+        obj = query_set.data[0]
+
+    else:
+        return
+
+    for link in links[1:]:
+        link_fields = links_fields[link]
+        rel_fields = rels_fields[link]
+
+        query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
+        query_set = query_set.filter(**kwargs)
+
+        new_object = query_set.data[0]
+        obj_link = getattr(new_object, link)
+
+        setattr(obj, link, obj_link)
+
+    return obj
 
 
 @raise_exception
@@ -139,10 +230,10 @@ def get_first_object(cls: _model_type,
     Get the first object from database
     """
     query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
-    objs = query_set.all()
+    query_set = query_set.all()
 
-    if objs:
-        return objs[0]
+    if query_set.data:
+        return query_set.data[0]
 
     return
 
@@ -157,9 +248,9 @@ def get_last_object(cls: _model_type,
     Get the last object from database
     """
     query_set = get_query_set(cls=cls, fields=fields, link=link, link_fields=link_fields, rel_fields=rel_fields)
-    objs = query_set.all()
+    query_set = query_set.all()
 
-    if objs:
-        return objs[-1]
+    if query_set.data:
+        return query_set.data[-1]
 
     return
