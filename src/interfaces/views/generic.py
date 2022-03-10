@@ -54,16 +54,6 @@ class APIListView(ExportFileMixin):
 
         return Response(serializer.data)
 
-    def get_renderer_context(self: Union['APIListView', generics.GenericAPIView]):
-        # noinspection PyUnresolvedReferences
-        context = super().get_renderer_context()
-
-        serializer_cls = self.get_serializer_class()
-        header = get_header(serializer_cls=serializer_cls)
-
-        context['header'] = header
-        return context
-
 
 class APICreateView:
     """
@@ -136,16 +126,6 @@ class APIRetrieveView(ExportFileMixin):
         obj = self.get_object()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
-
-    def get_renderer_context(self: Union['APIRetrieveView', generics.GenericAPIView]):
-        # noinspection PyUnresolvedReferences
-        context = super().get_renderer_context()
-
-        serializer_cls = self.get_serializer_class()
-        header = get_header(serializer_cls=serializer_cls)
-
-        context['header'] = header
-        return context
 
 
 class APIUpdateDestroyView:
