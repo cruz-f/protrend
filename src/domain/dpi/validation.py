@@ -49,10 +49,12 @@ def _build_site_hash(kwargs: dict) -> str:
 # ------------------------------------------------
 def duplicate_validation(value: str, transformers: List[Callable], node_cls: Type[DjangoNode], key: str):
     value = apply_transformers(value, *transformers)
-    obj = get_object(node_cls, **{key: value})
-    if obj is not None:
+    objects = list(get_object(node_cls, **{key: value}))
+    if objects:
         raise ProtrendException(detail=f'Duplicated issue. There is a similar entry in the database with this {value} '
-                                       f'value. Please check the following protrend_id: {obj.protrend_id}.',
+                                       f'value. '
+                                       f'Please check the following ids: '
+                                       f'{[obj.protrend_id for obj in objects]}.',
                                 code='create or update error',
                                 status=status.HTTP_400_BAD_REQUEST)
 
