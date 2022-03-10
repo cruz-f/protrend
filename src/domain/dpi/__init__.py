@@ -6,11 +6,7 @@ from .queries import (
     get_last_object,
     get_object,
     get_objects,
-    get_query_set,
-    order_by_objects,
-    get_all_linked_objects,
-    get_all_linked_object
-)
+    get_query_set)
 from .operations import (
     create_objects,
     create_relationship,
