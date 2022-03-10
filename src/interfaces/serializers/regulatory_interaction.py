@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from data import RegulatoryInteraction
-from interfaces.serializers.base import BaseSerializer, URLField
+from interfaces.serializers.base import BaseSerializer, URLField, NestedField
 from interfaces.serializers.effector import EffectorField
 from interfaces.serializers.gene import GeneField
 from interfaces.serializers.organism import OrganismField
@@ -34,11 +34,11 @@ class RegulatoryInteractionListSerializer(BaseSerializer):
 class RegulatoryInteractionDetailSerializer(RegulatoryInteractionListSerializer):
     url = None
 
-    organism = OrganismField(read_only=True)
-    regulator = RegulatorField(read_only=True)
-    gene = GeneField(read_only=True)
-    tfbs = TFBSField(read_only=True)
-    effector = EffectorField(read_only=True)
+    organism = OrganismField(read_only=True, source='data_organism')
+    regulator = RegulatorField(read_only=True, source='data_regulator')
+    gene = GeneField(read_only=True, source='data_gene')
+    tfbs = TFBSField(read_only=True, source='data_tfbs')
+    effector = EffectorField(read_only=True, source='data_effector')
 
     # relationships
     data_source = SourceRelationshipSerializer(read_only=True,
@@ -85,3 +85,14 @@ class RegulatoryInteractionDetailSerializer(RegulatoryInteractionListSerializer)
                                            view_name='binding-sites-detail',
                                            lookup_field='protrend_id',
                                            lookup_url_kwarg='protrend_id'))
+
+
+class RegulatoryInteractionField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
+    gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
+    tfbs = serializers.CharField(required=False, max_length=100, help_text=help_text.tfbs_id)
+    effector = serializers.CharField(required=False, max_length=100, help_text=help_text.effector_id)
+    regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
+                                                help_text=help_text.regulatory_effect)

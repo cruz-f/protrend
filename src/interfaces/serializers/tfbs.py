@@ -1,10 +1,8 @@
-import abc
-
 from rest_framework import serializers
 
 from constants import help_text, choices
 from data import TFBS
-from interfaces.serializers.base import BaseSerializer, URLField
+from interfaces.serializers.base import BaseSerializer, URLField, NestedField
 from interfaces.serializers.organism import OrganismField
 from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
                                                   RelationshipSerializer)
@@ -35,7 +33,7 @@ class TFBSListSerializer(BaseSerializer):
 
 class TFBSDetailSerializer(TFBSListSerializer):
     url = None
-    organism = OrganismField(read_only=True)
+    organism = OrganismField(read_only=True, source='data_organism')
 
     # relationships
     data_source = SourceRelationshipSerializer(read_only=True,
@@ -78,18 +76,10 @@ class TFBSDetailSerializer(TFBSListSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class TFBSField(serializers.Serializer):
+class TFBSField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
     strand = serializers.ChoiceField(read_only=True, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.stop)
-
-    @abc.abstractmethod
-    def create(self, validated_data):
-        pass
-
-    @abc.abstractmethod
-    def update(self, instance, validated_data):
-        pass

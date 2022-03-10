@@ -1,10 +1,8 @@
-import abc
-
 from rest_framework import serializers
 
 from constants import help_text
 from data import Organism
-from interfaces.serializers.base import BaseSerializer, URLField
+from interfaces.serializers.base import BaseSerializer, URLField, NestedField
 from interfaces.serializers.relationships import (RelationshipSerializer, SourceRelationshipSerializer,
                                                   SourceField)
 
@@ -98,16 +96,8 @@ class OrganismDetailSerializer(OrganismListSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class OrganismField(serializers.Serializer):
+class OrganismField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=200, help_text=help_text.organism_name)
     ncbi_taxonomy = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.ncbi_taxonomy)
-
-    @abc.abstractmethod
-    def create(self, validated_data):
-        pass
-
-    @abc.abstractmethod
-    def update(self, instance, validated_data):
-        pass

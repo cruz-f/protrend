@@ -1,10 +1,8 @@
-import abc
-
 from rest_framework import serializers
 
 from constants import help_text, choices
 from data import Gene
-from interfaces.serializers.base import BaseSerializer, URLField
+from interfaces.serializers.base import BaseSerializer, URLField, NestedField
 from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
                                                   RelationshipSerializer)
 from interfaces.validation import validate_protein_sequence
@@ -97,28 +95,9 @@ class GeneDetailSerializer(GeneListSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class GeneField(serializers.Serializer):
+class GeneField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     locus_tag = serializers.CharField(read_only=True, max_length=50, help_text=help_text.locus_tag)
     uniprot_accession = serializers.CharField(read_only=True, max_length=50, help_text=help_text.uniprot_accession)
     name = serializers.CharField(read_only=True, max_length=50, help_text=help_text.gene_name)
-
-    @abc.abstractmethod
-    def create(self, validated_data):
-        pass
-
-    @abc.abstractmethod
-    def update(self, instance, validated_data):
-        pass
-
-
-class GeneListField(serializers.ListSerializer):
-
-    @abc.abstractmethod
-    def create(self, validated_data):
-        pass
-
-    @abc.abstractmethod
-    def update(self, instance, validated_data):
-        pass

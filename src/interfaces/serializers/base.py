@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
 from constants import help_text
-# --------------------------------------
-# Base Serializer
-# --------------------------------------
 from domain import dpi
 
 
+# --------------------------------------
+# Base Serializer
+# --------------------------------------
 class BaseSerializer(serializers.Serializer):
     model = None
 
@@ -33,3 +33,18 @@ class URLField(serializers.HyperlinkedIdentityField):
         lookup_value = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
+
+
+class NestedField(serializers.Serializer):
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+    def get_attribute(self, instance):
+        attribute = super(NestedField, self).get_attribute(instance)
+        if isinstance(attribute, list) and attribute:
+            return attribute[0]
+        return attribute

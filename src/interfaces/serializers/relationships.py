@@ -42,3 +42,10 @@ class SourceField(serializers.Serializer):
     @abc.abstractmethod
     def update(self, instance, validated_data):
         pass
+
+    def to_representation(self, instance):
+        if hasattr(instance, 'relationship_'):
+            value = getattr(instance.relationship_, 'url', None)
+            if value:
+                setattr(instance, 'url', value)
+        return super(SourceField, self).to_representation(instance)

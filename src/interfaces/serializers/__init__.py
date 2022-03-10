@@ -11,7 +11,6 @@ from .evidence import (EvidenceDetailSerializer,
                        EvidenceListSerializer)
 from .gene import (GeneDetailSerializer,
                    GeneField,
-                   GeneListField,
                    GeneListSerializer)
 from .operon import (OperonDetailSerializer,
                      OperonListSerializer)

@@ -4,9 +4,7 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from interfaces.serializers.base import URLField
-from interfaces.serializers.effector import EffectorField
-from interfaces.serializers.gene import GeneField
-from interfaces.serializers.regulator import RegulatorField
+from interfaces.serializers.regulatory_interaction import RegulatoryInteractionField
 from interfaces.serializers.tfbs import TFBSField
 
 
@@ -34,14 +32,14 @@ class TRNListSerializer(serializers.Serializer):
 
 
 class TRNDetailSerializer(serializers.Serializer):
-    # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
-                                                help_text=help_text.regulatory_effect)
-    regulator = RegulatorField(read_only=True)
-    gene = GeneField(read_only=True)
-    tfbs = TFBSField(read_only=True)
-    effector = EffectorField(read_only=True)
+    name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
+    ncbi_taxonomy = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_taxonomy)
+    species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
+    strain = serializers.CharField(required=False, max_length=150, help_text=help_text.strain)
+
+    regulatory_interaction = serializers.ListSerializer(read_only=True,
+                                                        child=RegulatoryInteractionField(read_only=True))
 
     @abc.abstractmethod
     def create(self, validated_data):
@@ -81,10 +79,12 @@ class OrganismBindingSitesListSerializer(serializers.Serializer):
 
 class OrganismBindingSitesDetailSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
-    strand = serializers.ChoiceField(read_only=True, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.start)
-    stop = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.stop)
+    name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
+    ncbi_taxonomy = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_taxonomy)
+    species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
+    strain = serializers.CharField(required=False, max_length=150, help_text=help_text.strain)
+
+    tfbs = serializers.ListSerializer(read_only=True, child=TFBSField(read_only=True))
 
     @abc.abstractmethod
     def create(self, validated_data):
@@ -119,8 +119,14 @@ class RegulatorBindingSitesListSerializer(serializers.Serializer):
 
 
 class RegulatorBindingSitesDetailSerializer(serializers.Serializer):
-    regulator = RegulatorField(read_only=True)
-    tfbs = TFBSField(read_only=True)
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    locus_tag = serializers.CharField(read_only=True, max_length=50, help_text=help_text.locus_tag)
+    uniprot_accession = serializers.CharField(read_only=True, max_length=50, help_text=help_text.uniprot_accession)
+    name = serializers.CharField(read_only=True, max_length=50, help_text=help_text.gene_name)
+    mechanism = serializers.ChoiceField(read_only=True, choices=choices.mechanism,
+                                        help_text=help_text.mechanism)
+
+    tfbs = serializers.ListSerializer(read_only=True, child=TFBSField(read_only=True))
 
     @abc.abstractmethod
     def create(self, validated_data):

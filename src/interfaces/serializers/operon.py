@@ -3,7 +3,7 @@ from rest_framework import serializers
 from constants import help_text, choices
 from data import Operon
 from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.gene import GeneListField, GeneField
+from interfaces.serializers.gene import GeneField
 from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
                                                   RelationshipSerializer)
 
@@ -34,8 +34,10 @@ class OperonListSerializer(BaseSerializer):
 class OperonDetailSerializer(OperonListSerializer):
     url = None
 
-    genes = GeneListField(read_only=True, child=GeneField(read_only=True),
-                          help_text=help_text.operon_genes)
+    genes = serializers.ListSerializer(read_only=True,
+                                       source='gene',
+                                       child=GeneField(read_only=True),
+                                       help_text=help_text.operon_genes)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)

@@ -1,10 +1,8 @@
-import abc
-
 from rest_framework import serializers
 
 from constants import help_text
 from data import Effector
-from interfaces.serializers.base import BaseSerializer, URLField
+from interfaces.serializers.base import BaseSerializer, URLField, NestedField
 from interfaces.serializers.relationships import (SourceRelationshipSerializer,
                                                   SourceField,
                                                   RelationshipSerializer)
@@ -45,15 +43,7 @@ class EffectorDetailSerializer(EffectorListSerializer):
                                                         lookup_url_kwarg='protrend_id'))
 
 
-class EffectorField(serializers.Serializer):
+class EffectorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
-
-    @abc.abstractmethod
-    def create(self, validated_data):
-        pass
-
-    @abc.abstractmethod
-    def update(self, instance, validated_data):
-        pass
