@@ -23,10 +23,10 @@ from .validation import (locus_tag_validation,
                          pmid_validation,
                          interaction_validation,
                          binding_site_validation)
-from domain.neo import BaseNode
+from domain.neo import NeoNode
 
-_model_type = Union[Type[DjangoNode], Type[BaseNode]]
-_model = Union[DjangoNode, BaseNode]
+_model_type = Union[Type[DjangoNode], Type[NeoNode]]
+_model = Union[DjangoNode, NeoNode]
 
 
 def object_validation(cls: _model_type,
