@@ -12,7 +12,7 @@ from interfaces.validation import validate_dna_sequence
 
 
 class TFBSListSerializer(BaseSerializer):
-    _data_model = TFBS
+    model = TFBS
 
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)

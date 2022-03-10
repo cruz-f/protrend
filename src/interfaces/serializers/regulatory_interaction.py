@@ -13,7 +13,7 @@ from interfaces.serializers.tfbs import TFBSField
 
 
 class RegulatoryInteractionListSerializer(BaseSerializer):
-    _data_model = RegulatoryInteraction
+    model = RegulatoryInteraction
 
     # properties
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)

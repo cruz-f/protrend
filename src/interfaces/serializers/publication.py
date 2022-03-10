@@ -7,7 +7,7 @@ from interfaces.serializers.relationships import RelationshipSerializer
 
 
 class PublicationListSerializer(BaseSerializer):
-    _data_model = Publication
+    model = Publication
 
     # properties
     pmid = serializers.IntegerField(required=True, min_value=0, help_text=help_text.pmid)

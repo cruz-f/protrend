@@ -8,7 +8,7 @@ from interfaces.serializers.relationships import (SourceRelationshipSerializer, 
 
 
 class PathwayListSerializer(BaseSerializer):
-    _data_model = Pathway
+    model = Pathway
 
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)

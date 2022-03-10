@@ -11,7 +11,7 @@ from interfaces.serializers.relationships import (SourceRelationshipSerializer,
 
 
 class EffectorListSerializer(BaseSerializer):
-    _data_model = Effector
+    model = Effector
 
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)

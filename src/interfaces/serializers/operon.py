@@ -9,7 +9,7 @@ from interfaces.serializers.relationships import (SourceRelationshipSerializer, 
 
 
 class OperonListSerializer(BaseSerializer):
-    _data_model = Operon
+    model = Operon
 
     # properties
     operon_db_id = serializers.CharField(required=True, max_length=50, help_text=help_text.operon_db_id)

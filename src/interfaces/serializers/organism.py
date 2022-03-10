@@ -10,7 +10,7 @@ from interfaces.serializers.relationships import (RelationshipSerializer, Source
 
 
 class OrganismsSerializer(BaseSerializer):
-    _data_model = Organism
+    model = Organism
 
     # properties
     name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
@@ -31,7 +31,7 @@ class OrganismsSerializer(BaseSerializer):
 
 
 class OrganismListSerializer(BaseSerializer):
-    _data_model = Organism
+    model = Organism
 
     # properties
     name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)

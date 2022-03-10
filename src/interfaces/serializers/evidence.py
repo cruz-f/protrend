@@ -7,7 +7,7 @@ from interfaces.serializers.relationships import RelationshipSerializer
 
 
 class EvidenceListSerializer(BaseSerializer):
-    _data_model = Evidence
+    model = Evidence
 
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)

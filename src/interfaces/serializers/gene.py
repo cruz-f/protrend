@@ -11,7 +11,7 @@ from interfaces.validation import validate_protein_sequence
 
 
 class GeneListSerializer(BaseSerializer):
-    _data_model = Gene
+    model = Gene
 
     # properties
     locus_tag = serializers.CharField(required=True, max_length=50, help_text=help_text.locus_tag)

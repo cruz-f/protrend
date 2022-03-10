@@ -8,7 +8,7 @@ from interfaces.serializers.relationships import (SourceRelationshipSerializer, 
 
 
 class RegulatoryFamilyListSerializer(BaseSerializer):
-    _data_model = RegulatoryFamily
+    model = RegulatoryFamily
 
     # properties
     name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
