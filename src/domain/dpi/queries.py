@@ -20,6 +20,30 @@ def get_query_set(cls: _model_type,
                   relationship_fields: List[str] = None) -> Union[NeoQuerySet,
                                                                   NeoLinkedQuerySet,
                                                                   NeoHyperLinkedQuerySet]:
+    """
+    It builds a NeoQuerySet, NeoLinkedQuerySet, and NeoHyperLinkedQuerySet that can be used to perform
+    all, get, filter, count and slice queries to the ProTRenD database nodes.
+
+    The model label will be used in the cypher query to the database.
+
+    :type cls: Union[Type[DjangoNode], Type[NeoNode]]
+    :type fields: List[str]
+    :type target: str
+    :type target_fields: List[str]
+    :type relationship_fields: List[str]
+
+    :param cls: A neomodel structured node type available at the data model package
+    that represents a node in the Neo4j ProTReND database
+    :param fields: A list of fields that will be used to fetch the node properties and load them into a NeoNode instance
+    :param target: The relationship attribute name that will be used to fetch the connected nodes
+    :param target_fields: A list of fields that will be used to fetch the connected nodes' properties
+    and load them into a NeoNode instances
+    :param relationship_fields: A list of fields that will be used to fetch the connected relationships' properties
+    and load them into a NeoNode instances
+
+    :return: It returns a NeoQuerySet, NeoLinkedQuerySet, or NeoHyperLinkedQuerySet based on the inputs,
+    namely targets and relationships
+    """
     if not target:
         return NeoQuerySet(source=cls, fields=fields)
 
