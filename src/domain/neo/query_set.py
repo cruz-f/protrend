@@ -1,152 +1,138 @@
 from functools import lru_cache
 from itertools import groupby
-from typing import Type, List, Union, Dict
+from typing import Type, List, Union, Dict, Iterable
 
 from django_neomodel import DjangoNode
 
-from .node import NodeMeta, node_factory
-from .query import CYPHER_OPERATORS, query_meta, query_db
+from .node import NodeMeta, node_factory, BaseNode
+from .query import CYPHER_OPERATORS, parse_query_meta, query_db
 
 
 class NeoQuerySet:
 
-    def __init__(self,
-                 node: Type[DjangoNode],
-                 fields: List[str] = None):
+    def __init__(self, source: Type[DjangoNode], fields: List[str] = None):
 
         if not fields:
             fields = ['protrend_id']
+        else:
+            if 'protrend_id' not in fields:
+                fields.insert(0, 'protrend_id')
 
-        self.node = node
+        self.source = source
         self.fields = fields
         self.limit = 1
         self.skip = 0
-        self._data = None
-        self._query = None
+        self._data = []
+        self._query = ''
+
+    # -------------------------------------------------------------
+    # BASE DYNAMIC PROPERTIES
+    # -------------------------------------------------------------
+    @property
+    def query(self):
+        if self._query:
+            return self._query
+
+        self.all()
+        return self._query
 
     @property
-    def data(self):
+    def data(self) -> List[BaseNode]:
         if self._data:
             return self._data
 
-        if not self._query:
-            self.all()
-
-        results, meta = query_db(self._query)
-        self._data = self.parse_query_results(results, meta)
-        return self._data
-
-    @property
-    def label(self) -> str:
-        return self.node.__label__
-
-    @property
-    def lower_label(self) -> str:
-        return self.label.lower()
+        return self.fetch()
 
     @property
     @lru_cache()
     def node_cls(self) -> Union[type, NodeMeta]:
-        return node_factory(fields=self.fields)
+        fields = getattr(self, 'fields', None)
+        target = getattr(self, 'target', None)
+        target_fields = getattr(self, 'target_fields', None)
+        relationship_fields = getattr(self, 'relationship_fields', None)
+        return node_factory(fields=fields,
+                            target=target,
+                            target_fields=target_fields,
+                            relationship_fields=relationship_fields)
+
+    # -------------------------------------------------------------
+    # SOURCE PROPERTIES
+    # -------------------------------------------------------------
+    @property
+    def source_label(self) -> str:
+        return self.source.__label__
 
     @property
-    def node_clause(self) -> str:
-        return f'({self.lower_label}:{self.label})'
+    def source_variable(self) -> str:
+        return self.source_label.lower()
 
     @property
-    def connection_clause(self) -> str:
-        return '-[]->'
+    def source_clause(self) -> str:
+        return f'({self.source_variable}:{self.source_label})'
 
     @property
-    def return_clause(self) -> str:
-        fields_return = ', '.join(f'{self.lower_label}.{field}' for field in self.fields)
-        return f'RETURN {fields_return}'
+    def source_return(self) -> str:
+        return ', '.join(f'{self.source_variable}.{field}' for field in self.fields)
 
     @property
-    def return_count_clause(self) -> str:
-        return f'RETURN count({self.lower_label})'
+    def count_source(self) -> str:
+        return f'count({self.source_variable})'
 
-    @property
-    def skip_limit_clause(self) -> str:
-        skip = f' SKIP {int(self.skip)}'
-        limit = f' LIMIT {int(self.limit)}'
-        return skip + limit
+    # -------------------------------------------------------------
+    # BASE METHODS
+    # -------------------------------------------------------------
+    def copy(self) -> 'NeoQuerySet':
+        instance = self.__class__.__new__(self.__class__)
+        instance.__dict__.update(self.__dict__)
+        return instance
 
-    @property
-    def match_clause(self) -> str:
-        return f'MATCH {self.node_clause}'
+    def fetch(self) -> List[BaseNode]:
+        results, meta = query_db(self.query)
+        data = self.parse(results=results, meta=meta)
+        self._data = data
+        return self._data
 
-    @property
-    def slice_query(self) -> str:
-        return f'{self.match_clause} {self.return_clause} {self.skip_limit_clause}'
+    # get method is only base to all query sets because it only calls the filter method, which is rather specific
+    def get(self, **kwargs):
+        kwargs = {f'{key}__exact': value for key, value in kwargs.items()}
+        return self.filter(**kwargs)
 
-    def where_clause(self, **kwargs):
+    def __iter__(self) -> Iterable:
+        return iter(self.data)
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __bool__(self) -> bool:
+        return len(self.data) > 0
+
+    def __nonzero__(self) -> bool:
+        return len(self.data) > 0
+
+    def __contains__(self, obj) -> bool:
+        if not hasattr(obj, 'protrend_id'):
+            raise ValueError('Expecting Protrend source saved instance')
+
+        for node in self:
+            if node.protrend_id == obj.protrend_id:
+                return True
+
+        return False
+
+    def _where_clauses(self, **kwargs):
         where_clauses = []
         for key, value in kwargs.items():
             field, operator = key.split('__')
-            left_operand = f'{self.lower_label}.{field}'
+            left_operand = f'{self.source_variable}.{field}'
             right_operand = value
 
             operator = CYPHER_OPERATORS[operator]
             clause = operator(left_operand=left_operand, right_operand=right_operand)
             where_clauses.append(clause)
 
-        where_clause = ' AND '.join(where_clauses)
+        return where_clauses
 
-        return f'WHERE {where_clause}'
-
-    def parse_query_results(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
-        source_meta, _, _, _ = query_meta(meta, source_label=self.lower_label)
-
-        nodes = []
-        for row in results:
-            kwargs = {attr: val for attr, val in zip(source_meta, row)}
-            node_instance = self.node_cls(**kwargs)
-            nodes.append(node_instance)
-
-        return nodes
-
-    def all(self):
-        self._query = f'{self.match_clause} {self.return_clause}'
-        return self
-
-    def count(self) -> int:
-        count_query = f'{self.match_clause} {self.return_count_clause}'
-        results, _ = query_db(count_query)
-        return int(results[0][0])
-
-    def get(self, **kwargs):
-        kwargs = {f'{key}__exact': value for key, value in kwargs.items()}
-        return self.filter(**kwargs)
-
-    def filter(self, **kwargs):
-        where_clause = self.where_clause(**kwargs)
-        self._query = f'{self.match_clause} {where_clause} {self.return_clause}'
-        return self
-
-    def __iter__(self):
-        return iter(self.data)
-
-    def __len__(self):
-        return self.count()
-
-    def __bool__(self):
-        return self.count() > 0
-
-    def __nonzero__(self):
-        return self.count() > 0
-
-    def __contains__(self, obj):
-        if not hasattr(obj, 'protrend_id'):
-            raise ValueError('Expecting Protrend node saved instance')
-
-        query = f'MATCH {self.node_clause} RETURN {self.lower_label}.protrend_id'
-        results, meta = query_db(query)
-        nodes = self.parse_query_results(results, meta)
-        identifiers = [node.protrend_id for node in nodes]
-        return obj.protrend_id in identifiers
-
-    def __getitem__(self, key):
+    def _set_item(self, key):
         if isinstance(key, slice):
             if key.stop and key.start:
                 self.limit = key.stop - key.start
@@ -163,42 +149,86 @@ class NeoQuerySet:
         else:
             raise ValueError("Expecting slice or int")
 
-        results, meta = query_db(self.slice_query)
-        results = self.parse_query_results(results, meta)
+    # -------------------------------------------------------------
+    # SOURCE SPECIFIC/CUSTOM METHODS
+    # -------------------------------------------------------------
+    def parse(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
+        source_meta, _, _, _ = parse_query_meta(meta, source_variable=self.source_variable)
+
+        nodes = []
+        for row in results:
+            kwargs = {attr: val for attr, val in zip(source_meta, row)}
+            node_instance = self.node_cls(**kwargs)
+            nodes.append(node_instance)
+
+        return nodes
+
+    def all(self):
+        self._query = f'MATCH {self.source_clause} RETURN {self.source_return}'
+        self._data = []
+        return self
+
+    def count(self) -> int:
+        count_query = f'MATCH {self.source_clause} RETURN {self.count_source}'
+        results, _ = query_db(count_query)
+        return int(results[0][0])
+
+    def filter(self, **kwargs):
+        where_clauses = self._where_clauses(**kwargs)
+        where_clause = ' AND '.join(where_clauses)
+
+        if where_clause:
+            self._query = f'MATCH {self.source_clause} WHERE {where_clause} RETURN {self.source_return}'
+        else:
+            self._query = f'MATCH {self.source_clause} RETURN {self.source_return}'
+
+        self._data = []
+        return self
+
+    def __getitem__(self, key):
+        self._set_item(key)
+
+        skip = int(self.skip)
+        limit = int(self.limit)
+        query = f'MATCH {self.source_clause} RETURN {self.source_return} SKIP {skip} LIMIT {limit}'
+        results, meta = query_db(query)
+        data = self.parse(results=results, meta=meta)
 
         if isinstance(key, int):
-            return results[0]
+            return data[key]
 
-        return results
+        return data
 
 
 class NeoLinkedQuerySet(NeoQuerySet):
 
     def __init__(self,
-                 node: Type[DjangoNode],
+                 source: Type[DjangoNode],
                  fields: List[str] = None,
-                 link: str = None,
-                 link_fields: List[str] = None):
+                 target: str = None,
+                 target_fields: List[str] = None):
 
-        super().__init__(node, fields)
+        super().__init__(source, fields)
 
-        if not link:
-            raise ValueError('Link cannot be empty for NeoLinkedQuerySets')
+        if not target:
+            raise ValueError('target cannot be empty for NeoLinkedQuerySets')
 
-        if not link_fields:
+        if not target_fields:
+            target_fields = ['protrend_id']
+        else:
+            if 'protrend_id' not in target_fields:
+                target_fields.insert(0, 'protrend_id')
 
-            if link:
-                link_fields = ['protrend_id']
-            else:
-                link_fields = []
+        self.target = target
+        self.target_fields = target_fields
 
-        self.link = link
-        self.link_fields = link_fields
-
+    # -------------------------------------------------------------
+    # TARGET PROPERTIES
+    # -------------------------------------------------------------
     @property
     @lru_cache()
-    def link_label(self) -> str:
-        relationship = getattr(self.node, self.link)
+    def target_label(self) -> str:
+        relationship = getattr(self.source, self.target)
 
         if 'node_class' not in relationship.definition:
             # noinspection PyProtectedMember
@@ -207,44 +237,29 @@ class NeoLinkedQuerySet(NeoQuerySet):
         return relationship.definition['node_class'].__label__
 
     @property
-    def lower_link_label(self) -> str:
-        return self.link_label.lower()
+    def target_variable(self) -> str:
+        return self.target_label.lower()
 
     @property
-    @lru_cache()
-    def node_cls(self) -> Union[type, NodeMeta]:
-        return node_factory(fields=self.fields, link=self.link, link_fields=self.link_fields)
+    def target_clause(self) -> str:
+        return f'({self.target_variable}:{self.target_label})'
 
     @property
-    def link_clause(self) -> str:
-        return f'({self.lower_link_label}:{self.link_label})'
+    def target_return(self) -> str:
+        return ', '.join(f'{self.target_variable}.{field}' for field in self.target_fields)
 
     @property
-    def return_clause(self) -> str:
-        node_return = ', '.join(f'{self.lower_label}.{field}' for field in self.fields)
-        link_return = ', '.join(f'{self.lower_link_label}.{field}' for field in self.link_fields)
-        return f'RETURN {node_return}, {link_return}'
+    def count_target(self) -> str:
+        return f'count({self.target_variable})'
 
-    @property
-    def return_count_clause(self) -> str:
-        return f'RETURN {self.lower_label}.protrend_id, count({self.lower_link_label})'
-
-    @property
-    def match_clause(self) -> str:
-        return f'MATCH {self.node_clause}{self.connection_clause}{self.link_clause}'
-
-    @property
-    def slice_query(self) -> str:
-        return f'MATCH {self.node_clause} ' \
-                f'WITH {self.lower_label} {self.skip_limit_clause} ' \
-                f'MATCH ({self.lower_label}){self.connection_clause}{self.link_clause} ' \
-                f'{self.return_clause}'
-
-    def parse_query_results(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
-        source_meta, _, link_meta, key_fn = query_meta(meta,
-                                                       source_label=self.lower_label,
-                                                       rel_label='',
-                                                       target_label=self.lower_link_label)
+    # -------------------------------------------------------------
+    # TARGET SPECIFIC/CUSTOM METHODS
+    # -------------------------------------------------------------
+    def parse(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
+        source_meta, _, link_meta, key_fn = parse_query_meta(meta,
+                                                             source_variable=self.source_variable,
+                                                             relationship_variable='',
+                                                             target_variable=self.target_variable)
 
         n_source = len(source_meta)
 
@@ -263,16 +278,23 @@ class NeoLinkedQuerySet(NeoQuerySet):
                 link_kwarg = {attr: field for attr, field in zip(link_meta, link_values)}
                 link_kwargs.append(link_kwarg)
 
-            kwargs[self.link] = link_kwargs
+            kwargs[self.target] = link_kwargs
 
             node_instance = self.node_cls(**kwargs)
             nodes.append(node_instance)
 
         return nodes
 
-    def count(self) -> Dict[str, int]:
-        count_query = f'{self.match_clause} {self.return_count_clause}'
-        results, _ = query_db(count_query)
+    def all(self):
+        self._query = f'MATCH {self.source_clause} ' \
+                      f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
+                      f'RETURN {self.source_return}, {self.target_return}'
+        self._data = []
+        return self
+
+    @staticmethod
+    def _group_by_count(query: str):
+        results, _ = query_db(query)
 
         def key_fn(x):
             return x[0]
@@ -286,60 +308,92 @@ class NeoLinkedQuerySet(NeoQuerySet):
             nodes[protrend_id] = count
         return nodes
 
-    def __len__(self):
-        return super(NeoLinkedQuerySet, self).__len__()
+    def count(self) -> Dict[str, int]:
+        query = f'MATCH {self.source_clause} ' \
+                f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
+                f'RETURN {self.source_variable}.protrend_id, {self.count_target}'
+        return self._group_by_count(query)
 
-    def __bool__(self):
-        return super(NeoLinkedQuerySet, self).__bool__()
+    def filter(self, **kwargs):
+        where_clauses = self._where_clauses(**kwargs)
+        where_clause = ' AND '.join(where_clauses)
 
-    def __nonzero__(self):
-        return super(NeoLinkedQuerySet, self).__nonzero__()
+        if where_clause:
+            self._query = f'MATCH {self.source_clause} WHERE {where_clause} ' \
+                          f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
+                          f'RETURN {self.source_return}, {self.target_return}'
+        else:
+            self._query = f'MATCH {self.source_clause} ' \
+                          f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
+                          f'RETURN {self.source_return}, {self.target_return}'
+
+        self._data = []
+        return self
+
+    def __getitem__(self, key):
+        self._set_item(key)
+
+        skip = int(self.skip)
+        limit = int(self.limit)
+        query = f'MATCH {self.source_clause} ' \
+                f'WITH {self.source_variable} SKIP {skip} LIMIT {limit} ' \
+                f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
+                f'RETURN {self.source_return}, {self.target_return}'
+        results, meta = query_db(query)
+        data = self.parse(results=results, meta=meta)
+
+        if isinstance(key, int):
+            return data[key]
+
+        return data
 
 
 class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
 
     def __init__(self,
-                 node: Type[DjangoNode],
+                 source: Type[DjangoNode],
                  fields: List[str] = None,
-                 link: str = None,
-                 link_fields: List[str] = None,
-                 rel_fields: List[str] = None):
+                 target: str = None,
+                 target_fields: List[str] = None,
+                 relationship_fields: List[str] = None):
 
-        super().__init__(node=node,
+        super().__init__(source=source,
                          fields=fields,
-                         link=link,
-                         link_fields=link_fields)
+                         target=target,
+                         target_fields=target_fields)
 
-        if not rel_fields:
+        if not relationship_fields:
             raise ValueError('Relationship fields cannot be empty for NeoHyperLinkedQuerySet')
 
-        self.rel_fields = rel_fields
+        self.relationship_fields = relationship_fields
+
+    # -------------------------------------------------------------
+    # RELATIONSHIP PROPERTIES
+    # -------------------------------------------------------------
+    @property
+    def relationship_variable(self):
+        return 'relationship_variable'
 
     @property
-    def rel_label(self):
-        return 'rel_label'
+    def relationship_clause(self) -> str:
+        return f'-[{self.relationship_variable}]->'
 
     @property
-    def connection_clause(self) -> str:
-        return f'-[{self.rel_label}]->'
+    def relationship_return(self) -> str:
+        return ', '.join(f'{self.relationship_variable}.{field}' for field in self.relationship_fields)
 
     @property
-    def return_clause(self) -> str:
-        node_return = ', '.join(f'{self.lower_label}.{field}' for field in self.fields)
-        rel_return = ', '.join(f'{self.rel_label}.{field}' for field in self.rel_fields)
-        link_return = ', '.join(f'{self.lower_link_label}.{field}' for field in self.link_fields)
-        return f'RETURN {node_return}, {rel_return}, {link_return}'
+    def count_relationship(self) -> str:
+        return f'count({self.target_variable})'
 
-    @property
-    @lru_cache()
-    def node_cls(self) -> Union[type, NodeMeta]:
-        return node_factory(fields=self.fields, link=self.link, link_fields=self.link_fields)
-
-    def parse_query_results(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
-        source_meta, rel_meta, link_meta, key_fn = query_meta(meta,
-                                                              source_label=self.lower_label,
-                                                              rel_label=self.rel_label,
-                                                              target_label=self.lower_link_label)
+    # -------------------------------------------------------------
+    # TARGET SPECIFIC/CUSTOM METHODS
+    # -------------------------------------------------------------
+    def parse(self, results: List[str], meta: List[str]) -> List[DjangoNode]:
+        source_meta, rel_meta, link_meta, key_fn = parse_query_meta(meta,
+                                                                    source_variable=self.source_variable,
+                                                                    relationship_variable=self.relationship_variable,
+                                                                    target_variable=self.target_variable)
 
         n_source = len(source_meta)
         n_source_rel = n_source + len(rel_meta)
@@ -363,9 +417,78 @@ class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
                 link_kwarg['relationship'] = rel_kwarg
                 link_kwargs.append(link_kwarg)
 
-            kwargs[self.link] = link_kwargs
+            kwargs[self.target] = link_kwargs
 
             node_instance = self.node_cls(**kwargs)
             nodes.append(node_instance)
 
         return nodes
+
+    def all(self):
+        self._query = f'MATCH {self.source_clause} ' \
+                      f'OPTIONAL MATCH ({self.source_variable}){self.relationship_clause}{self.target_clause} ' \
+                      f'RETURN {self.source_return}, {self.relationship_return}, {self.target_return}'
+        self._data = []
+        return self
+
+    def count(self) -> Dict[str, int]:
+        query = f'MATCH {self.source_clause} ' \
+                f'OPTIONAL MATCH ({self.source_variable}){self.relationship_clause}{self.target_clause} ' \
+                f'RETURN {self.source_variable}.protrend_id, {self.count_relationship}'
+
+        return self._group_by_count(query)
+
+    def filter(self, **kwargs):
+        where_clauses = self._where_clauses(**kwargs)
+        where_clause = ' AND '.join(where_clauses)
+
+        if where_clause:
+            self._query = f'MATCH {self.source_clause} WHERE {where_clause} ' \
+                          f'OPTIONAL MATCH ({self.source_variable}){self.relationship_clause}{self.target_clause} ' \
+                          f'RETURN {self.source_return}, {self.relationship_return}, {self.target_return}'
+        else:
+            self._query = f'MATCH {self.source_clause} ' \
+                          f'OPTIONAL MATCH ({self.source_variable}){self.relationship_clause}{self.target_clause} ' \
+                          f'RETURN {self.source_return}, {self.relationship_return}, {self.target_return}'
+
+        self._data = []
+        return self
+
+    def __getitem__(self, key):
+        self._set_item(key)
+
+        skip = int(self.skip)
+        limit = int(self.limit)
+        query = f'MATCH {self.source_clause} ' \
+                f'WITH {self.source_variable} SKIP {skip} LIMIT {limit} ' \
+                f'OPTIONAL MATCH ({self.source_variable}){self.relationship_clause}{self.target_clause} ' \
+                f'RETURN {self.source_return}, {self.relationship_return}, {self.target_return}'
+        results, meta = query_db(query)
+        data = self.parse(results=results, meta=meta)
+
+        if isinstance(key, int):
+            return data[key]
+
+        return data
+
+
+def add_query_sets(*query_sets: Union[NeoQuerySet,
+                                      NeoLinkedQuerySet,
+                                      NeoHyperLinkedQuerySet]) -> Union[NeoQuerySet,
+                                                                        NeoLinkedQuerySet,
+                                                                        NeoHyperLinkedQuerySet]:
+    query_set = query_sets[0]
+
+    data = {obj.protrend_id: obj for obj in query_set.data}
+    for query_set_ in query_sets[1:]:
+
+        for obj in query_set_.data:
+            if obj.protrend_id in data:
+                data_obj = data[obj.protrend_id]
+                data_obj.add(obj)
+            else:
+                data[obj.protrend_id] = obj
+
+    new_query_set = query_set.copy()
+    new_query_set._data = list(data.values())
+    return new_query_set
