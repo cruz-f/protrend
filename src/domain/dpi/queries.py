@@ -6,6 +6,7 @@ from .utils import raise_exception
 from ..neo import NeoNode, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet
 from ..neo.query_set import add_query_sets
 
+
 _model_type = Union[Type[DjangoNode], Type[NeoNode]]
 _model = Union[DjangoNode, NeoNode]
 
@@ -347,3 +348,59 @@ def get_object(cls: _model_type,
 
     query_set = add_query_sets(*query_sets)
     return query_set
+
+
+@raise_exception
+def get_first_object(cls: _model_type,
+                     fields: List[str]) -> Union[None, _model]:
+    """
+    It builds a NeoQuerySet that retrieves the first node from the database based on the model type
+    and the unique identifier provided in the query filter.
+
+    The model label will be used in the cypher query to the database.
+
+    The list of fields that must be fetched from the database for a given node can be used to speed up the cypher query.
+    Fields' list should contain only node properties that must be fetched and loaded into a NeoNode.
+
+    :type cls: Union[Type[DjangoNode], Type[NeoNode]]
+    :type fields: List[str]
+
+    :param cls: A neomodel structured node type available at the data model package
+    that represents a node in the Neo4j ProTReND database
+    :param fields: A list of fields that will be used to fetch the node properties and load them into a NeoNode instance
+
+    :return: It returns the first node as a NeoNode instance
+    """
+    query_set = get_query_set(cls=cls, fields=fields)
+    try:
+        return query_set[0]
+    except IndexError:
+        return
+
+
+@raise_exception
+def get_last_object(cls: _model_type,
+                    fields: List[str]) -> Union[None, _model]:
+    """
+    It builds a NeoQuerySet that retrieves the last node from the database based on the model type
+    and the unique identifier provided in the query filter.
+
+    The model label will be used in the cypher query to the database.
+
+    The list of fields that must be fetched from the database for a given node can be used to speed up the cypher query.
+    Fields' list should contain only node properties that must be fetched and loaded into a NeoNode.
+
+    :type cls: Union[Type[DjangoNode], Type[NeoNode]]
+    :type fields: List[str]
+
+    :param cls: A neomodel structured node type available at the data model package
+    that represents a node in the Neo4j ProTReND database
+    :param fields: A list of fields that will be used to fetch the node properties and load them into a NeoNode instance
+
+    :return: It returns the last node as a NeoNode instance
+    """
+    query_set = get_query_set(cls=cls, fields=fields)
+    try:
+        return query_set[-1]
+    except IndexError:
+        return
