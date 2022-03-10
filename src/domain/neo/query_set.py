@@ -270,15 +270,17 @@ class NeoLinkedQuerySet(NeoQuerySet):
         for fields, group in groupby(results, key_fn):
             kwargs = {attr: field for attr, field in zip(source_meta, fields)}
 
-            values = list(group)
+            target_kwargs = []
+            for value in list(group):
+                target_values = value[n_source:]
 
-            link_kwargs = []
-            for value in values:
-                link_values = value[n_source:]
-                link_kwarg = {attr: field for attr, field in zip(link_meta, link_values)}
-                link_kwargs.append(link_kwarg)
+                if target_values[0] is None:
+                    continue
 
-            kwargs[self.target] = link_kwargs
+                target_kwarg = {attr: field for attr, field in zip(link_meta, target_values)}
+                target_kwargs.append(target_kwarg)
+
+            kwargs[self.target] = target_kwargs
 
             node_instance = self.node_cls(**kwargs)
             nodes.append(node_instance)
@@ -308,7 +310,7 @@ class NeoLinkedQuerySet(NeoQuerySet):
             nodes[protrend_id] = count
         return nodes
 
-    def count(self) -> Dict[str, int]:
+    def group_by_count(self) -> Dict[str, int]:
         query = f'MATCH {self.source_clause} ' \
                 f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
                 f'RETURN {self.source_variable}.protrend_id, {self.count_target}'
@@ -407,17 +409,22 @@ class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
 
             values = list(group)
 
-            link_kwargs = []
+            target_kwargs = []
             for value in values:
-                rel_values = value[n_source:n_source_rel]
-                link_values = value[n_source_rel:]
+                relationship_values = value[n_source:n_source_rel]
+                target_values = value[n_source_rel:]
 
-                link_kwarg = {attr: field for attr, field in zip(link_meta, link_values)}
-                rel_kwarg = {attr: field for attr, field in zip(rel_meta, rel_values)}
-                link_kwarg['relationship'] = rel_kwarg
-                link_kwargs.append(link_kwarg)
+                if target_values[0] is None:
+                    continue
 
-            kwargs[self.target] = link_kwargs
+                target_kwarg = {attr: field for attr, field in zip(link_meta, target_values)}
+
+                relationship_kwarg = {attr: field for attr, field in zip(rel_meta, relationship_values)}
+                target_kwarg['relationship_'] = relationship_kwarg
+
+                target_kwargs.append(target_kwarg)
+
+            kwargs[self.target] = target_kwargs
 
             node_instance = self.node_cls(**kwargs)
             nodes.append(node_instance)
@@ -431,7 +438,7 @@ class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
         self._data = []
         return self
 
-    def count(self) -> Dict[str, int]:
+    def group_by_count(self) -> Dict[str, int]:
         query = f'MATCH {self.source_clause} ' \
                 f'OPTIONAL MATCH ({self.source_variable}){self.relationship_clause}{self.target_clause} ' \
                 f'RETURN {self.source_variable}.protrend_id, {self.count_relationship}'
