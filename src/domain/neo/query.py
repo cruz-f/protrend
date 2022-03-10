@@ -34,18 +34,18 @@ def query_db(query: str) -> Tuple[List[str], List[str]]:
     return db.cypher_query(query)
 
 
-def query_meta(meta, source_label='', rel_label='', target_label=''):
+def parse_query_meta(meta, source_variable='', relationship_variable='', target_variable=''):
     source_meta = []
-    rel_meta = []
+    relationship_meta = []
     target_meta = []
 
     for key in meta:
-        label, field = key.split('.')
-        if label == source_label:
+        variable, field = key.split('.')
+        if variable == source_variable:
             source_meta.append(field)
-        elif label == rel_label:
-            rel_meta.append(field)
-        elif label == target_label:
+        elif variable == relationship_variable:
+            relationship_meta.append(field)
+        elif variable == target_variable:
             target_meta.append(field)
         else:
             continue
@@ -53,4 +53,4 @@ def query_meta(meta, source_label='', rel_label='', target_label=''):
     def key_fn(x):
         return tuple([x[i] for i, _ in enumerate(source_meta)])
 
-    return source_meta, rel_meta, target_meta, key_fn
+    return source_meta, relationship_meta, target_meta, key_fn
