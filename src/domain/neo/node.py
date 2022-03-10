@@ -3,7 +3,7 @@ from typing import List, Type, Union
 from .field import NodeField, NodeRelationshipField, NodeLinkField, DefaultField
 
 
-class BaseNode:
+class NeoNode:
     def __init__(self, **kwargs):
         for attr, kwarg in kwargs.items():
             setattr(self, attr, kwarg)
@@ -19,7 +19,7 @@ class BaseNode:
         return self.__str__()
 
     def __getattr__(self, item):
-        raise AttributeError(f'{item} attribute not found in BaseNode')
+        raise AttributeError(f'{item} attribute not found in NeoNode')
 
     def add(self, other):
         if hasattr(self, 'fields_') and hasattr(other, 'fields_'):
@@ -96,10 +96,10 @@ class NodeMeta(type):
 def node_factory(fields: List[str] = None,
                  target: str = None,
                  target_fields: List[str] = None,
-                 relationship_fields: List[str] = None) -> Union[type, Type[BaseNode]]:
+                 relationship_fields: List[str] = None) -> Union[type, Type[NeoNode]]:
 
     cls = NodeMeta(name='Node',
-                   bases=(BaseNode,),
+                   bases=(NeoNode, ),
                    namespace={},
                    fields=fields,
                    target=target,
