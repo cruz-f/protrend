@@ -6,6 +6,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
+from domain import dpi
 from domain.neo import NeoLinkedQuerySet, NeoQuerySet, NeoHyperLinkedQuerySet
 from exceptions import ProtrendException
 from utils import ExportFileMixin, get_header
@@ -27,10 +28,11 @@ class APIListView(ExportFileMixin):
     """
     View to list ProTReND database objects.
     """
+    model = None
+    fields = []
 
-    @abstractmethod
-    def get_queryset(self) -> Union[None, NodeSet, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
-        pass
+    def get_queryset(self):
+        return dpi.get_objects(cls=self.model, fields=self.fields)
 
     # noinspection PyUnusedLocal
     def get(self: Union['APIListView', generics.GenericAPIView], request, *args, **kwargs):
@@ -105,28 +107,33 @@ class APIRetrieveView(ExportFileMixin):
     """
     View to retrieve ProTReND database objects.
     """
+    model = None
+    fields = []
+    targets = {}
+    relationships = {}
 
-    @abstractmethod
-    def get_queryset(self) -> Union[None, NodeSet, NeoQuerySet, NeoLinkedQuerySet, NeoHyperLinkedQuerySet]:
-        pass
+    def get_queryset(self: Union['APIRetrieveView', generics.GenericAPIView]):
+        return dpi.get_object(cls=self.model,
+                              fields=self.fields,
+                              targets=self.targets,
+                              relationships=self.relationships,
+                              **self.kwargs)
 
-    def get_object(self: Union['APIRetrieveView', generics.GenericAPIView], protrend_id: str):
+    def get_object(self: Union['APIRetrieveView', generics.GenericAPIView]):
         queryset = self.get_queryset()
-        obj = queryset.get(protrend_id=protrend_id)
-
-        if obj is None:
+        objects = list(queryset)
+        if not objects:
             raise ProtrendException(detail='Object not found',
                                     code='get error',
                                     status=status.HTTP_404_NOT_FOUND)
-        return obj
+        return objects[0]
 
     # noinspection PyUnusedLocal
     def get(self: Union['APIRetrieveView', generics.GenericAPIView],
             request,
-            protrend_id: str,
             *args,
             **kwargs):
-        obj = self.get_object(protrend_id)
+        obj = self.get_object()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 
@@ -153,11 +160,10 @@ class APIUpdateDestroyView:
     # noinspection PyUnusedLocal
     def put(self: Union['APIUpdateDestroyView', 'APIRetrieveView', generics.GenericAPIView],
             request,
-            protrend_id: str,
             *args,
             **kwargs):
         partial = kwargs.pop('partial', False)
-        obj = self.get_object(protrend_id)
+        obj = self.get_object()
 
         serializer = self.get_serializer(obj, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -184,10 +190,9 @@ class APIUpdateDestroyView:
     # noinspection PyUnusedLocal
     def delete(self: Union['APIUpdateDestroyView', 'APIRetrieveView', generics.GenericAPIView],
                request,
-               protrend_id: str,
                *args,
                **kwargs):
-        obj = self.get_object(protrend_id)
+        obj = self.get_object()
         serializer = self.get_serializer(obj)
         error = self.perform_destroy(serializer, obj)
         if error is not None:
