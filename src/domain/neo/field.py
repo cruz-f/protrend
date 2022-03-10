@@ -1,3 +1,29 @@
+class DefaultField:
+
+    def __init__(self, name, default=None):
+        self.name = name
+        self.default = default
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+
+        if self.name not in instance.__dict__:
+            default = list(self.default)
+            instance.__dict__[self.name] = default
+
+        return instance.__dict__[self.name]
+
+    def __set__(self, instance, value):
+        if instance is None:
+            return self
+
+        instance.__dict__[self.name] = value
+
+
 class NodeField:
 
     def __init__(self, name):
