@@ -4,7 +4,7 @@ from typing import Type, List, Union, Dict, Iterable
 
 from django_neomodel import DjangoNode
 
-from .node import NodeMeta, node_factory, BaseNode
+from .node import NodeMeta, node_factory, NeoNode
 from .query import CYPHER_OPERATORS, parse_query_meta, query_db
 
 
@@ -37,7 +37,7 @@ class NeoQuerySet:
         return self._query
 
     @property
-    def data(self) -> List[BaseNode]:
+    def data(self) -> List[NeoNode]:
         if self._data:
             return self._data
 
@@ -45,7 +45,7 @@ class NeoQuerySet:
 
     @property
     @lru_cache()
-    def node_cls(self) -> Union[type, NodeMeta]:
+    def node_cls(self) -> Union[type, NodeMeta, Type[NeoNode]]:
         fields = getattr(self, 'fields', None)
         target = getattr(self, 'target', None)
         target_fields = getattr(self, 'target_fields', None)
@@ -86,7 +86,7 @@ class NeoQuerySet:
         instance.__dict__.update(self.__dict__)
         return instance
 
-    def fetch(self) -> List[BaseNode]:
+    def fetch(self) -> List[NeoNode]:
         results, meta = query_db(self.query)
         data = self.parse(results=results, meta=meta)
         self._data = data
