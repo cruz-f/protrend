@@ -105,7 +105,9 @@ def get_objects(cls: _model_type,
     namely targets and relationships
     """
     if not targets:
-        targets = {}
+        query_set = get_query_set(cls=cls, fields=fields)
+        query_set.all()
+        return query_set
 
     if not relationships:
         relationships = {}
@@ -156,7 +158,9 @@ def get_identifiers(cls: _model_type, targets: List[str] = None) -> Union[NeoQue
     namely targets and relationships
     """
     if not targets:
-        targets = []
+        query_set = get_query_set(cls=cls, fields=['protrend_id'])
+        query_set.all()
+        return query_set
 
     query_sets = []
     for target in targets:
@@ -251,7 +255,9 @@ def filter_objects(cls: _model_type,
     namely targets and relationships
     """
     if not targets:
-        targets = {}
+        query_set = get_query_set(cls=cls, fields=fields)
+        query_set.filter(**kwargs)
+        return query_set
 
     if not relationships:
         relationships = {}
@@ -327,7 +333,9 @@ def get_object(cls: _model_type,
     namely targets and relationships
     """
     if not targets:
-        targets = {}
+        query_set = get_query_set(cls=cls, fields=fields)
+        query_set.get(**kwargs)
+        return query_set
 
     if not relationships:
         relationships = {}
