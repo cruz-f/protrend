@@ -31,11 +31,8 @@ class OrganismsRegulatorsChart(Chart):
 
         total = len(self.objects)
         degree_counts = defaultdict(int)
-        for obj in self.objects:
-            # TODO: fix this
-            degree = random.randint(0, 100)
-
-            degree_counts[degree] += 1
+        for value in self.objects.values():
+            degree_counts[value] += 1
 
         degree_coefs = [{'x': degree, 'y': cnt / total} for degree, cnt in degree_counts.items()]
 
@@ -58,18 +55,11 @@ class OrganismsRegulatorsTopChart(Chart):
     def data(self):
         label = 'Regulators'
 
-        regulator_counts = {}
-        for obj in self.objects:
-            # TODO: fix this
-            degree = random.randint(0, 100)
-
-            regulator_counts[obj.protrend_id] = degree
-
-        labels = sorted(regulator_counts, key=regulator_counts.get, reverse=True)[:10]
+        labels = sorted(self.objects, key=self.objects.get, reverse=True)[:10]
 
         datasets = [{'label': label,
                      'backgroundColor': Colors.get_color('yellow', muted=True),
-                     'data': [regulator_counts[label] for label in labels]}]
+                     'data': [self.objects[label] for label in labels]}]
 
         data = {'data': {'labels': labels, 'datasets': datasets}}
         return data
@@ -173,10 +163,14 @@ class OrganismRegulatorsGenesChart(Chart):
     def data(self):
         label = 'Out-Degree'
 
+        regulators = defaultdict(set)
+        for interaction in self.objects.regulatory_interaction:
+            regulators[interaction.regulator].add(interaction.gene)
+
         total = 0
         degree_counts = defaultdict(int)
-        for regulator in self.objects.regulator:
-            degree = len(regulator.gene)
+        for genes in regulators.values():
+            degree = len(genes)
             degree_counts[degree] += 1
 
             total += 1
@@ -202,10 +196,14 @@ class OrganismGenesRegulatorsChart(Chart):
     def data(self):
         label = 'In-Degree'
 
+        genes = defaultdict(set)
+        for interaction in self.objects.regulatory_interaction:
+            genes[interaction.gene].add(interaction.regulator)
+
         total = 0
         degree_counts = defaultdict(int)
-        for gene in self.objects.gene:
-            degree = len(gene.regulator)
+        for regulators in genes.values():
+            degree = len(regulators)
             degree_counts[degree] += 1
 
             total += 1
@@ -216,4 +214,28 @@ class OrganismGenesRegulatorsChart(Chart):
                      'backgroundColor': Colors.get_color('green', muted=True),
                      'data': degree_coefs}]
         data = {'data': {'labels': [], 'datasets': datasets}}
+        return data
+
+
+class OrganismRegulatoryEffectChart(Chart):
+    _chart_type = 'bar'
+    _aspect_ratio = True
+    _legend = 'top'
+    _title = 'TRN Regulatory Effect Frequency'
+    _x_label = 'Type of Regulatory Effect'
+    _y_label = 'Regulatory Interaction Frequency'
+
+    @property
+    def data(self):
+        label = 'Interactions'
+
+        effects = defaultdict(int)
+        for interaction in self.objects.regulatory_interaction:
+            effects[interaction.regulatory_effect] += 1
+
+        datasets = [{'label': label,
+                     'backgroundColor': Colors.get_color('yellow', muted=True),
+                     'data': [cnt for cnt in effects.values()]}]
+
+        data = {'data': {'labels': [label_.title() for label_ in effects.keys()], 'datasets': datasets}}
         return data

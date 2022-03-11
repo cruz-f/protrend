@@ -4,4 +4,5 @@ from .organisms import (OrganismsRegulatorsChart,
                         OrganismsExternalChart,
                         OrganismTRNChart,
                         OrganismRegulatorsGenesChart,
-                        OrganismGenesRegulatorsChart)
+                        OrganismGenesRegulatorsChart,
+                        OrganismRegulatoryEffectChart)
