@@ -13,7 +13,7 @@ from data import (Effector,
                   Regulator,
                   RegulatoryFamily,
                   RegulatoryInteraction,
-                  TFBS)
+                  TFBS, Source)
 from .utils import raise_exception
 from .validation import (locus_tag_validation,
                          name_validation,
@@ -68,6 +68,9 @@ def object_validation(cls: _model_type,
     elif cls is RegulatoryInteraction:
         return interaction_validation(values=values, node_cls=RegulatoryInteraction, header='PRT', entity='RIN')
 
+    elif cls is Source:
+        return name_validation(values=values, node_cls=Source, header='PRT', entity='SRC')
+
     elif cls is TFBS:
         return binding_site_validation(values=values, node_cls=TFBS, header='PRT', entity='TBS')
 
@@ -81,7 +84,7 @@ def object_validation(cls: _model_type,
 @raise_exception
 def create_objects(cls: _model_type,
                    values: Tuple[Dict[str, Any]],
-                   validators: Tuple[Callable]) -> List:
+                   validators: Tuple[Callable] = None) -> List:
     """
     Create multiple objects into the database from a set of dictionaries
     """

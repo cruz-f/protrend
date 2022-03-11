@@ -360,7 +360,7 @@ def get_object(cls: _model_type,
 
 @raise_exception
 def get_first_object(cls: _model_type,
-                     fields: List[str]) -> Union[None, _model]:
+                     fields: List[str] = None) -> Union[None, _model]:
     """
     It builds a NeoQuerySet that retrieves the first node from the database based on the model type
     and the unique identifier provided in the query filter.
@@ -388,7 +388,7 @@ def get_first_object(cls: _model_type,
 
 @raise_exception
 def get_last_object(cls: _model_type,
-                    fields: List[str]) -> Union[None, _model]:
+                    fields: List[str] = None) -> Union[None, _model]:
     """
     It builds a NeoQuerySet that retrieves the last node from the database based on the model type
     and the unique identifier provided in the query filter.
@@ -408,7 +408,8 @@ def get_last_object(cls: _model_type,
     :return: It returns the last node as a NeoNode instance
     """
     query_set = get_query_set(cls=cls, fields=fields)
+    count = query_set.count()
     try:
-        return query_set[-1]
+        return query_set[count]
     except IndexError:
         return
