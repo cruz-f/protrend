@@ -2,10 +2,10 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from data import Regulator
-from interfaces.serializers.base import BaseSerializer, URLField, NestedField
-from interfaces.serializers.relationships import (RelationshipSerializer, SourceField,
-                                                  SourceRelationshipSerializer)
 from interfaces.validation import validate_protein_sequence
+from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.fields import URLField, SourceField
+from interfaces.serializers.relationship import RelationshipSerializer, SourceRelationshipSerializer
 
 
 class RegulatorListSerializer(BaseSerializer):
@@ -98,13 +98,3 @@ class RegulatorDetailSerializer(RegulatorListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
-
-
-class RegulatorField(NestedField):
-    # properties
-    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    locus_tag = serializers.CharField(read_only=True, max_length=50, help_text=help_text.locus_tag)
-    uniprot_accession = serializers.CharField(read_only=True, max_length=50, help_text=help_text.uniprot_accession)
-    name = serializers.CharField(read_only=True, max_length=50, help_text=help_text.gene_name)
-    mechanism = serializers.ChoiceField(read_only=True, choices=choices.mechanism,
-                                        help_text=help_text.mechanism)

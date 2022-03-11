@@ -2,11 +2,11 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from data import TFBS
-from interfaces.serializers.base import BaseSerializer, URLField, NestedField
-from interfaces.serializers.organism import OrganismField
-from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
-                                                  RelationshipSerializer)
 from interfaces.validation import validate_dna_sequence
+from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.fields import URLField, SourceField
+from interfaces.serializers.relationship import SourceRelationshipSerializer, RelationshipSerializer
+from interfaces.api.serializers.fields import OrganismField
 
 
 class TFBSListSerializer(BaseSerializer):
@@ -74,12 +74,3 @@ class TFBSDetailSerializer(TFBSListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
-
-
-class TFBSField(NestedField):
-    # properties
-    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
-    strand = serializers.ChoiceField(read_only=True, choices=choices.strand, help_text=help_text.strand)
-    start = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.start)
-    stop = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.stop)

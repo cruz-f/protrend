@@ -2,9 +2,9 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from data import RegulatoryFamily
-from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.relationships import (SourceRelationshipSerializer, RelationshipSerializer,
-                                                  SourceField)
+from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.fields import URLField, SourceField
+from interfaces.serializers.relationship import SourceRelationshipSerializer, RelationshipSerializer
 
 
 class RegulatoryFamilyListSerializer(BaseSerializer):

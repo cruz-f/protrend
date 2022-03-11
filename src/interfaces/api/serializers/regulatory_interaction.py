@@ -2,14 +2,10 @@ from rest_framework import serializers
 
 from constants import help_text, choices
 from data import RegulatoryInteraction
-from interfaces.serializers.base import BaseSerializer, URLField, NestedField
-from interfaces.serializers.effector import EffectorField
-from interfaces.serializers.gene import GeneField
-from interfaces.serializers.organism import OrganismField
-from interfaces.serializers.regulator import RegulatorField
-from interfaces.serializers.relationships import (SourceRelationshipSerializer, SourceField,
-                                                  RelationshipSerializer)
-from interfaces.serializers.tfbs import TFBSField
+from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.fields import URLField, SourceField
+from interfaces.serializers.relationship import SourceRelationshipSerializer, RelationshipSerializer
+from interfaces.api.serializers.fields import OrganismField, RegulatorField, GeneField, TFBSField, EffectorField
 
 
 class RegulatoryInteractionListSerializer(BaseSerializer):
@@ -85,14 +81,3 @@ class RegulatoryInteractionDetailSerializer(RegulatoryInteractionListSerializer)
                                            view_name='binding-sites-detail',
                                            lookup_field='protrend_id',
                                            lookup_url_kwarg='protrend_id'))
-
-
-class RegulatoryInteractionField(NestedField):
-    # properties
-    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
-    gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
-    tfbs = serializers.CharField(required=False, max_length=100, help_text=help_text.tfbs_id)
-    effector = serializers.CharField(required=False, max_length=100, help_text=help_text.effector_id)
-    regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
-                                                help_text=help_text.regulatory_effect)

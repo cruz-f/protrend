@@ -3,9 +3,8 @@ import abc
 from rest_framework import serializers
 
 from constants import help_text, choices
-from interfaces.serializers.base import URLField
-from interfaces.serializers.regulatory_interaction import RegulatoryInteractionField
-from interfaces.serializers.tfbs import TFBSField
+from interfaces.serializers.fields import URLField
+from interfaces.api.serializers.fields import RegulatoryInteractionField, TFBSField
 
 
 class TRNListSerializer(serializers.Serializer):

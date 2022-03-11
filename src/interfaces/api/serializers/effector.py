@@ -2,10 +2,9 @@ from rest_framework import serializers
 
 from constants import help_text
 from data import Effector
-from interfaces.serializers.base import BaseSerializer, URLField, NestedField
-from interfaces.serializers.relationships import (SourceRelationshipSerializer,
-                                                  SourceField,
-                                                  RelationshipSerializer)
+from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.fields import URLField, SourceField
+from interfaces.serializers.relationship import SourceRelationshipSerializer, RelationshipSerializer
 
 
 class EffectorListSerializer(BaseSerializer):
@@ -41,9 +40,3 @@ class EffectorDetailSerializer(EffectorListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
-
-
-class EffectorField(NestedField):
-    # properties
-    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)

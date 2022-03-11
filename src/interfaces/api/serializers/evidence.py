@@ -1,29 +1,27 @@
 from rest_framework import serializers
 
 from constants import help_text
-from data import Publication
-from interfaces.serializers.base import BaseSerializer, URLField
-from interfaces.serializers.relationships import RelationshipSerializer
+from data import Evidence
+from interfaces.serializers.base import BaseSerializer
+from interfaces.serializers.fields import URLField
+from interfaces.serializers.relationship import RelationshipSerializer
 
 
-class PublicationListSerializer(BaseSerializer):
-    model = Publication
+class EvidenceListSerializer(BaseSerializer):
+    model = Evidence
 
     # properties
-    pmid = serializers.IntegerField(required=True, min_value=0, help_text=help_text.pmid)
-    doi = serializers.CharField(required=False, max_length=250, help_text=help_text.doi)
-    title = serializers.CharField(required=False, max_length=500, help_text=help_text.title)
-    author = serializers.CharField(required=False, max_length=250, help_text=help_text.author)
-    year = serializers.IntegerField(required=False, min_value=0, help_text=help_text.year)
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
+    description = serializers.CharField(required=False, help_text=help_text.generic_description)
 
     # url
     url = URLField(read_only=True,
-                   view_name='publications-detail',
+                   view_name='evidences-detail',
                    lookup_field='protrend_id',
                    lookup_url_kwarg='protrend_id')
 
 
-class PublicationDetailSerializer(PublicationListSerializer):
+class EvidenceDetailSerializer(EvidenceListSerializer):
     url = None
 
     # relationships
