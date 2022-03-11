@@ -22,29 +22,3 @@ class BaseSerializer(serializers.Serializer):
     # noinspection PyMethodMayBeStatic
     def delete(self, instance):
         return dpi.delete_objects((instance,))
-
-
-# ----------------------------------------------------------
-# URLField
-# ----------------------------------------------------------
-class URLField(serializers.HyperlinkedIdentityField):
-
-    def get_url(self, obj, view_name, request, format):
-        lookup_value = getattr(obj, self.lookup_field)
-        kwargs = {self.lookup_url_kwarg: lookup_value}
-        return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
-
-
-class NestedField(serializers.Serializer):
-
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
-
-    def get_attribute(self, instance):
-        attribute = super(NestedField, self).get_attribute(instance)
-        if isinstance(attribute, list) and attribute:
-            return attribute[0]
-        return attribute
