@@ -9,7 +9,7 @@ from rest_framework.settings import api_settings
 from domain import dpi
 from domain.neo import NeoLinkedQuerySet, NeoQuerySet, NeoHyperLinkedQuerySet
 from exceptions import ProtrendException
-from utils import ExportFileMixin, get_header
+from utils import ExportFileMixin
 
 
 def is_api(request) -> bool:
