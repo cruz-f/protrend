@@ -63,3 +63,6 @@ class Chart(metaclass=ABCMeta):
         return {**self.type_,
                 **self.options,
                 **self.data}
+
+    def context_dict(self):
+        return self.config
