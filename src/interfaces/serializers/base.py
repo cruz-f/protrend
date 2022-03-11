@@ -14,10 +14,10 @@ class BaseSerializer(serializers.Serializer):
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
 
     def create(self, validated_data):
-        return dpi.create_objects(cls=self.model, values=(validated_data,))
+        return dpi.create_objects(cls=self.model, values=(validated_data,))[0]
 
     def update(self, instance, validated_data):
-        return dpi.update_objects((instance,), (validated_data,))
+        return dpi.update_objects((instance,), (validated_data,))[0]
 
     # noinspection PyMethodMayBeStatic
     def delete(self, instance):
