@@ -46,6 +46,7 @@ class Configuration:
         self._debug = parse_boolean_string(str(config.get('django-configuration', 'debug')))
         self._allowed_hosts = parse_allowed_hosts(config.get('django-configuration', 'allowed_hosts'))
 
+        self._users_db_engine = str(config.get('protrend-db-users', 'db_engine'))
         self._users_db_name = str(config.get('protrend-db-users', 'db_name'))
         self._users_db_user = str(config.get('protrend-db-users', 'user_name'))
         self._users_db_password = str(config.get('protrend-db-users', 'password'))
@@ -99,6 +100,10 @@ class Configuration:
     @property
     def allowed_hosts(self) -> List[str]:
         return self._allowed_hosts
+
+    @property
+    def users_db_engine(self):
+        return self._users_db_engine
 
     @property
     def users_db_name(self):

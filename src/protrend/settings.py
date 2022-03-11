@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'protrend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': Configuration.users_db_engine,
         'NAME': Configuration.users_db_name,
         'USER': Configuration.users_db_user,
         'PASSWORD': Configuration.users_db_password,
