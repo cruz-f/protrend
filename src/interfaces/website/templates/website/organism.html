@@ -213,6 +213,16 @@
                                 aria-controls="gene-degree"
                                 aria-selected="false">Genes-Regulators</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="regulatory-effect-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#regulatory-effect"
+                                type="button"
+                                role="tab"
+                                aria-controls="regulatory-effect"
+                                aria-selected="false">Regulatory Effects</button>
+                    </li>
                 </ul>
                 <div class="tab-content pt-3" id="graph-tab-content">
                     <div class="tab-pane fade show active"
@@ -233,6 +243,12 @@
                          aria-labelledby="gene-degree-tab">
                         <canvas id="OrganismGenesRegulators" class="canvas-md"></canvas>
                     </div>
+                    <div class="tab-pane fade"
+                         id="regulatory-effect"
+                         role="tabpanel"
+                         aria-labelledby="regulatory-effect-tab">
+                        <canvas id="OrganismRegulatoryEffect" class="canvas-md"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -244,20 +260,24 @@
                 <div class="container">
                     <div class="row pt-2">
                         {% for source in organism.data_source %}
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 py-sm-2">
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title text-uppercase">{{ source.name }}</h5>
-                                        <p class="card-text">
-                                            The organism named {{ organism.name }}
-                                            has been retrieved from {{ source.name }}.
+                                        <div class="card-text">
+                                            <p class="pb-2">
+                                                The organism named {{ organism.name }}
+                                                has been retrieved from {{ source.name|upper }}.
+                                            </p>
+                                            <p>
                                             {% if source.external_identifier %}
                                                 This organism is referred by the following external identifier
-                                                {{ source.external_identifier }} in {{ source.name }}
+                                                <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
                                             {% else %}
                                                 This organism is available at {{ source.url }}.
                                             {% endif %}
-                                        </p>
+                                            </p>
+                                        </div>
                                         <a class="btn rounded-pill btn-outline-success text-uppercase"
                                            rel="nofollow" target="_blank"
                                            href="{{ source.url }}">
@@ -277,7 +297,7 @@
                     Network <i class="bi bi-bezier2 ps-2"></i>
                 </h5>
                 <p class="text-justify pb-3">
-                    ProTReND Transcriptional Regulatory Networks are composed by regulatory interactions
+                    Transcriptional Regulatory Networks are composed by regulatory interactions
                     between regulators and target genes. ProTReND also comprehends whenever possible
                     the DNA <i>cis</i>-element, namely the Transcription Factor Binding Site (TFBS),
                     where the regulator binds to control the expression of the target gene.
@@ -372,10 +392,13 @@
     {{ OrganismTRNChartData|json_script:'OrganismTRNChartData' }}
     {{ OrganismRegulatorsGenesChartData|json_script:'OrganismRegulatorsGenesChartData' }}
     {{ OrganismGenesRegulatorsChartData|json_script:'OrganismGenesRegulatorsChartData' }}
+    {{ OrganismRegulatoryEffectChartData|json_script:'OrganismRegulatoryEffectChartData' }}
     <script>
         const OrganismTRNChart = getChart('OrganismTRN', 'OrganismTRNChartData')
         const OrganismRegulatorsGenesChart = getChart('OrganismRegulatorsGenes', 'OrganismRegulatorsGenesChartData')
         const OrganismGenesRegulatorsChart = getChart('OrganismGenesRegulators', 'OrganismGenesRegulatorsChartData')
+        const OrganismRegulatoryEffectChart = getChart('OrganismRegulatoryEffect',
+            'OrganismRegulatoryEffectChartData')
     </script>
 {% endblock %}
 </html>
