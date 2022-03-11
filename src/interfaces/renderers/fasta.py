@@ -1,5 +1,5 @@
 from io import StringIO
-from typing import Union
+from typing import List
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -13,65 +13,81 @@ class FastaRenderer(renderers.BaseRenderer):
     filename = 'protrend_data.fasta'
 
     @staticmethod
-    def build_nested_record(obj: dict) -> Union[SeqRecord, None]:
-        tfbs = obj.get('tfbs', {})
-        protrend_id = tfbs.get('protrend_id', '')
-        sequence = tfbs.get('sequence', '')
-
-        if not sequence:
-            return
-
-        regulator = obj.get('regulator', {})
-        regulator_protrend_id = regulator.get('protrend_id', '')
-        regulator_locus_tag = regulator.get('locus_tag', '')
-        regulator_uniprot_acc = regulator.get('uniprot_accession', '')
-
-        description = f'ProTReND sequence of regulator: ' \
-                      f'{regulator_protrend_id} - {regulator_locus_tag} - {regulator_uniprot_acc}'
-
-        seq = Seq(sequence)
-        record = SeqRecord(seq=seq,
-                           id=protrend_id,
-                           name=protrend_id,
-                           description=description)
-        return record
-
-    @staticmethod
-    def build_record(obj: dict) -> Union[SeqRecord, None]:
-        protrend_id = obj.get('protrend_id', '')
-        sequence = obj.get('sequence', '')
-
-        if not sequence:
-            return
-
-        description = 'ProTReND binding-site sequence'
-
-        seq = Seq(sequence)
-        record = SeqRecord(seq=seq,
-                           id=protrend_id,
-                           name=protrend_id,
-                           description=description)
-        return record
-
-    def render(self, data, media_type=None, renderer_context=None):
-        if data is None:
-            return ''
-
-        if isinstance(data, dict):
-            data = data.get('results', [])
-
+    def build_regulator_records(sites: List[dict],
+                                protrend_id: str,
+                                locus_tag: str,
+                                uniprot_acc: str) -> List[SeqRecord]:
         records = []
-        for obj in data:
-            if 'regulator' and 'tfbs' in obj:
-                record = self.build_nested_record(obj)
+        for site in sites:
+            site_protrend_id = site.get('protrend_id', '')
+            sequence = site.get('sequence', '')
+            strand = site.get('strand', '')
+            start = site.get('start', '')
+            stop = site.get('stop', '')
 
-            else:
-                record = self.build_record(obj)
-
-            if record is None:
+            if not sequence:
                 continue
 
+            description = 'ProTReND binding-site sequence of regulator ' \
+                          f'{protrend_id}-{locus_tag}-{uniprot_acc} and genomic coordinates: {strand}-{start}-{stop}'
+
+            seq = Seq(sequence)
+            record = SeqRecord(seq=seq,
+                               id=site_protrend_id,
+                               name=site_protrend_id,
+                               description=description)
             records.append(record)
+
+        return records
+
+    @staticmethod
+    def build_organism_records(sites: List[dict],
+                               protrend_id: str,
+                               name: str,
+                               ncbi_taxonomy: str) -> List[SeqRecord]:
+        records = []
+        for site in sites:
+            site_protrend_id = site.get('protrend_id', '')
+            sequence = site.get('sequence', '')
+            strand = site.get('strand', '')
+            start = site.get('start', '')
+            stop = site.get('stop', '')
+
+            if not sequence:
+                continue
+
+            description = 'ProTReND binding-site sequence of organism ' \
+                          f'{protrend_id}-{name}-{ncbi_taxonomy} and genomic coordinates: {strand}-{start}-{stop}'
+
+            seq = Seq(sequence)
+            record = SeqRecord(seq=seq,
+                               id=site_protrend_id,
+                               name=site_protrend_id,
+                               description=description)
+            records.append(record)
+
+        return records
+
+    def render(self, data, media_type=None, renderer_context=None):
+        if not data:
+            return ''
+
+        sites = data.get('tfbs', [])
+
+        if 'ncbi_taxonomy' in data:
+            protrend_id = data.get('protrend_id', '')
+            name = data.get('name', '')
+            ncbi_taxonomy = data.get('ncbi_taxonomy', '')
+            records = self.build_organism_records(sites, protrend_id, name, ncbi_taxonomy)
+
+        elif 'mechanism' in data:
+            protrend_id = data.get('protrend_id', '')
+            locus_tag = data.get('locus_tag', '')
+            uniprot_acc = data.get('uniprot_acc', '')
+            records = self.build_regulator_records(sites, protrend_id, locus_tag, uniprot_acc)
+
+        else:
+            records = []
 
         buffer = StringIO()
         SeqIO.write(records, buffer, "fasta")

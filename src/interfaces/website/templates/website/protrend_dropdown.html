@@ -1,0 +1,156 @@
+<div class="dropdown pe-3">
+    {% if source == 'ncbi' %}
+        <button class="btn btn-outline-success dropdown-toggle text-uppercase"
+                type="button"
+                id="NCBIDropDown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            <i class="bi bi-collection"></i>
+            ncbi
+        </button>
+        <ul class="dropdown-menu text-uppercase"
+            aria-labelledby="NCBIDropDown">
+            {% if obj.ncbi_taxonomy %}
+                <li>
+                    <a class="dropdown-item" rel="nofollow" target="_blank"
+                       href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ obj.ncbi_taxonomy }}">
+                        NCBI Taxonomy
+                    </a>
+                </li>
+            {% endif %}
+            {% if obj.refseq_accession %}
+                <li>
+                    <a class="dropdown-item text-uppercase" rel="nofollow" target="_blank"
+                       href="https://www.ncbi.nlm.nih.gov/refseq/?term={{ obj.refseq_accession }}">
+                        RefSeq
+                    </a>
+                </li>
+            {% endif %}
+            {% if obj.genbank_accession %}
+                <li>
+                    <a class="dropdown-item text-uppercase" rel="nofollow" target="_blank"
+                       href="https://www.ncbi.nlm.nih.gov/search/all/?term={{ obj.genbank_accession }}">
+                        GenBank
+                    </a>
+                </li>
+            {% endif %}
+            {% if obj.assembly_accession %}
+                <li>
+                    <a class="dropdown-item text-uppercase" rel="nofollow" target="_blank"
+                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ obj.assembly_accession }}">
+                        Assembly
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    {% elif source == 'uniprot' %}
+        <button class="btn btn-outline-success dropdown-toggle text-uppercase"
+                type="button"
+                id="UniProtDropDown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            <i class="bi bi-collection"></i>
+            UniProt
+        </button>
+        <ul class="dropdown-menu text-uppercase"
+            aria-labelledby="UniProtDropDown">
+            {% if obj.ncbi_taxonomy %}
+                <li>
+                    <a class="dropdown-item" rel="nofollow" target="_blank"
+                       href="https://beta.uniprot.org/taxonomy/{{ obj.ncbi_taxonomy }}">
+                        UniProt Taxonomy
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" rel="nofollow" target="_blank"
+                       href="https://beta.uniprot.org/proteomes?query=(taxonomy_id:{{ obj.ncbi_taxonomy }})">
+                        Proteomes
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" rel="nofollow" target="_blank"
+                       href="https://beta.uniprot.org/uniprotkb?query=(taxonomy_id:{{ obj.ncbi_taxonomy }})">
+                        Proteins
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    {% elif source == 'detail' %}
+        <button class="btn btn-outline-primary dropdown-toggle text-uppercase"
+                type="button"
+                id="DetailDropDown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            <i class="bi bi-journal-plus"></i>
+            more
+        </button>
+        <ul class="dropdown-menu"
+            aria-labelledby="DetailDropDown">
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}#details">
+                    detail
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}#sources">
+                    source
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}#networks">
+                    network
+                </a>
+            </li>
+        </ul>
+    {% elif source == 'download' %}
+        {% if larger %}
+            <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                    type="button"
+                    id="DownloadDropDown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <i class="bi bi-download"></i>
+                download
+            </button>
+        {% else %}
+            <button class="btn btn-outline-primary dropdown-toggle text-uppercase"
+                    type="button"
+                    id="DownloadDropDown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <i class="bi bi-download"></i>
+                download
+            </button>
+        {% endif %}
+        <ul class="dropdown-menu"
+            aria-labelledby="DownloadropDown">
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=api">
+                    api
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=json">
+                    json
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=csv">
+                    csv
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-uppercase"
+                   href="{% url redirect obj.protrend_id %}?format=xlsx">
+                    xlsx
+                </a>
+            </li>
+        </ul>
+    {% endif %}
+</div>

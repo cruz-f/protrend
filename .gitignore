@@ -2,6 +2,7 @@
 
 # django configs
 src/conf
+useless.py
 
 # PyCharm idea files
 .idea

@@ -16,8 +16,7 @@ this project uses a clear separation between four core layers:
 based on django-neomodel/neomodel OGM. It also includes the common django Models ORMs for a MySQL dbms.
 
 - **interfaces** - The purpose of the interfaces layer is to validate input, call the domain or application layer, 
-and return output. It links a given request to the respective business logic action 
-- encoded into the application- or domain-layer. The API interface sub-app calls directly the domain layer.
+and return output. It links a given request to the respective business logic action encoded into the application- or domain-layer. The API interface sub-app calls directly the domain layer.
 
 - **application** - It contains the several use cases of the whole web application. Use-cases are the actions that the application provides 
 such as creating a new TRN, building a TFBS dataset, etc.

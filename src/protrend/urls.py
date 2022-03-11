@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('interfaces.website.urls')),
     path('api/', include('interfaces.api.urls')),
     path('api-login/', include('rest_framework.urls')),
+    path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
 ]
