@@ -1,15 +1,16 @@
 import unittest
 
 from django.test import TestCase
+from neomodel import clear_neo4j_database, db
 
 from data import *
-from ..utils_test_db import clean_db, populate_db
+from ..utils_test_db import populate_db
 
 
 class DataTest(TestCase):
 
     def setUp(self) -> None:
-        clean_db()
+        clear_neo4j_database(db)
 
     def test_source(self):
         """
@@ -130,7 +131,7 @@ class DataTest(TestCase):
         """
         Test the operon database.
         """
-        clean_db()
+        clear_neo4j_database(db)
 
         populate_db()
 

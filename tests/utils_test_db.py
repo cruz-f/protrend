@@ -1,34 +1,3 @@
-import functools
-import time
-
-
-def clean_db():
-    from data import (Source,
-                      Organism,
-                      Regulator,
-                      Gene,
-                      TFBS,
-                      Effector,
-                      Operon,
-                      Evidence,
-                      Publication,
-                      RegulatoryInteraction)
-    nodes = (Source,
-             Organism,
-             Regulator,
-             Gene,
-             TFBS,
-             Effector,
-             Operon,
-             Evidence,
-             Publication,
-             RegulatoryInteraction)
-    for node in nodes:
-        nodes_instances = node.nodes.all()
-        for node_instance in nodes_instances:
-            node_instance.delete()
-
-
 def disable_throttling(router):
     for _, list_view, detail_view in router.views:
         list_view.throttle_classes = ()
