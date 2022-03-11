@@ -14,7 +14,7 @@ class OrganismRegulatorsTable(Table):
     fields = ('protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene')
     columns = ('protrend id', 'locus tag', 'name', 'uniprot', 'ncbi')
     sortable = ('true', 'true', 'true', 'true', 'true')
-    types = ('regulator-btn', 'attr', 'attr', 'uniprot-btn', 'ncbi-btn')
+    types = ('protrend-regulator-btn', 'attr', 'attr', 'uniprot-btn', 'ncbi-gene-btn')
 
 
 class OrganismGenesTable(Table):
@@ -22,7 +22,7 @@ class OrganismGenesTable(Table):
     fields = ('protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene')
     columns = ('protrend id', 'locus tag', 'name', 'uniprot', 'ncbi')
     sortable = ('true', 'true', 'true', 'true', 'true')
-    types = ('gene-btn', 'attr', 'attr', 'uniprot-btn', 'ncbi-btn')
+    types = ('protrend-gene-btn', 'attr', 'attr', 'uniprot-btn', 'ncbi-gene-btn')
 
 
 class OrganismBindingsTable(Table):
@@ -30,7 +30,7 @@ class OrganismBindingsTable(Table):
     fields = ('protrend_id', 'sequence', 'start', 'stop', 'strand')
     columns = ('protrend id', 'sequence', 'start', 'stop', 'strand')
     sortable = ('true', 'false', 'true', 'true', 'true')
-    types = ('binding-btn', 'attr', 'attr', 'attr', 'attr')
+    types = ('protrend-binding-btn', 'attr', 'attr', 'attr', 'attr')
 
 
 class OrganismInteractionsTable(Table):
@@ -38,4 +38,4 @@ class OrganismInteractionsTable(Table):
     fields = ('protrend_id', 'regulator', 'gene', 'regulatory_effect')
     columns = ('protrend id', 'regulator', 'gene', 'regulatory effect')
     sortable = ('true', 'true', 'true', 'true')
-    types = ('interaction-btn', 'regulator-btn', 'gene-btn', 'attr')
+    types = ('protrend-interaction-btn', 'protrend-regulator-black-btn', 'protrend-gene-black-btn', 'regulatory-effect')
