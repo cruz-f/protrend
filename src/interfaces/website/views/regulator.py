@@ -29,12 +29,21 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
     def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
         # performing a group_by_count in a linked query set is faster than obtaining a linked query set
         # at the instantiation of the view to retrieve all organisms and regulator objects
-        queryset = NeoLinkedQuerySet(source=self.model,
-                                     fields=['protrend_id'],
-                                     target='gene',
-                                     target_fields=['protrend_id'])
-        counts = queryset.group_by_count()
-        return []
+        genes_queryset = NeoLinkedQuerySet(source=self.model,
+                                           fields=['protrend_id'],
+                                           target='gene',
+                                           target_fields=['protrend_id'])
+        genes_counts = genes_queryset.group_by_count()
+        rfams_queryset = NeoLinkedQuerySet(source=data.RegulatoryFamily,
+                                           fields=['name'],
+                                           target='regulator',
+                                           target_fields=['protrend_id'])
+        rfams_counts = rfams_queryset.group_by_count()
+        return [charts.RegulatorsGenesChart(objects=genes_counts),
+                charts.RegulatorsGenesTopChart(objects=genes_counts),
+                charts.RegulatoryFamiliesRegulatorsTopChart(objects=rfams_counts),
+                charts.RegulatorsMechanismChart(objects=objects),
+                charts.RegulatorsExternalChart(objects=objects)]
 
 
 class RegulatorView(views.WebsiteDetailView, generic.DetailView):

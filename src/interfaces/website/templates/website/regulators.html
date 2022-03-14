@@ -102,6 +102,16 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link text-uppercase"
+                                id="top-rfam-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#top-rfam"
+                                type="button"
+                                role="tab"
+                                aria-controls="top-rfam"
+                                aria-selected="false">top 25 regulatory families</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
                                 id="mechanism-tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#mechanism"
@@ -135,7 +145,7 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsRegulatorsGenes" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsGenes" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -147,7 +157,19 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsRegulatorsTop" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsGenesTop" class="canvas-md"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="top-rfam"
+                         role="tabpanel"
+                         aria-labelledby="top-rfam-tab">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                    <canvas id="RegulatoryFamiliesRegulatorsTop" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +181,7 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsTaxa" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsMechanism" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -171,7 +193,7 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsExternal" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsExternal" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -194,15 +216,18 @@
     </script>
     <script src="{% static 'website/js/getChart.js' %}">
     </script>
-    {{ OrganismsRegulatorsChartData|json_script:'OrganismsRegulatorsChartData' }}
-    {{ OrganismsRegulatorsTopChartData|json_script:'OrganismsRegulatorsTopChartData' }}
-    {{ OrganismsTaxaChartData|json_script:'OrganismsTaxaChartData' }}
-    {{ OrganismsExternalChartData|json_script:'OrganismsExternalChartData' }}
+    {{ RegulatorsGenesChartData|json_script:'RegulatorsGenesChartData' }}
+    {{ RegulatorsGenesTopChartData|json_script:'RegulatorsGenesTopChartData' }}
+    {{ RegulatoryFamiliesRegulatorsTopChartData|json_script:'RegulatoryFamiliesRegulatorsTopChartData' }}
+    {{ RegulatorsMechanismChartData|json_script:'RegulatorsMechanismChartData' }}
+    {{ RegulatorsExternalChartData|json_script:'RegulatorsExternalChartData' }}
     <script>
-        const OrganismsRegulatorsGenesChart = getChart('OrganismsRegulatorsGenes', 'OrganismsRegulatorsChartData')
-        const OrganismsRegulatorsTopChart = getChart('OrganismsRegulatorsTop', 'OrganismsRegulatorsTopChartData')
-        const OrganismsTaxaChart = getChart('OrganismsTaxa', 'OrganismsTaxaChartData')
-        const OrganismsExternalChart = getChart('OrganismsExternal', 'OrganismsExternalChartData')
+        const RegulatorsGenesChart = getChart('RegulatorsGenes', 'RegulatorsGenesChartData')
+        const RegulatorsGenesTopChart = getChart('RegulatorsGenesTop', 'RegulatorsGenesTopChartData')
+        const RegulatoryFamiliesRegulatorsTopChart = getChart('RegulatoryFamiliesRegulatorsTop',
+            'RegulatoryFamiliesRegulatorsTopChartData')
+        const RegulatorsMechanismChart = getChart('RegulatorsMechanism', 'RegulatorsMechanismChartData')
+        const RegulatorsExternalChart = getChart('RegulatorsExternal', 'RegulatorsExternalChartData')
     </script>
 {% endblock %}
 </html>
