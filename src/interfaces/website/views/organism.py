@@ -20,8 +20,8 @@ class OrganismsView(views.WebsiteListView, generic.ListView):
     active_page = 'organisms'
     serializer = serializers.OrganismsSerializer
     model = data.Organism
-    fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain',
-              'refseq_accession', 'genbank_accession', 'assembly_accession']
+    fields = ['protrend_id', 'name', 'ncbi_taxonomy',
+              'species', 'refseq_accession', 'genbank_accession', 'assembly_accession']
 
     def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
         return [tables.OrganismsTable()]
