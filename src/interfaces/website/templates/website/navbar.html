@@ -32,7 +32,10 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'regulators' %} active {% endif %} text-uppercase" href="#">Regulators</a>
+                        <a class="nav-link {% if active_page == 'regulators' %} active {% endif %} text-uppercase"
+                           href="{% url 'regulators' %}">
+                            Regulators
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if active_page == 'tfbs' %} active {% endif %} text-uppercase" href="#">Binding Sites</a>
