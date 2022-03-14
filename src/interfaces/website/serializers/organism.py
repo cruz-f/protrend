@@ -15,7 +15,6 @@ class OrganismsSerializer(BaseSerializer):
     # properties
     name = serializers.CharField(required=True, max_length=200, help_text=help_text.organism_name)
     ncbi_taxonomy = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_taxonomy)
-    species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
     strain = serializers.CharField(required=False, max_length=150, help_text=help_text.strain)
     refseq_accession = serializers.CharField(required=False, max_length=50,
                                              help_text=help_text.refseq_accession)
@@ -31,9 +30,9 @@ class OrganismsSerializer(BaseSerializer):
 
 
 class OrganismSerializer(OrganismsSerializer):
-    model = Organism
-
     url = None
+
+    species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
     refseq_ftp = serializers.CharField(required=False, max_length=250, help_text=help_text.refseq_ftp)
     genbank_ftp = serializers.CharField(required=False, max_length=250, help_text=help_text.genbank_ftp)
     ncbi_assembly = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_assembly)
@@ -45,3 +44,5 @@ class OrganismSerializer(OrganismsSerializer):
 
     data_source = SourceRelationshipSerializer(read_only=True,
                                                child=SourceField(read_only=True))
+
+
