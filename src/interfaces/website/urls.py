@@ -9,10 +9,10 @@ from .router import WebsiteRouter
 # Create a router and register our class-based views.
 router = WebsiteRouter(r'')
 router.register(r'organisms', list_view=website_views.OrganismsView, detail_view=website_views.OrganismView)
+router.register(r'regulators', list_view=website_views.RegulatorsView, detail_view=website_views.RegulatorView)
 
 urlpatterns = [
     path(r'', include(router.urls)),
-    path('regulators/<str:protrend_id>', views.fake_view, name='regulator'),
     path('genes/<str:protrend_id>', views.fake_view, name='gene'),
-    path('bindings/<str:protrend_id>', views.fake_view, name='binding'),
+    path('binding-sites/<str:protrend_id>', views.fake_view, name='binding-site'),
     path('interactions/<str:protrend_id>', views.fake_view, name='interaction')]
