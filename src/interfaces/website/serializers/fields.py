@@ -7,6 +7,21 @@ from interfaces.serializers.fields import NestedField
 # ----------------------------------------------------------
 # Objects Field
 # ----------------------------------------------------------
+class OrganismField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    name = serializers.CharField(read_only=True, max_length=200, help_text=help_text.organism_name)
+    ncbi_taxonomy = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.ncbi_taxonomy)
+    species = serializers.CharField(required=False, max_length=150, help_text=help_text.species)
+    strain = serializers.CharField(required=False, max_length=150, help_text=help_text.strain)
+
+
+class EffectorField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+
+
 class RegulatorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
