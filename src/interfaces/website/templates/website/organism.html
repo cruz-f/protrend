@@ -19,13 +19,78 @@
             </div>
         </div>
         <div class="row align-items-center pt-3">
-            <div class="col-sm-10 align-self-center">
+            <div class="col-sm-8 align-self-center">
                 <h2 class="text-uppercase blue-color">
                     {{ organism.name }}
                 </h2>
             </div>
             <div class="col-sm-2 align-self-center">
-                {% include "website/protrend_dropdown.html" with obj=organism source="download" redirect='trns-detail' larger=True only %}
+                <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="DownloadDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-download"></i>
+                    download
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="DownloadDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=api">
+                            api
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=json">
+                            json
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=csv">
+                            csv
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=xlsx">
+                            xlsx
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-2 align-self-center">
+                <button class="btn btn-outline-primary dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="NavigateDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-journal-plus"></i>
+                    navigate
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="NavigateDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#details">
+                            detail
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#sources">
+                            source
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#networks">
+                            network
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
         <div class="row align-items-center pt-5">
@@ -56,22 +121,8 @@
                             <td class="border-right fw-bold text-uppercase pe-3">Taxonomy</td>
                             <td>
                                 {% if organism.ncbi_taxonomy %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ organism.ncbi_taxonomy }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI taxonomy page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-success"
-                                       rel="nofollow" target="_blank"
-                                       href="https://beta.uniprot.org/taxonomy/{{ organism.ncbi_taxonomy }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt taxonomy page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="ncbi-taxonomy-btn" %}
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="uniprot-taxonomy-btn" %}
                                 {% else %}
                                     NA
                                 {% endif %}
@@ -81,14 +132,7 @@
                             <td class="border-right fw-bold text-uppercase pe-3">RefSeq Accession</td>
                             <td>
                                 {% if organism.refseq_accession %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/refseq/?term={{ organism.refseq_accession }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="RefSeq page">
-                                        {{ organism.refseq_accession }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.refseq_accession type="ncbi-organism-refseq-btn" %}
                                     <a role="button"
                                        class="btn rounded-pill btn-outline-success"
                                        rel="nofollow" target="_blank"
@@ -106,14 +150,7 @@
                             <td class="border-right fw-bold text-uppercase pe-3">GenBank Accession</td>
                             <td>
                                 {% if organism.genbank_accession %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/search/all/?term={{ organism.genbank_accession }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="GenBank page">
-                                        {{ organism.genbank_accession }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.genbank_accession type="ncbi-organism-genbank-btn" %}
                                     <a role="button"
                                        class="btn rounded-pill btn-outline-success"
                                        rel="nofollow" target="_blank"
@@ -131,22 +168,8 @@
                             <td class="border-right fw-bold text-uppercase pe-3">Assembly Accession</td>
                             <td>
                                 {% if organism.assembly_accession %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ organism.ncbi_assembly }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="Assembly page">
-                                        {{ organism.ncbi_assembly }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-success"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ organism.assembly_accession }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="Assembly page">
-                                        {{ organism.assembly_accession }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.assembly_accession type="ncbi-organism-assembly-btn" %}
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_assembly type="ncbi-organism-assembly-btn" %}
                                 {% else %}
                                     NA
                                 {% endif %}
@@ -156,22 +179,8 @@
                             <td class="border-right fw-bold text-uppercase pe-3">uniprot proteomes</td>
                             <td>
                                 {% if organism.ncbi_taxonomy %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://beta.uniprot.org/proteomes?query=(taxonomy_id:{{ organism.ncbi_taxonomy }})"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt proteomes page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-success"
-                                       rel="nofollow" target="_blank"
-                                       href="https://beta.uniprot.org/uniprotkb?query=(taxonomy_id:{{ organism.ncbi_taxonomy }})"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt proteins page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="uniprot-proteomes-btn" %}
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="uniprot-proteins-btn" %}
                                 {% else %}
                                     NA
                                 {% endif %}
@@ -270,12 +279,12 @@
                                                 has been retrieved from {{ source.name|upper }}.
                                             </p>
                                             <p>
-                                            {% if source.external_identifier %}
-                                                This organism is referred by the following external identifier
-                                                <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
-                                            {% else %}
-                                                This organism is available at {{ source.url }}.
-                                            {% endif %}
+                                                {% if source.external_identifier %}
+                                                    This organism is referred by the following external identifier
+                                                    <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
+                                                {% else %}
+                                                    This organism is available at {{ source.url }}.
+                                                {% endif %}
                                             </p>
                                         </div>
                                         <a class="btn rounded-pill btn-outline-success text-uppercase"
@@ -351,25 +360,25 @@
                          id="regulators"
                          role="tabpanel"
                          aria-labelledby="regulators-tab">
-                        {% include "website/protrend_table.html" with objs=organism.regulator fields=organism_regulators_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.regulator table_config=organism_regulators_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="genes"
                          role="tabpanel"
                          aria-labelledby="genes-tab">
-                        {% include "website/protrend_table.html" with objs=organism.gene fields=organism_genes_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.gene table_config=organism_genes_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="bindings"
                          role="tabpanel"
                          aria-labelledby="bindings-tab">
-                        {% include "website/protrend_table.html" with objs=organism.tfbs fields=organism_bindings_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.tfbs table_config=organism_bindings_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="interactions"
                          role="tabpanel"
                          aria-labelledby="interactions-tab">
-                        {% include "website/protrend_table.html" with objs=organism.regulatory_interaction fields=organism_interactions_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.regulatory_interaction table_config=organism_interactions_table only %}
                     </div>
                 </div>
             </div>

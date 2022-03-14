@@ -31,7 +31,7 @@
         </div>
         <div class="row align-items-center">
             <div class="col-8 align-self-center">
-                <p class="py-1">
+                <p class="text-justify py-1">
                     ProTReND comprises a list of organisms classified with the scientific name and taxonomy identifier
                     from NCBI.
                     In addition, ProTReND contains several details for each organism,
@@ -40,11 +40,11 @@
                     and NCBI Assembly accession that can be used to obtain both protein and genome sequences from the
                     NCBI databases.
                 </p>
-                <p class="py-1">
+                <p class="text-justify py-1">
                     In this view, one can consult all regulators, genes, interactions and binding sites associated with
                     a given organism. For that, just open the organism dedicated webpage.
                 </p>
-                <p class="py-1">
+                <p class="text-justify py-1">
                     Note that, the list of organisms available at ProTReND might contain redundant species,
                     due to the ambiguous scientific name found in the collected data sources,
                     and incorrect NCBI taxonomy classifications.
@@ -126,7 +126,7 @@
                          id="networks"
                          role="tabpanel"
                          aria-labelledby="networks-tab">
-                        {% include "website/protrend_table.html" with objs=organisms fields=organism_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organisms table_config=organisms_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="regulator-frequency"
