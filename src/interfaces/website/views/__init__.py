@@ -1,2 +1,2 @@
-from .index import (index, fake_view)
+from .index import (IndexView, fake_view)
 from .organism import (OrganismsView, OrganismView)

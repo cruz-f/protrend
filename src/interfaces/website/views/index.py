@@ -1,8 +1,11 @@
 from django.shortcuts import render
+from django.views import generic
 
 
-def index(request):
-    return render(request, "website/index.html", {'active_page': 'home'})
+class IndexView(generic.TemplateView):
+    views = ()
+    template_name = "website/index.html"
+    view_name = 'home'
 
 
 def fake_view(request, param=None):

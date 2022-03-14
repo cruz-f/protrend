@@ -15,6 +15,7 @@ from interfaces.website import serializers
 class OrganismsView(views.WebsiteListView, generic.ListView):
     template_name = "website/organisms.html"
     context_object_name = "organisms"
+    view_name = 'organisms'
 
     active_page = 'organisms'
     serializer = serializers.OrganismsSerializer
@@ -42,6 +43,7 @@ class OrganismsView(views.WebsiteListView, generic.ListView):
 class OrganismView(views.WebsiteDetailView, generic.DetailView):
     template_name = "website/organism.html"
     context_object_name = "organism"
+    view_name = 'organism'
 
     active_page = 'organisms'
     serializer = serializers.OrganismSerializer
