@@ -26,18 +26,18 @@
        data-page-list="[25, 50, 100, all]">
     <thead>
     <tr>
-        {% for field, table_config in fields.items %}
-            <th class="text-uppercase" data-field="{{ field }}" data-sortable="{{ table_config.sortable }}">
-                {{ table_config.column }}
+        {% for field, field_config in table_config.items %}
+            <th class="text-uppercase" data-field="{{ field }}" data-sortable="{{ field_config.sortable }}">
+                {{ field_config.column }}
             </th>
         {% endfor %}
     </tr>
     </thead>
     <tbody>
-    {% for obj in objs %}
+    {% for obj in objects %}
         <tr>
-            {% for field, table_config in fields.items %}
-                {% if table_config.type == 'attr' %}
+            {% for field, field_config in table_config.items %}
+                {% if field_config.type == 'text' %}
                     {% if obj|get_item:field == None %}
                         <td class="text-uppercase">
                             <span>NA</span>
@@ -47,61 +47,23 @@
                             {{ obj|get_item:field }}
                         </td>
                     {% endif %}
-                {% elif 'dropdown' in table_config.type %}
-                    {% if table_config.type == 'ncbi-dropdown' %}
+                {% elif 'btn' in field_config.type %}
+                    {% if 'detail' in field_config.type %}
                         <td class="text-uppercase">
-                            {% include "website/protrend_dropdown.html" with obj=obj source="ncbi" redirect='ncbi' only %}
+                            {% include "website/protrend_button.html" with identifier=obj.protrend_id type=field_config.type only %}
                         </td>
-                    {% elif table_config.type == 'uniprot-dropdown' %}
+                    {% else %}
                         <td class="text-uppercase">
-                            {% include "website/protrend_dropdown.html" with obj=obj source="uniprot" redirect='uniprot' only %}
-                        </td>
-                    {% elif table_config.type == 'organism-dropdown' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_dropdown.html" with obj=obj source="detail" redirect='organism' only %}
-                        </td>
-                    {% elif table_config.type == 'organism-download-dropdown' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_dropdown.html" with obj=obj source="download" redirect='trns-detail' only %}
+                            {% include "website/protrend_button.html" with identifier=obj|get_item:field type=field_config.type only %}
                         </td>
                     {% endif %}
-                {% elif 'btn' in table_config.type %}
-                    {% if table_config.type == 'ncbi-gene-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.ncbi_gene source="ncbi-gene" redirect='ncbi-gene' only %}
-                        </td>
-                    {% elif table_config.type == 'uniprot-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.uniprot_accession source="uniprot" redirect='uniprot' only %}
-                        </td>
-                    {% elif table_config.type == 'protrend-regulator-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.protrend_id source="protrend" redirect='regulator' only %}
-                        </td>
-                    {% elif table_config.type == 'protrend-gene-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.protrend_id source="protrend" redirect='gene' only %}
-                        </td>
-                    {% elif table_config.type == 'protrend-binding-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.protrend_id source="protrend" redirect='binding' only %}
-                        </td>
-                    {% elif table_config.type == 'protrend-interaction-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.protrend_id source="protrend" redirect='interaction' only %}
-                        </td>
-                    {% elif table_config.type == 'protrend-regulator-black-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.regulator source="protrend-black" redirect='regulator' only %}
-                        </td>
-                    {% elif table_config.type == 'protrend-gene-black-btn' %}
-                        <td class="text-uppercase">
-                            {% include "website/protrend_button.html" with identifier=obj.gene source="protrend-black" redirect='gene' only %}
-                        </td>
-                    {% endif %}
-                {% elif 'regulatory-effect' in table_config.type %}
+                {% elif field_config.type == 'regulatory-effect'%}
                     <td class="text-uppercase">
-                        {% include "website/regulatory_effect.html" with obj=obj only %}
+                        {% include "website/regulatory_effect.html" with regulatory_effect=obj.regulatory_effect only %}
+                    </td>
+                {% else %}
+                    <td class="text-uppercase">
+                        <span>NA</span>
                     </td>
                 {% endif %}
             {% endfor %}
