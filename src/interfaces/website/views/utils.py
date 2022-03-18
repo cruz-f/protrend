@@ -1,6 +1,6 @@
 from django.http import FileResponse
 
-from application.export.fasta import make_fasta_file
+from application.exports.fasta import make_fasta_file
 
 
 def download_fasta(request,
