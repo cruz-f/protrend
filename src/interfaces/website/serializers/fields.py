@@ -22,6 +22,14 @@ class EffectorField(NestedField):
     name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
 
 
+class PathwayField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    kegg_pathways = serializers.ListField(required=False, child=serializers.CharField(required=False),
+                                          help_text=help_text.kegg_pathways)
+
+
 class RegulatorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
@@ -56,3 +64,14 @@ class RegulatoryInteractionField(NestedField):
     gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
     regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
                                                 help_text=help_text.regulatory_effect)
+
+
+class RegulatoryFamilyField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    mechanism = serializers.ChoiceField(required=False,
+                                        choices=choices.mechanism,
+                                        help_text=help_text.mechanism)
+    rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
+    description = serializers.CharField(required=False, help_text=help_text.generic_description)
