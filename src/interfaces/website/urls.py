@@ -5,7 +5,6 @@ from interfaces.website import views
 import interfaces.website.views as website_views
 from .router import WebsiteRouter
 
-
 # Create a router and register our class-based views.
 router = WebsiteRouter(r'')
 router.register(r'organisms', list_view=website_views.OrganismsView, detail_view=website_views.OrganismView)
@@ -15,4 +14,7 @@ urlpatterns = [
     path(r'', include(router.urls)),
     path('genes/<str:protrend_id>', views.fake_view, name='gene'),
     path('binding-sites/<str:protrend_id>', views.fake_view, name='binding-site'),
-    path('interactions/<str:protrend_id>', views.fake_view, name='interaction')]
+    path('interactions/<str:protrend_id>', views.fake_view, name='interaction'),
+    path('effectors/<str:protrend_id>', views.fake_view, name='effector'),
+    path('download-fasta/<str:identifier>/<str:locus_tag>/<str:name>/<str:sequence>',
+         views.download_fasta, name='download-fasta')]
