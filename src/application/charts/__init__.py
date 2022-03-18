@@ -10,4 +10,6 @@ from .regulator import (RegulatorsExternalChart,
                         RegulatorsGenesChart,
                         RegulatorsGenesTopChart,
                         RegulatorsMechanismChart,
-                        RegulatoryFamiliesRegulatorsTopChart)
+                        RegulatoryFamiliesRegulatorsTopChart,
+                        RegulatorTRNChart,
+                        RegulatorRegulatoryEffectChart)
