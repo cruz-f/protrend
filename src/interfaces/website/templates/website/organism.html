@@ -19,12 +19,12 @@
             </div>
         </div>
         <div class="row align-items-center pt-3">
-            <div class="col-sm-8 align-self-center">
+            <div class="col-lg-8 py-2 py-lg-2 align-self-center">
                 <h2 class="text-uppercase blue-color">
                     {{ organism.name }}
                 </h2>
             </div>
-            <div class="col-sm-2 align-self-center">
+            <div class="col-lg-2 py-2 py-lg-2 align-self-center">
                 <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
                         type="button"
                         id="DownloadDropDown"
@@ -61,7 +61,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-sm-2 align-self-center">
+            <div class="col-lg-2 py-2 py-lg-2 align-self-center">
                 <button class="btn btn-outline-primary dropdown-toggle text-uppercase fs-5"
                         type="button"
                         id="NavigateDropDown"
@@ -97,7 +97,7 @@
             <h5 id="details" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
                 Details <i class="bi bi-clipboard-data ps-2"></i>
             </h5>
-            <div class="col-6 align-self-center">
+            <div class="col-lg-6 py-2 py-lg-2 align-self-center">
                 <div class="table-responsive">
                     <table class="table-custom table-borderless">
                         <tbody>
@@ -190,7 +190,7 @@
                     </table>
                 </div>
             </div>
-            <div class="col-6 align-self-center">
+            <div class="col-lg-6 py-2 py-lg-2 align-self-center">
                 <ul class="nav nav-tabs" id="graph-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active text-uppercase"
@@ -269,7 +269,7 @@
                 <div class="container">
                     <div class="row pt-2">
                         {% for source in organism.data_source %}
-                            <div class="col-sm-4 py-sm-2">
+                            <div class="col-lg-4 py-2 py-lg-0">
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title text-uppercase">{{ source.name }}</h5>
