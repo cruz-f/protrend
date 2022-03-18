@@ -125,3 +125,49 @@ class RegulatorsExternalChart(Chart):
 
         data = {'data': {'labels': labels, 'datasets': datasets}}
         return data
+
+
+class RegulatorTRNChart(Chart):
+    _chart_type = 'bar'
+    _aspect_ratio = True
+    _legend = 'top'
+    _title = 'TRN Nodes Distribution'
+    _x_label = 'Type of Nodes'
+    _y_label = 'Node Frequency'
+
+    @property
+    def data(self):
+        labels = ['Effectors', 'Genes', 'Binding Sites', 'Interactions']
+        label = 'Nodes'
+
+        datasets = [{'label': label,
+                     'backgroundColor': Colors.get_color('blue', muted=True),
+                     'data': [len(self.objects.effector), len(self.objects.gene), len(self.objects.tfbs),
+                              len(self.objects.regulatory_interaction)]}]
+
+        data = {'data': {'labels': labels, 'datasets': datasets}}
+        return data
+
+
+class RegulatorRegulatoryEffectChart(Chart):
+    _chart_type = 'bar'
+    _aspect_ratio = True
+    _legend = 'top'
+    _title = 'TRN Regulatory Effect Frequency'
+    _x_label = 'Type of Regulatory Effect'
+    _y_label = 'Regulatory Interaction Frequency'
+
+    @property
+    def data(self):
+        label = 'Interactions'
+
+        effects = defaultdict(int)
+        for interaction in self.objects.regulatory_interaction:
+            effects[interaction.regulatory_effect] += 1
+
+        datasets = [{'label': label,
+                     'backgroundColor': Colors.get_color('yellow', muted=True),
+                     'data': [cnt for cnt in effects.values()]}]
+
+        data = {'data': {'labels': [label_.title() for label_ in effects.keys()], 'datasets': datasets}}
+        return data
