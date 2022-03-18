@@ -1,11 +1,14 @@
-from typing import Union, List
+from typing import Union, List, Dict
 
+import numpy as np
+import pandas as pd
 from django.views import generic
 from django_neomodel import DjangoNode
 
 import data
 from application import tables, charts
 from application.charts.chart import Chart
+from application.sequences import make_motif_logo, make_motif_img, make_pwm
 from application.tables.table import Table
 from domain.neo import NeoNode, NeoLinkedQuerySet
 from interfaces import views
@@ -54,18 +57,56 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
     active_page = 'regulators'
     serializer = serializers.RegulatorSerializer
     model = data.Regulator
-    fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain',
-              'refseq_accession', 'refseq_ftp', 'genbank_accession',
-              'genbank_ftp', 'ncbi_assembly', 'assembly_accession']
+    fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'function', 'description',
+              'mechanism', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence',
+              'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
-               'regulator': ['protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene'],
+               'organism': ['protrend_id', 'name', 'species', 'strain', 'ncbi_taxonomy'],
+               'effector': ['protrend_id', 'name'],
+               'pathway': ['protrend_id', 'name', 'kegg_pathways'],
                'gene': ['protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene'],
                'tfbs': ['protrend_id', 'sequence', 'start', 'stop', 'strand'],
-               'regulatory_interaction': ['protrend_id', 'regulator', 'gene', 'regulatory_effect']}
+               'regulatory_interaction': ['protrend_id', 'regulator', 'gene', 'regulatory_effect'],
+               'regulatory_family': ['protrend_id', 'name', 'mechanism', 'rfam', 'description']}
     relationships = {'data_source': ['external_identifier', 'url']}
 
     def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
-        return []
+        return [tables.RegulatorEffectorsTable(),
+                tables.RegulatorGenesTable(),
+                tables.RegulatorBindingsTable(),
+                tables.RegulatorInteractionsTable()]
 
     def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
-        return []
+        return [charts.RegulatorTRNChart(objects=objects),
+                charts.RegulatorRegulatoryEffectChart(objects=objects)]
+
+    @staticmethod
+    def get_binding_motif(binding_sites: List[Dict]):
+        sequences = [tfbs.get('sequence', '') for tfbs in binding_sites]
+        pwm = make_pwm(sequences)
+        logo = make_motif_logo(pwm)
+        img = make_motif_img(logo)
+        img = img.replace('height="180pt"', '').replace('width="720pt"', '')
+
+        # split sequences
+        sequences = np.array_split(sequences, 4)
+        return pwm, sequences, img
+
+    def get_context_data(self, **kwargs):
+        context = super(RegulatorView, self).get_context_data(**kwargs)
+
+        binding_sites = context[self.context_object_name].get('tfbs', [])
+
+        if binding_sites:
+            pwm, sequences, img = self.get_binding_motif(binding_sites)
+
+            context['pwm'] = pwm
+            context['motif_sequences'] = sequences
+            context['motif'] = img
+
+        else:
+            context['pwm'] = pd.DataFrame()
+            context['motif_sequences'] = []
+            context['motif'] = '<svg height="30" width="200"><text x="0" y="15" fill="black">There is no motif available</text></svg>'
+
+        return context
