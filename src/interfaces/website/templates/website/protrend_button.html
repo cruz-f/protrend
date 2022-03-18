@@ -121,6 +121,13 @@
            href="{% url 'regulator' identifier %}">
             <i class="bi bi-journal-plus pe-2"></i> detail
         </a>
+    {% elif type == 'protrend-effector-primary-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url 'effector' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
     {% elif type == 'protrend-organism-primary-btn' %}
         <a role="button"
            class="btn rounded-pill btn-outline-primary"
