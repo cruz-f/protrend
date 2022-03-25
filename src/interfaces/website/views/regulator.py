@@ -66,7 +66,7 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
                'pathway': ['protrend_id', 'name', 'kegg_pathways'],
                'gene': ['protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene'],
                'tfbs': ['protrend_id', 'sequence', 'start', 'stop', 'strand'],
-               'regulatory_interaction': ['protrend_id', 'regulator', 'gene', 'regulatory_effect'],
+               'regulatory_interaction': ['protrend_id', 'organism', 'regulator', 'gene', 'regulatory_effect'],
                'regulatory_family': ['protrend_id', 'name', 'mechanism', 'rfam', 'description']}
     relationships = {'data_source': ['external_identifier', 'url']}
 
