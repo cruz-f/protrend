@@ -60,6 +60,7 @@ class TFBSField(NestedField):
 class RegulatoryInteractionField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
     gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
     regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
