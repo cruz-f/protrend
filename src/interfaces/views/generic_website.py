@@ -57,15 +57,15 @@ class GenericWebsiteView(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def get_serialized_objects(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> Dict:
+    def get_serialized_objects(self, objects: Union[List[DjangoNode], List[NeoNode], DjangoNode, NeoNode]) -> Dict:
         pass
 
     @abc.abstractmethod
-    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
+    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode], DjangoNode, NeoNode]) -> List[Table]:
         pass
 
     @abc.abstractmethod
-    def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
+    def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode], DjangoNode, NeoNode]) -> List[Chart]:
         pass
 
 
@@ -89,11 +89,12 @@ class WebsiteListView(GenericWebsiteView):
                                many=True,
                                context={'request': self.request}).data
 
-    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
+    def get_tables(self, objects):
         return []
 
-    def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
+    def get_charts(self,objects):
         return []
+
 
 
 class WebsiteDetailView(GenericWebsiteView):
@@ -125,8 +126,8 @@ class WebsiteDetailView(GenericWebsiteView):
         return self.serializer(objects,
                                context={'request': self.request}).data
 
-    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
+    def get_tables(self, objects):
         return []
 
-    def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
+    def get_charts(self,objects):
         return []
