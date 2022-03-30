@@ -441,45 +441,51 @@
                 </h5>
                 <div class="container">
                     <div class="row pt-2">
-                        <div class="col">
-                            <div class="card" style="min-height: 250px!important;">
-                                <div class="card-body">
-                                    {% if regulator.regulatory_family %}
-                                        <h5 class="card-title">{{ regulator.regulatory_family.0.name }}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">{{ regulator.regulatory_family.0.protrend_id }}</h6>
-                                        {% if regulator.regulatory_family.0.rfam %}
-                                            <p class="card-text py-3">RFAM: {{ regulator.regulatory_family.0.rfam }}</p>
-                                        {% endif %}
-                                        <p class="card-text py-3">Mechanism:
-                                            {% if regulator.regulatory_family.0.mechanism %}
-                                                {{ regulator.regulatory_family.0.mechanism }}
-                                            {% else %}
-                                                {{ regulator.mechanism }}
-                                            {% endif %}
-                                        </p>
-                                        <p class="card-text">Description:
-                                            {% if regulator.regulatory_family.0.description %}
-                                                {{ regulator.regulatory_family.0.description }}
-                                            {% else %}
-                                                No description available for this regulatory family
-                                            {% endif %}
-                                        </p>
-                                    {% else %}
+                        {% if regulator.regulatory_family %}
+                            {% for rfam in regulator.regulatory_family %}
+                                <div class="col-lg-4 py-2">
+                                    <div class="card" style="min-height: 250px!important;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ rfam.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">Regulatory Family</h6>
+                                            <p class="card-text">
+                                                PROTREND FAMILY: {{ rfam.protrend_id }}
+                                            </p>
+                                            <p class="card-text">
+                                                {% if rfam.rfam %}
+                                                    RFAM: {{ rfam.rfam }}
+                                                {% else %}
+                                                    RFAM: Not Available
+                                                {% endif %}
+                                            </p>
+                                            <p class="card-text">
+                                                {% if rfam.description %}
+                                                    {{ rfam.description }}
+                                                {% else %}
+                                                    There is no description for this regulatory family
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card" style="min-height: 250px!important;">
+                                    <div class="card-body">
                                         <h5 class="card-title">Not Available</h5>
                                         <h6 class="card-subtitle mb-2 text-muted">Regulatory Family</h6>
-                                        {% if regulator.regulatory_family.0.rfam %}
-                                            <p class="card-text">RFAM: {{ regulator.regulatory_family.0.rfam }}</p>
-                                        {% endif %}
+                                        <p class="card-text">RFAM: Not Available</p>
                                         <p class="card-text">Mechanism:
                                             {{ regulator.mechanism }}
                                         </p>
                                         <p class="card-text">Description:
                                             No description available for this regulatory family
                                         </p>
-                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -491,35 +497,46 @@
                 </h5>
                 <div class="container">
                     <div class="row pt-2">
-                        <div class="col">
-                            <div class="card" style="min-height: 250px!important;">
-                                <div class="card-body">
-                                    {% if regulator.pathway %}
-                                        <h5 class="card-title">{{ regulator.pathway.0.name }}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">{{ regulator.pathway.0.protrend_id }}</h6>
-                                        <p class="card-text text-uppercase py-3">Associated kegg pathways</p>
-                                        {% if regulator.pathway.0.kegg_pathways %}
-                                            <ul class="list-group list-group-flush" style="max-width: 50%">
-                                                {% for kegg_pathway in regulator.pathway.0.kegg_pathways %}
-                                                    <li class="list-group-item">{{ kegg_pathway }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        {% else %}
-                                            <ul class="list-group list-group-flush" style="max-width: 50%">
-                                                <li class="list-group-item">Not available</li>
-                                            </ul>
-                                        {% endif %}
-                                    {% else %}
+                        {% if regulator.pathway %}
+                            {% for pathway in regulator.pathway %}
+                                <div class="col-lg-4 py-2">
+                                    <div class="card" style="min-height: 250px!important;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ pathway.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">Metabolic Pathway</h6>
+                                            <p class="card-text">
+                                                PROTREND PATHWAY: {{ pathway.protrend_id }}
+                                            </p>
+                                            <p class="card-text text-uppercase py-3">Associated kegg pathways</p>
+                                            {% if pathway.kegg_pathways %}
+                                                <ul class="list-group list-group-flush" style="max-width: 50%">
+                                                    {% for kegg_pathway in pathway.kegg_pathways %}
+                                                        <li class="list-group-item">{{ kegg_pathway }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <ul class="list-group list-group-flush" style="max-width: 50%">
+                                                    <li class="list-group-item">Not available</li>
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card" style="min-height: 250px!important;">
+                                    <div class="card-body">
                                         <h5 class="card-title">Not Available</h5>
                                         <h6 class="card-subtitle mb-2 text-muted">Regulatory Family</h6>
                                         <p class="card-text text-uppercase">Associated kegg pathways</p>
                                         <ul class="list-group list-group-flush" style="max-width: 50%">
                                             <li class="list-group-item">Not available</li>
                                         </ul>
-                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
