@@ -63,6 +63,8 @@ class RegulatoryInteractionField(NestedField):
     organism = serializers.CharField(required=True, max_length=100, help_text=help_text.organism_id)
     regulator = serializers.CharField(required=True, max_length=100, help_text=help_text.regulator_id)
     gene = serializers.CharField(required=True, max_length=100, help_text=help_text.gene_id)
+    tfbs = serializers.CharField(required=False, max_length=100, help_text=help_text.tfbs_id)
+    effector = serializers.CharField(required=False, max_length=100, help_text=help_text.effector_id)
     regulatory_effect = serializers.ChoiceField(required=True, choices=choices.regulatory_effect,
                                                 help_text=help_text.regulatory_effect)
 
