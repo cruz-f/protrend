@@ -1,13 +1,8 @@
-from typing import Union, List
-
 from django.views import generic
-from django_neomodel import DjangoNode
 
 import data
 from application import tables, charts
-from application.charts.chart import Chart
-from application.tables.table import Table
-from domain.neo import NeoNode, NeoLinkedQuerySet
+from domain.neo import NeoLinkedQuerySet
 from interfaces import views
 from interfaces.website import serializers
 
@@ -23,10 +18,10 @@ class OrganismsView(views.WebsiteListView, generic.ListView):
     fields = ['protrend_id', 'name', 'ncbi_taxonomy',
               'species', 'refseq_accession', 'genbank_accession', 'assembly_accession']
 
-    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
+    def get_tables(self, objects):
         return [tables.OrganismsTable()]
 
-    def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
+    def get_charts(self, objects):
         # performing a group_by_count in a linked query set is faster than obtaining a linked query set
         # at the instantiation of the view to retrieve all organisms and regulator objects
         queryset = NeoLinkedQuerySet(source=self.model,
@@ -55,16 +50,17 @@ class OrganismView(views.WebsiteDetailView, generic.DetailView):
                'regulator': ['protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene'],
                'gene': ['protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene'],
                'tfbs': ['protrend_id', 'sequence', 'start', 'stop', 'strand'],
-               'regulatory_interaction': ['protrend_id', 'regulator', 'gene', 'regulatory_effect']}
+               'regulatory_interaction': ['protrend_id', 'organism', 'regulator', 'gene', 'tfbs', 'effector',
+                                          'regulatory_effect']}
     relationships = {'data_source': ['external_identifier', 'url']}
 
-    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
+    def get_tables(self, objects):
         return [tables.OrganismRegulatorsTable(),
                 tables.OrganismGenesTable(),
                 tables.OrganismBindingsTable(),
                 tables.OrganismInteractionsTable()]
 
-    def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
+    def get_charts(self, objects):
         return [charts.OrganismTRNChart(objects=objects),
                 charts.OrganismRegulatorsGenesChart(objects=objects),
                 charts.OrganismGenesRegulatorsChart(objects=objects),
