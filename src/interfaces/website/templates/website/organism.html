@@ -10,6 +10,15 @@
     <link rel="stylesheet"
           type="text/css"
           href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/network.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/heb.css' %}">
+
 {% endblock %}
 {% block content %}
     <div class="container">
@@ -88,6 +97,12 @@
                         <a class="dropdown-item text-uppercase"
                            href="#networks">
                             network
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#visualizations">
+                            visualizations
                         </a>
                     </li>
                 </ul>
@@ -300,7 +315,7 @@
                 </div>
             </div>
         </div>
-        <div class="row align-items-center py-5">
+        <div class="row align-items-center pt-5">
             <div class="col align-self-center">
                 <h5 id="networks" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
                     Network <i class="bi bi-bezier2 ps-2"></i>
@@ -383,21 +398,281 @@
                 </div>
             </div>
         </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 id="visualizations" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Network Visualization <i class="fa-solid fa-code-merge ps-2"></i>
+                </h5>
+                <p class="blue-color">
+                    NETWORK VISUALIZATION IS LIMITED TO ONLY 15 REGULATORS!!!
+                </p>
+                <p class="text-justify pb-3">
+                    The network visualization is currently limited to only 15 regulators
+                    in order to ease nodes (regulators and genes) and edges (regulatory interactions).
+                    One can select the number of regulators to be displayed in the network by selecting the desired regulator
+                    in the table bellow and then run the launch network visualization button.
+                </p>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <ul class="nav nav-tabs" id="tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active text-uppercase"
+                                            id="network-graph-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#network-graph"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="network-graph"
+                                            aria-selected="true">graph network</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link text-uppercase"
+                                            id="heb-graph-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#heb-graph"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="heb-graph"
+                                            aria-selected="false">Hierarchical Edge Bundling</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content pt-3" id="tab">
+                                <div class="tab-pane fade show active"
+                                     id="network-graph"
+                                     role="tabpanel"
+                                     aria-labelledby="network-graph-tab">
+                                    <div id="network-toolbar">
+                                        <span class="text-start">
+                                            Select the regulators to be displayed in the network and then
+                                        </span>
+                                        <button id="network-btn"
+                                                class="btn btn-success text-uppercase"
+                                                data-bs-toggle="modal" data-bs-target="#network-modal"
+                                                disabled>
+                                            Launch Network <i class="bi bi-caret-right"></i>
+                                        </button>
+                                    </div>
+                                    <table class="table table-hover table-borderless" id="network-table"
+
+                                           data-toolbar="#network-toolbar"
+
+                                           data-toggle="table"
+
+                                           data-search="true"
+                                           data-regex-search="true"
+                                           data-search-accent-neutralise="true"
+                                           data-search-highlight="true"
+                                           data-search-time-out="1000"
+
+                                           data-sort-reset="true"
+                                           data-click-to-select="true"
+
+                                           data-buttons-class="primary"
+
+                                           data-id-field="id"
+
+                                           data-pagination="true"
+                                           data-page-size="15"
+                                           data-page-list="[15, 25, 50, 100, all]">
+                                        <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th class="text-uppercase"
+                                                data-field="id"
+                                                data-sortable="true">
+                                                PROTREND ID
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="locus_tag"
+                                                data-sortable="true">
+                                                locus tag
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="name"
+                                                data-sortable="true">
+                                                name
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="uniprot_id"
+                                                data-sortable="true">
+                                                uniprot
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for reg in organism.regulator %}
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.protrend_id }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.locus_tag }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.name }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.uniprot_accession }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="modal fade" id="network-modal" tabindex="-1"
+                                         aria-labelledby="network-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog modal-fullscreen">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-uppercase" id="network-modal-label">{{ organism.name }} network</h5>
+                                                    <button id="close-network-modal-1"
+                                                            type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="network-cy"></div>
+                                                    <div id="network-cy-config" class="config"></div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="close-network-modal-2"
+                                                            type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade"
+                                     id="heb-graph"
+                                     role="tabpanel"
+                                     aria-labelledby="heb-graph-tab">
+                                    <div id="heb-toolbar">
+                                        <span class="text-start">
+                                            Select the regulators to be displayed in the HEB and then
+                                        </span>
+                                        <button id="heb-btn"
+                                                class="btn btn-success text-uppercase"
+                                                data-bs-toggle="modal" data-bs-target="#heb-modal"
+                                                disabled>
+                                            Launch HEB <i class="bi bi-caret-right"></i>
+                                        </button>
+                                    </div>
+                                    <table class="table table-hover table-borderless" id="heb-table"
+
+                                           data-toolbar="#heb-toolbar"
+
+                                           data-toggle="table"
+
+                                           data-search="true"
+                                           data-regex-search="true"
+                                           data-search-accent-neutralise="true"
+                                           data-search-highlight="true"
+                                           data-search-time-out="1000"
+
+                                           data-sort-reset="true"
+                                           data-click-to-select="true"
+
+                                           data-buttons-class="primary"
+
+                                           data-id-field="id"
+
+                                           data-pagination="true"
+                                           data-page-size="15"
+                                           data-page-list="[15, 25, 50, 100, all]">
+                                        <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th class="text-uppercase"
+                                                data-field="id"
+                                                data-sortable="true">
+                                                PROTREND ID
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="locus_tag"
+                                                data-sortable="true">
+                                                locus tag
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="name"
+                                                data-sortable="true">
+                                                name
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="uniprot_id"
+                                                data-sortable="true">
+                                                uniprot
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for reg in organism.regulator %}
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.protrend_id }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.locus_tag }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.name }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.uniprot_accession }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="modal fade" id="heb-modal" tabindex="-1"
+                                         aria-labelledby="heb-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog modal-fullscreen">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-uppercase" id="heb-modal-label">{{ organism.name }} Hierarchical Edge Bundling</h5>
+                                                    <button id="close-heb-modal-1"
+                                                            type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="heb-ds" class="text-center py-2"></div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="close-heb-modal-2"
+                                                            type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 {% block script %}
-    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js">
-    </script>
-    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js">
-    </script>
-    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
-    </script>
-    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js">
-    </script>
-    <script src="{% static 'website/js/getChart.js' %}">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
+    <script src="https://unpkg.com/webcola@3.3.8/WebCola/cola.min.js"></script>
+    <script src="https://unpkg.com/popper.js@1.14.4/dist/umd/popper.js"></script>
+    <script src="https://unpkg.com/tippy.js@2.6.0/dist/tippy.all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.0/cytoscape.min.js"
+            integrity="sha512-6NNH8uUbdENB10r5FH/4DZviHTQ44GtZ+c+fwSiWM4GekjajHkYanpH0+jWt3meFll/HHWAcxKLcMpSAXuT/Dg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/cytoscape-cola@2.2.3/cytoscape-cola.js"></script>
+    <script src="https://unpkg.com/cytoscape-popper@1.0.2/cytoscape-popper.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="{% static 'website/js/getChart.js' %}"></script>
     {{ OrganismTRNChartData|json_script:'OrganismTRNChartData' }}
     {{ OrganismRegulatorsGenesChartData|json_script:'OrganismRegulatorsGenesChartData' }}
     {{ OrganismGenesRegulatorsChartData|json_script:'OrganismGenesRegulatorsChartData' }}
@@ -409,5 +684,21 @@
         const OrganismRegulatoryEffectChart = getChart('OrganismRegulatoryEffect',
             'OrganismRegulatoryEffectChartData')
     </script>
+
+    {{ organism|json_script:'organism-data' }}
+    <script src="{% static 'website/js/getNetwork.js' %}"></script>
+    <script>
+        getNetwork('#network-btn', '#network-table',
+            '#close-network-modal-1', '#close-network-modal-2',
+            '#network-cy', '#network-cy-config', '#organism-data')
+    </script>
+
+    <script src="{% static 'website/js/getHEB.js' %}"></script>
+    <script>
+        getHEB('#heb-btn', '#heb-table',
+            '#close-heb-modal-1', '#close-heb-modal-2',
+            '#heb-ds', '#organism-data')
+    </script>
+
 {% endblock %}
 </html>

@@ -1,0 +1,58 @@
+#network-cy {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 17rem!important;
+}
+
+.network-node-paragraph {
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+}
+
+.network-edge-paragraph {
+    color: #8BB0D0;
+    display: block;
+    padding-top: 0.3rem!important;
+    padding-bottom: 0.3rem!important;
+}
+
+#network-cy-config {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 17rem!important;
+    background: rgba(18, 49, 39, 0.45);
+    box-sizing: border-box;
+    padding: 1rem;
+    color: #fff;
+    transition-property: opacity;
+    transition-duration: 250ms;
+    transition-timing-function: ease-out;
+    overflow: auto;
+    z-index: 1;
+}
+
+#network-cy-config .param {
+    margin-bottom: 1rem;
+}
+
+#network-cy-config .preamble {
+    margin-bottom: 2rem;
+}
+
+#network-cy-config .label {
+    display: block;
+}
+
+#network-cy-config .slider {
+    display: block;
+    width: 100%;
+    margin: 0;
+}
+
+#network-cy-config .fa {
+    color: #fff;
+}
