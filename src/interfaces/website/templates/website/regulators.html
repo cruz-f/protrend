@@ -19,41 +19,41 @@
     <div class="container">
         <div class="row align-items-center pt-5">
             <div class="col align-self-start">
-                {% include "website/protrend_bread_crumb.html" with child="Organisms" only %}
+                {% include "website/protrend_bread_crumb.html" with child="Regulators" only %}
             </div>
         </div>
         <div class="row align-items-center pt-3">
             <div class="col align-self-center">
                 <h2 class="text-uppercase blue-color">
-                    Organisms
+                    Regulators
                 </h2>
             </div>
         </div>
         <div class="row align-items-center">
             <div class="col-8 align-self-center">
                 <p class="text-justify py-1">
-                    ProTReND comprises a list of organisms classified with the scientific name and taxonomy identifier
-                    from NCBI.
-                    In addition, ProTReND contains several details for each organism,
-                    including the species and strain of the organism.
-                    Regarding the genomic sequences, we provide the GenBank accession, the RefSeq accession,
-                    and NCBI Assembly accession that can be used to obtain both protein and genome sequences from the
-                    NCBI databases.
+                    ProTReND comprises a list of regulators classified with the locus tag, name and regulatory mechanism
+                    (e.g. transcription factor, sigma factor, small RNA, etc.).
+                    In addition, ProTReND provides several attributes for each regulator
+                    including gene/protein synonyms, functions and descriptions, or genomic coordinates and protein sequences.
+                    Regarding the external links and annotation, we have used UniProtKB, NCBI Gene, NCBI Protein, NCBI GenBank and NCBI RefSeq databases
+                    to provide genomic coordinates, amino acid sequences and other details.
+                    The role and mechanism of each regulator in the many regulatory interactions comprised in ProTReND have been retrieved
+                    from several resources of regulatory data, such as RegPrecise, Abasy, CoryneRegNet, RegulonDB, DBTBS and literature.
                 </p>
-                <p class="text-justify py-1">
-                    In this view, one can consult all regulators, genes, interactions and binding sites associated with
-                    a given organism. For that, just open the organism dedicated webpage.
+                <p class="py-1">
+                    In this view, one can consult the organism, effectors, genes, interactions and binding sites associated with
+                    a given regulator. For that, just open the organism dedicated webpage.
                 </p>
-                <p class="text-justify py-1">
-                    Note that, the list of organisms available at ProTReND might contain redundant species,
-                    due to the ambiguous scientific name found in the collected data sources,
-                    and incorrect NCBI taxonomy classifications.
+                <p class="py-1">
+                    Note that, the list of regulators available at ProTReND might contain redundant locus tag or names,
+                    due to the ambiguous classifications found in the collected data sources and external links.
                 </p>
             </div>
             <div class="col-4 align-self-center">
-                <img src="{% static 'website/images/bacteria.jpg' %}"
+                <img src="{% static 'website/images/regulator.jpg' %}"
                      class="img-fluid"
-                     alt="organisms">
+                     alt="regulators">
             </div>
         </div>
         <div class="row align-items-center py-5">
@@ -82,13 +82,13 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link text-uppercase"
-                                id="regulator-frequency-tab"
+                                id="gene-frequency-tab"
                                 data-bs-toggle="tab"
-                                data-bs-target="#regulator-frequency"
+                                data-bs-target="#gene-frequency"
                                 type="button"
                                 role="tab"
-                                aria-controls="regulator-frequency"
-                                aria-selected="false">organisms-regulators</button>
+                                aria-controls="gene-frequency"
+                                aria-selected="false">regulators-genes</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link text-uppercase"
@@ -98,17 +98,27 @@
                                 type="button"
                                 role="tab"
                                 aria-controls="top-frequency"
-                                aria-selected="false">top 10 organisms</button>
+                                aria-selected="false">top 25 regulators</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link text-uppercase"
-                                id="distribution-tab"
+                                id="top-rfam-tab"
                                 data-bs-toggle="tab"
-                                data-bs-target="#distribution"
+                                data-bs-target="#top-rfam"
                                 type="button"
                                 role="tab"
-                                aria-controls="distribution"
-                                aria-selected="false">taxa</button>
+                                aria-controls="top-rfam"
+                                aria-selected="false">top 25 regulatory families</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="mechanism-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#mechanism"
+                                type="button"
+                                role="tab"
+                                aria-controls="mechanism"
+                                aria-selected="false">mechanism</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link text-uppercase"
@@ -126,16 +136,16 @@
                          id="networks"
                          role="tabpanel"
                          aria-labelledby="networks-tab">
-                        {% include "website/protrend_table.html" with objects=organisms table_config=organisms_table only %}
+                        {% include "website/protrend_table.html" with objects=regulators table_config=regulators_table only %}
                     </div>
                     <div class="tab-pane fade"
-                         id="regulator-frequency"
+                         id="gene-frequency"
                          role="tabpanel"
-                         aria-labelledby="regulator-frequency-tab">
+                         aria-labelledby="gene-frequency-tab">
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsRegulatorsGenes" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsGenes" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -147,19 +157,31 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsRegulatorsTop" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsGenesTop" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane fade"
-                         id="distribution"
+                         id="top-rfam"
                          role="tabpanel"
-                         aria-labelledby="distribution-tab">
+                         aria-labelledby="top-rfam-tab">
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsTaxa" class="canvas-md"></canvas>
+                                    <canvas id="RegulatoryFamiliesRegulatorsTop" class="canvas-md"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="mechanism"
+                         role="tabpanel"
+                         aria-labelledby="mechanism-tab">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                    <canvas id="RegulatorsMechanism" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -171,7 +193,7 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-sm-6">
-                                    <canvas id="OrganismsExternal" class="canvas-md"></canvas>
+                                    <canvas id="RegulatorsExternal" class="canvas-md"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -194,15 +216,18 @@
     </script>
     <script src="{% static 'website/js/getChart.js' %}">
     </script>
-    {{ OrganismsRegulatorsChartData|json_script:'OrganismsRegulatorsChartData' }}
-    {{ OrganismsRegulatorsTopChartData|json_script:'OrganismsRegulatorsTopChartData' }}
-    {{ OrganismsTaxaChartData|json_script:'OrganismsTaxaChartData' }}
-    {{ OrganismsExternalChartData|json_script:'OrganismsExternalChartData' }}
+    {{ RegulatorsGenesChartData|json_script:'RegulatorsGenesChartData' }}
+    {{ RegulatorsGenesTopChartData|json_script:'RegulatorsGenesTopChartData' }}
+    {{ RegulatoryFamiliesRegulatorsTopChartData|json_script:'RegulatoryFamiliesRegulatorsTopChartData' }}
+    {{ RegulatorsMechanismChartData|json_script:'RegulatorsMechanismChartData' }}
+    {{ RegulatorsExternalChartData|json_script:'RegulatorsExternalChartData' }}
     <script>
-        const OrganismsRegulatorsGenesChart = getChart('OrganismsRegulatorsGenes', 'OrganismsRegulatorsChartData')
-        const OrganismsRegulatorsTopChart = getChart('OrganismsRegulatorsTop', 'OrganismsRegulatorsTopChartData')
-        const OrganismsTaxaChart = getChart('OrganismsTaxa', 'OrganismsTaxaChartData')
-        const OrganismsExternalChart = getChart('OrganismsExternal', 'OrganismsExternalChartData')
+        const RegulatorsGenesChart = getChart('RegulatorsGenes', 'RegulatorsGenesChartData')
+        const RegulatorsGenesTopChart = getChart('RegulatorsGenesTop', 'RegulatorsGenesTopChartData')
+        const RegulatoryFamiliesRegulatorsTopChart = getChart('RegulatoryFamiliesRegulatorsTop',
+            'RegulatoryFamiliesRegulatorsTopChartData')
+        const RegulatorsMechanismChart = getChart('RegulatorsMechanism', 'RegulatorsMechanismChartData')
+        const RegulatorsExternalChart = getChart('RegulatorsExternal', 'RegulatorsExternalChartData')
     </script>
 {% endblock %}
 </html>

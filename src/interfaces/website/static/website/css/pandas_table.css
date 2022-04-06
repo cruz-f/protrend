@@ -1,0 +1,9 @@
+.pandas-table>thead>tr {
+    background-color: #ffffff!important;
+    color: #000000!important;
+    border-top-width: 0!important;
+}
+
+.pandas-table>thead>tr>th {
+    border: 0;
+}

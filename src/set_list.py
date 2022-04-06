@@ -21,6 +21,10 @@ class SetList(UserList, List[T]):
 
     def _get_element_key(self, element: Any):
         if self.key:
+
+            if isinstance(element, dict):
+                return element[self.key]
+
             return getattr(element, self.key)
 
         hash(element)

@@ -1,0 +1,756 @@
+{% extends "website/footer.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/table.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/gene_box.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/pandas_table.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/motif.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-start">
+                {% include "website/protrend_bread_crumb.html" with child="Regulators" sub_child=regulator.protrend_id only %}
+            </div>
+        </div>
+        <div class="row align-items-center pt-3">
+            <div class="col-lg-8 py-2 py-lg-0 align-self-center">
+                <h2 class="text-uppercase blue-color">
+                    {{ regulator.locus_tag }}
+                </h2>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="DownloadDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-download"></i>
+                    download
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="DownloadDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=api">
+                            api
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=json">
+                            json
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=csv">
+                            csv
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=xlsx">
+                            xlsx
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <button class="btn btn-outline-primary dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="NavigateDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-journal-plus"></i>
+                    navigate
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="NavigateDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#details">
+                            detail
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#sources">
+                            source
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#organism">
+                            organism
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#family">
+                            family
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#pathway">
+                            pathway
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#motif">
+                            binding motif
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#networks">
+                            network
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <h5 id="details" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                Details <i class="bi bi-clipboard-data ps-2"></i>
+            </h5>
+            <div class="col-lg-6 py-2 py-md-0 align-self-center">
+                <div class="table-responsive">
+                    <table class="table-custom table-borderless">
+                        <tbody>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">identifier</td>
+                            <td>{{ regulator.protrend_id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">locus tag</td>
+                            <td>{{ regulator.locus_tag }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">name</td>
+                            <td>{% if regulator.name %}{{ regulator.name }}{% else %}NA{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">synonyms</td>
+                            <td>
+                                {% if regulator.synonyms %}
+                                    {% for synonym in regulator.synonyms %}
+                                        <span class="pe-1">{{ synonym }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">mechanism</td>
+                            <td>{{ regulator.mechanism }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">function</td>
+                            <td>
+                                {% if regulator.function %}
+                                    {{ regulator.function }}
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">description</td>
+                            <td>
+                                <button class="btn btn-outline-success text-uppercase"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#descriptionCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="descriptionCollapse">
+                                    show descriptions
+                                </button>
+                                <div class="collapse pt-2" id="descriptionCollapse">
+                                    <div class="card card-body">
+                                        {% if regulator.description %}
+                                            {{ regulator.description }}
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">UniProt Accession</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=regulator.uniprot_accession type='uniprot-acc-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI Protein</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=regulator.ncbi_protein type='ncbi-protein-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI GenBank Accession</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=regulator.genbank_accession type='ncbi-genbank-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI RefSeq Accession</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=regulator.refseq_accession type='ncbi-refseq-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI Gene</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=regulator.ncbi_gene type='ncbi-gene-btn' %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-6 py-2 py-md-0 align-self-center">
+                <ul class="nav nav-tabs" id="graph-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-uppercase"
+                                id="genomic-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#genomic"
+                                type="button"
+                                role="tab"
+                                aria-controls="genomic"
+                                aria-selected="true">genomics</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="distribution-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#distribution"
+                                type="button"
+                                role="tab"
+                                aria-controls="distribution"
+                                aria-selected="false">trn distribution</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="regulatory-effect-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#regulatory-effect"
+                                type="button"
+                                role="tab"
+                                aria-controls="regulatory-effect"
+                                aria-selected="false">Regulatory Effects</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="graph-tab-content">
+                    <div class="tab-pane fade show active"
+                         id="genomic"
+                         role="tabpanel"
+                         aria-labelledby="genomic-tab">
+                        <div class="card" style="min-height: 350px!important;">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-uppercase">{{ regulator.locus_tag }}</h5>
+                                <p class="card-text text-uppercase py-2">
+                                    {% if regulator.start %}
+                                        {% include 'website/gene_box.html' with strand=regulator.strand start=regulator.start stop=regulator.stop %}
+                                    {% else %}
+                                        {% include 'website/gene_box.html' with strand=regulator.strand start='NA' stop='NA' %}
+                                    {% endif %}
+                                </p>
+                                <p class="card-text text-uppercase text-justify">
+                                    {% if regulator.sequence %}
+                                        SEQUENCE: {{ regulator.sequence }}
+                                    {% else %}
+                                        NA
+                                    {% endif %}
+                                </p>
+                                <p class="card-text text-uppercase text-justify">
+                                    {% if regulator.sequence %}
+                                        length: {{ regulator.sequence|length }}
+                                    {% else %}
+                                        NA
+                                    {% endif %}
+                                </p>
+                                {% if regulator.sequence %}
+                                    <button onclick="copySequence()"
+                                            class="btn btn-outline-primary text-uppercase">Copy</button>
+                                    <label for="ProteinSequence"></label>
+                                    <input type="text"
+                                           value="{{ regulator.sequence }}"
+                                           id="ProteinSequence"
+                                           class="d-none">
+                                    <a href="{% url 'download-fasta' identifier=regulator.protrend_id locus_tag=regulator.locus_tag name=regulator.name sequence=regulator.sequence %}"
+                                       class="btn btn-outline-primary text-uppercase">Download</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="distribution"
+                         role="tabpanel"
+                         aria-labelledby="distribution-tab">
+                        <canvas id="RegulatorTRN" class="canvas-md"></canvas>
+                    </div>
+                    <div class="tab-pane fade"
+                         id="regulatory-effect"
+                         role="tabpanel"
+                         aria-labelledby="regulatory-effect-tab">
+                        <canvas id="RegulatorRegulatoryEffect" class="canvas-md"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="sources" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Source <i class="bi bi-collection ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        {% for source in regulator.data_source %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-uppercase">{{ source.name }}</h5>
+                                        <div class="card-text">
+                                            <p class="pb-2">
+                                                The regulator named {{ regulator.locus_tag }}
+                                                has been retrieved from {{ source.name|upper }}.
+                                            </p>
+                                            <p>
+                                                {% if source.external_identifier %}
+                                                    This regulator is referred by the following external identifier
+                                                    <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
+                                                {% else %}
+                                                    This regulator is available at {{ source.url }}.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <a class="btn rounded-pill btn-outline-success text-uppercase"
+                                           rel="nofollow" target="_blank"
+                                           href="{{ source.url }}">
+                                            Consult {{ source.name }} <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="organism" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Organism <i class="fa-solid fa-bacterium ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row align-items-center pt-2">
+                        <div class="col-md-6 py-2 py-md-0 align-self-center">
+                            <div class="card" style="min-height: 250px!important;">
+                                <div class="card-body">
+                                    {% if regulator.organism %}
+                                        <h5 class="card-title">{{ regulator.organism.0.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ regulator.organism.0.protrend_id }}</h6>
+                                        <p class="card-text">Scientific name: {{ regulator.organism.0.name }}</p>
+                                        <p class="card-text">Species:
+                                            {% if regulator.organism.0.species %}
+                                                {{ regulator.organism.0.species }}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">Strain:
+                                            {% if regulator.organism.0.strain %}
+                                                {{ regulator.organism.0.strain }}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">Taxonomy:
+                                            {% if regulator.organism.0.ncbi_taxonomy %}
+                                                {% include "website/protrend_button.html" with identifier=regulator.organism.0.ncbi_taxonomy type="ncbi-taxonomy-btn" %}
+                                                {% include "website/protrend_button.html" with identifier=regulator.organism.0.ncbi_taxonomy type="uniprot-taxonomy-btn" %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                    {% else %}
+                                        <h5 class="card-title">Not Available</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Organism</h6>
+                                        <p class="card-text">Scientific name: There is no organism for this regulator</p>
+                                        <p class="card-text">Species: There is no organism for this regulator</p>
+                                        <p class="card-text">Strain: There is no organism for this regulator</p>
+                                        <p class="card-text">Taxonomy: There is no organism for this regulator</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 py-2 py-md-0 text-center">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col pb-3">
+                                        <img src="{% static 'website/images/bacteria.jpg' %}"
+                                             height="150"
+                                             alt="organisms">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {% if regulator.organism %}
+                                            <a type="button"
+                                               class="btn btn-outline-success fs-6"
+                                               href="{% url 'organism' regulator.organism.0.protrend_id %}">
+                                                Browse {{ regulator.organism.0.name }}
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="family" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Regulatory Family <i class="fa-solid fa-gear ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        {% if regulator.regulatory_family %}
+                            {% for rfam in regulator.regulatory_family %}
+                                <div class="col-lg-4 py-2">
+                                    <div class="card" style="min-height: 250px!important;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ rfam.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">Regulatory Family</h6>
+                                            <p class="card-text">
+                                                PROTREND FAMILY: {{ rfam.protrend_id }}
+                                            </p>
+                                            <p class="card-text">
+                                                {% if rfam.rfam %}
+                                                    RFAM: {{ rfam.rfam }}
+                                                {% else %}
+                                                    RFAM: Not Available
+                                                {% endif %}
+                                            </p>
+                                            <p class="card-text">
+                                                {% if rfam.description %}
+                                                    {{ rfam.description }}
+                                                {% else %}
+                                                    There is no description for this regulatory family
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card" style="min-height: 250px!important;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Not Available</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Regulatory Family</h6>
+                                        <p class="card-text">RFAM: Not Available</p>
+                                        <p class="card-text">Mechanism:
+                                            {{ regulator.mechanism }}
+                                        </p>
+                                        <p class="card-text">Description:
+                                            No description available for this regulatory family
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="pathway" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Pathways <i class="fa-solid fa-circle-nodes ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        {% if regulator.pathway %}
+                            {% for pathway in regulator.pathway %}
+                                <div class="col-lg-4 py-2">
+                                    <div class="card" style="min-height: 250px!important;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ pathway.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">Metabolic Pathway</h6>
+                                            <p class="card-text">
+                                                PROTREND PATHWAY: {{ pathway.protrend_id }}
+                                            </p>
+                                            <p class="card-text text-uppercase py-3">Associated kegg pathways</p>
+                                            {% if pathway.kegg_pathways %}
+                                                <ul class="list-group list-group-flush" style="max-width: 50%">
+                                                    {% for kegg_pathway in pathway.kegg_pathways %}
+                                                        <li class="list-group-item">{{ kegg_pathway }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <ul class="list-group list-group-flush" style="max-width: 50%">
+                                                    <li class="list-group-item">Not available</li>
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card" style="min-height: 250px!important;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Not Available</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Regulatory Family</h6>
+                                        <p class="card-text text-uppercase">Associated kegg pathways</p>
+                                        <ul class="list-group list-group-flush" style="max-width: 50%">
+                                            <li class="list-group-item">Not available</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="motif" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Binding Site Motif <i class="fa-solid fa-dna ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        <div class="col">
+                            <div class="d-flex align-items-start">
+                                <div class="nav flex-column nav-pills me-3" id="v-pills-tab"
+                                     role="tablist" aria-orientation="vertical">
+                                    <button class="nav-link active text-uppercase" id="v-pills-motif-tab"
+                                            data-bs-toggle="pill" data-bs-target="#v-pills-motif"
+                                            type="button" role="tab" aria-controls="v-pills-motif"
+                                            aria-selected="true">
+                                        motif
+                                    </button>
+                                    <button class="nav-link text-uppercase" id="v-pills-pwm-tab"
+                                            data-bs-toggle="pill" data-bs-target="#v-pills-pwm"
+                                            type="button" role="tab" aria-controls="v-pills-pwm"
+                                            aria-selected="false">
+                                        PWM
+                                    </button>
+                                    <button class="nav-link text-uppercase" id="v-pills-sequences-tab"
+                                            data-bs-toggle="pill" data-bs-target="#v-pills-sequences"
+                                            type="button" role="tab" aria-controls="v-pills-sequences"
+                                            aria-selected="false">
+                                        Sequences
+                                    </button>
+                                </div>
+                                <div class="tab-content" id="v-pills-tabContent">
+                                    <div class="tab-pane fade show active"
+                                         id="v-pills-motif"
+                                         role="tabpanel"
+                                         aria-labelledby="v-pills-motif-tab">
+                                        <div id="motif-img" class="motif-container"></div>
+                                    </div>
+                                    <div class="tab-pane fade"
+                                         id="v-pills-pwm"
+                                         role="tabpanel"
+                                         aria-labelledby="v-pills-pwm-tab">
+                                        <div class="table-responsive">
+                                            <table class="table pandas-table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    {% for col in pwm.columns %}
+                                                        <th scope="col">{{ col }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for i, row in pwm.iterrows %}
+                                                    <tr>
+                                                        <td class="fw-bold">{{ i }}</td>
+                                                        <td>{{ row.0 }}</td>
+                                                        <td>{{ row.1 }}</td>
+                                                        <td>{{ row.2 }}</td>
+                                                        <td>{{ row.3 }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade"
+                                         id="v-pills-sequences"
+                                         role="tabpanel"
+                                         aria-labelledby="v-pills-sequences-tab">
+                                        <div class="container">
+                                            <div class="row">
+                                                {% for sequences in motif_sequences %}
+                                                    <div class="col-3">
+                                                        <ul class="list-group list-group-flush">
+                                                            {% for sequence in sequences %}
+                                                                <li class="list-group-item flex-fill text-uppercase">
+                                                                    {{ sequence }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 id="networks" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Network <i class="bi bi-bezier2 ps-2"></i>
+                </h5>
+                <p class="text-justify pb-3">
+                    Transcriptional Regulatory Networks are composed by regulatory interactions
+                    between regulators and target genes. ProTReND also comprehends whenever possible
+                    the DNA <i>cis</i>-element, namely the Transcription Factor Binding Site (TFBS),
+                    where the regulator binds to control the expression of the target gene.
+                    In addition, the effector that either binds to the regulator or influences the regulatory state
+                    of this protein is also available for some regulatory interactions.
+                </p>
+                <ul class="nav nav-tabs" id="tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-uppercase"
+                                id="effectors-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#effectors"
+                                type="button"
+                                role="tab"
+                                aria-controls="effectors"
+                                aria-selected="true">effectors</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="genes-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#genes"
+                                type="button"
+                                role="tab"
+                                aria-controls="genes"
+                                aria-selected="false">Genes</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="bindings-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#bindings"
+                                type="button"
+                                role="tab"
+                                aria-controls="bindings"
+                                aria-selected="false">Binding sites</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-uppercase"
+                                id="interactions-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#interactions"
+                                type="button"
+                                role="tab"
+                                aria-controls="interactions"
+                                aria-selected="false">Interactions</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="network-tab">
+                    <div class="tab-pane fade show active"
+                         id="effectors"
+                         role="tabpanel"
+                         aria-labelledby="effectors-tab">
+                        {% include "website/protrend_table.html" with objects=regulator.effector table_config=regulator_effectors_table only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="genes"
+                         role="tabpanel"
+                         aria-labelledby="genes-tab">
+                        {% include "website/protrend_table.html" with objects=regulator.gene table_config=regulator_genes_table only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="bindings"
+                         role="tabpanel"
+                         aria-labelledby="bindings-tab">
+                        {% include "website/protrend_table.html" with objects=regulator.tfbs table_config=regulator_bindings_table only %}
+                    </div>
+                    <div class="tab-pane fade"
+                         id="interactions"
+                         role="tabpanel"
+                         aria-labelledby="interactions-tab">
+                        {% include "website/protrend_table.html" with objects=regulator.regulatory_interaction table_config=regulator_interactions_table only %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js">
+    </script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <script src="{% static 'website/js/copySequenceToClipBoard.js' %}">
+    </script>
+    <script src="{% static 'website/js/getMotif.js' %}">
+    </script>
+    <script src="{% static 'website/js/getChart.js' %}">
+    </script>
+    <script>
+        const copySequence = function () {
+            const text = document.getElementById('ProteinSequence').value;
+            return copySequenceToClipBoard(text);
+        }
+    </script>
+    {{ motif|json_script:'motifSVG' }}
+    <script>
+        getMotif('motif-img', 'motifSVG');
+    </script>
+    {{ RegulatorTRNChartData|json_script:'RegulatorTRNChartData' }}
+    {{ RegulatorRegulatoryEffectChartData|json_script:'RegulatorRegulatoryEffectChartData' }}
+    <script>
+        const RegulatorTRNChart = getChart('RegulatorTRN', 'RegulatorTRNChartData')
+        const RegulatorRegulatoryEffectChart = getChart('RegulatorRegulatoryEffect',
+            'RegulatorRegulatoryEffectChartData')
+    </script>
+    </html>
+{% endblock %}

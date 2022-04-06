@@ -4,6 +4,7 @@ from typing import Type, List, Union, Dict, Iterable
 
 from django_neomodel import DjangoNode
 
+from set_list import SetList
 from .node import NeoNodeMeta, node_factory, NeoNode
 from .query import CYPHER_OPERATORS, parse_query_meta, query_db
 
@@ -161,6 +162,8 @@ class NeoQuerySet:
             node_instance = self.node_cls(**kwargs)
             nodes.append(node_instance)
 
+        if 'protrend_id' in source_meta:
+            return SetList(nodes)
         return nodes
 
     def all(self):
@@ -279,6 +282,9 @@ class NeoLinkedQuerySet(NeoQuerySet):
 
                 target_kwarg = {attr: field for attr, field in zip(link_meta, target_values)}
                 target_kwargs.append(target_kwarg)
+
+            if 'protrend_id' in link_meta:
+                target_kwargs = SetList(target_kwargs)
 
             kwargs[self.target] = target_kwargs
 
@@ -423,6 +429,9 @@ class NeoHyperLinkedQuerySet(NeoLinkedQuerySet):
                 target_kwarg['relationship_'] = relationship_kwarg
 
                 target_kwargs.append(target_kwarg)
+
+            if 'protrend_id' in link_meta:
+                target_kwargs = SetList(target_kwargs)
 
             kwargs[self.target] = target_kwargs
 

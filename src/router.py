@@ -103,8 +103,8 @@ class Router:
 
     def register(self,
                  prefix: str,
-                 list_view: Type[generics.GenericAPIView] = None,
-                 detail_view: Type[generics.GenericAPIView] = None):
+                 list_view: Union[Type[generics.GenericAPIView], Type[generic.View]] = None,
+                 detail_view: Union[Type[generics.GenericAPIView], Type[generic.View]] = None):
         """
         Register either a list, detail or both views under a single prefix in this Router instance.
 
