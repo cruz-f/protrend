@@ -1,0 +1,51 @@
+<div class="position-relative">
+    {% if strand == 'forward' %}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-2 align-self-center pe-0 pt-5">{{ start }}</div>
+                <div class="col-8 px-0">
+                    <div class="gene-box gene-box-right"
+                         data-bs-toggle="tooltip" data-bs-placement="top" title="GENE STRAND: {{ strand }}"></div>
+                    <div class="dna-strand dna-strand-bottom"></div>
+                </div>
+                <div class="col-2 align-self-center ps-0 pt-5">{{ stop }}</div>
+            </div>
+        </div>
+    {% elif strand == 'reverse' %}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-2 align-self-center pe-0 pb-5">{{ start }}</div>
+                <div class="col-8 px-0">
+                    <div class="dna-strand dna-strand-top"></div>
+                    <div class="gene-box gene-box-left"
+                         data-bs-toggle="tooltip" data-bs-placement="top" title="GENE STRAND: {{ strand }}"></div>
+                </div>
+                <div class="col-2 align-self-center ps-0 pb-5">{{ stop }}</div>
+            </div>
+        </div>
+    {% elif strand == 'unknown' %}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-2 align-self-center pe-0 pt-5">{{ start }}</div>
+                <div class="col-8 px-0">
+                    <div class="gene-box"
+                         data-bs-toggle="tooltip" data-bs-placement="top" title="GENE STRAND: {{ strand }}"></div>
+                    <div class="dna-strand dna-strand-bottom"></div>
+                </div>
+                <div class="col-2 align-self-center ps-0 pt-5">{{ stop }}</div>
+            </div>
+        </div>
+    {% else %}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-2 align-self-center pe-0 pt-5">{{ start }}</div>
+                <div class="col-8 px-0">
+                    <div class="gene-box"
+                         data-bs-toggle="tooltip" data-bs-placement="top" title="GENE STRAND: {{ strand }}"></div>
+                    <div class="dna-strand dna-strand-bottom"></div>
+                </div>
+                <div class="col-2 align-self-center ps-0 pt-5">{{ stop }}</div>
+            </div>
+        </div>
+    {% endif %}
+</div>

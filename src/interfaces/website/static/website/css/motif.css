@@ -1,0 +1,33 @@
+.motif-container {
+    width: 400px!important;
+}
+
+@media (min-width: 576px) {
+    .motif-container {
+        width: 450px!important;
+    }
+}
+
+@media (min-width: 768px) {
+    .motif-container {
+        width: 600px!important;
+    }
+}
+
+@media (min-width: 992px) {
+    .motif-container {
+        width: 800px!important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .motif-container {
+        width: 1000px!important;
+    }
+}
+
+@media (min-width: 1400px) {
+    .motif-container {
+        width: 1200px!important;
+    }
+}

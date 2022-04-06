@@ -3,3 +3,8 @@ from .organisms import (OrganismsTable,
                         OrganismGenesTable,
                         OrganismBindingsTable,
                         OrganismInteractionsTable)
+from .regulators import (RegulatorsTable,
+                         RegulatorEffectorsTable,
+                         RegulatorGenesTable,
+                         RegulatorBindingsTable,
+                         RegulatorInteractionsTable)

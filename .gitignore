@@ -2,6 +2,7 @@
 
 # django configs
 src/conf
+src/conf/protrend.conf
 useless.py
 
 # PyCharm idea files

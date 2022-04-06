@@ -1,33 +1,179 @@
 {% if identifier is None %}
     <span>NA</span>
 {% else %}
-    {% if source == 'uniprot' %}
+    {% if type == 'uniprot-acc-btn' %}
         <a role="button"
            class="btn rounded-pill btn-outline-success"
            rel="nofollow" target="_blank"
-           href="https://beta.uniprot.org/uniprotkb/{{ identifier }}">
+           href="https://beta.uniprot.org/uniprotkb/{{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt Accession">
             {{ identifier }}
             <i class="bi bi-box-arrow-up-right ps-2"></i>
         </a>
-    {% elif source == 'ncbi-gene' %}
+    {% elif type == 'uniprot-taxonomy-btn' %}
         <a role="button"
            class="btn rounded-pill btn-outline-success"
            rel="nofollow" target="_blank"
-           href="https://www.ncbi.nlm.nih.gov/gene/{{ identifier }}">
+           href="https://beta.uniprot.org/taxonomy/{{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt Taxonomy">
             {{ identifier }}
             <i class="bi bi-box-arrow-up-right ps-2"></i>
         </a>
-    {% elif source == 'protrend' %}
+    {% elif type == 'uniprot-proteomes-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://beta.uniprot.org/proteomes?query=(taxonomy_id:{{ identifier }})"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt Proteomes">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'uniprot-proteins-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://beta.uniprot.org/uniprotkb?query=(taxonomy_id:{{ identifier }})"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt Proteins">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-taxonomy-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI Taxonomy">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-organism-refseq-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/refseq/?term={{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI RefSeq">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-organism-genbank-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/search/all/?term={{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI GenBank">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-organism-assembly-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI Assembly">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-gene-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/gene/{{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI Gene">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-protein-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/protein/{{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI Protein">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-genbank-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/protein/{{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI GenBank">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'ncbi-refseq-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           rel="nofollow" target="_blank"
+           href="https://www.ncbi.nlm.nih.gov/protein/{{ identifier }}"
+           data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI RefSeq">
+            {{ identifier }}
+            <i class="bi bi-box-arrow-up-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-organism-detail-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           href="{% url 'organism' identifier %}">
+            <i class="bi bi-journal-plus pe-2"></i> detail
+        </a>
+    {% elif type == 'protrend-regulator-detail-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-success"
+           href="{% url 'regulator' identifier %}">
+            <i class="bi bi-journal-plus pe-2"></i> detail
+        </a>
+    {% elif type == 'protrend-effector-primary-btn' %}
         <a role="button"
            class="btn rounded-pill btn-outline-primary"
-           href="{% url redirect identifier %}">
+           href="{% url 'effector' identifier %}">
             {{ identifier }}
             <i class="bi bi-arrow-right ps-2"></i>
         </a>
-    {% elif source == 'protrend-black' %}
+    {% elif type == 'protrend-organism-primary-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url 'organism' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-regulator-primary-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url 'regulator' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-gene-primary-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url 'gene' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-tfbs-primary-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url 'binding-site' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-interaction-primary-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-primary"
+           href="{% url 'interaction' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-regulator-black-btn' %}
         <a role="button"
            class="btn rounded-pill btn-outline-dark"
-           href="{% url redirect identifier %}">
+           href="{% url 'regulator' identifier %}">
+            {{ identifier }}
+            <i class="bi bi-arrow-right ps-2"></i>
+        </a>
+    {% elif type == 'protrend-gene-black-btn' %}
+        <a role="button"
+           class="btn rounded-pill btn-outline-dark"
+           href="{% url 'gene' identifier %}">
             {{ identifier }}
             <i class="bi bi-arrow-right ps-2"></i>
         </a>

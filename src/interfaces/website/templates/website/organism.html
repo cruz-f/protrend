@@ -10,6 +10,15 @@
     <link rel="stylesheet"
           type="text/css"
           href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/network.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/heb.css' %}">
+
 {% endblock %}
 {% block content %}
     <div class="container">
@@ -19,20 +28,91 @@
             </div>
         </div>
         <div class="row align-items-center pt-3">
-            <div class="col-sm-10 align-self-center">
+            <div class="col-lg-8 py-2 py-lg-2 align-self-center">
                 <h2 class="text-uppercase blue-color">
                     {{ organism.name }}
                 </h2>
             </div>
-            <div class="col-sm-2 align-self-center">
-                {% include "website/protrend_dropdown.html" with obj=organism source="download" redirect='trns-detail' larger=True only %}
+            <div class="col-lg-2 py-2 py-lg-2 align-self-center">
+                <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="DownloadDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-download"></i>
+                    download
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="DownloadDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=api">
+                            api
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=json">
+                            json
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=csv">
+                            csv
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'trns-detail' organism.protrend_id %}?format=xlsx">
+                            xlsx
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-2 align-self-center">
+                <button class="btn btn-outline-primary dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="NavigateDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-journal-plus"></i>
+                    navigate
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="NavigateDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#details">
+                            detail
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#sources">
+                            source
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#networks">
+                            network
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#visualizations">
+                            visualizations
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
         <div class="row align-items-center pt-5">
             <h5 id="details" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
                 Details <i class="bi bi-clipboard-data ps-2"></i>
             </h5>
-            <div class="col-6 align-self-center">
+            <div class="col-lg-6 py-2 py-lg-2 align-self-center">
                 <div class="table-responsive">
                     <table class="table-custom table-borderless">
                         <tbody>
@@ -56,22 +136,8 @@
                             <td class="border-right fw-bold text-uppercase pe-3">Taxonomy</td>
                             <td>
                                 {% if organism.ncbi_taxonomy %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ organism.ncbi_taxonomy }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="NCBI taxonomy page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-success"
-                                       rel="nofollow" target="_blank"
-                                       href="https://beta.uniprot.org/taxonomy/{{ organism.ncbi_taxonomy }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt taxonomy page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="ncbi-taxonomy-btn" %}
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="uniprot-taxonomy-btn" %}
                                 {% else %}
                                     NA
                                 {% endif %}
@@ -81,14 +147,7 @@
                             <td class="border-right fw-bold text-uppercase pe-3">RefSeq Accession</td>
                             <td>
                                 {% if organism.refseq_accession %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/refseq/?term={{ organism.refseq_accession }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="RefSeq page">
-                                        {{ organism.refseq_accession }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.refseq_accession type="ncbi-organism-refseq-btn" %}
                                     <a role="button"
                                        class="btn rounded-pill btn-outline-success"
                                        rel="nofollow" target="_blank"
@@ -106,14 +165,7 @@
                             <td class="border-right fw-bold text-uppercase pe-3">GenBank Accession</td>
                             <td>
                                 {% if organism.genbank_accession %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/search/all/?term={{ organism.genbank_accession }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="GenBank page">
-                                        {{ organism.genbank_accession }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.genbank_accession type="ncbi-organism-genbank-btn" %}
                                     <a role="button"
                                        class="btn rounded-pill btn-outline-success"
                                        rel="nofollow" target="_blank"
@@ -131,22 +183,8 @@
                             <td class="border-right fw-bold text-uppercase pe-3">Assembly Accession</td>
                             <td>
                                 {% if organism.assembly_accession %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ organism.ncbi_assembly }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="Assembly page">
-                                        {{ organism.ncbi_assembly }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-success"
-                                       rel="nofollow" target="_blank"
-                                       href="https://www.ncbi.nlm.nih.gov/assembly/?term={{ organism.assembly_accession }}"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="Assembly page">
-                                        {{ organism.assembly_accession }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.assembly_accession type="ncbi-organism-assembly-btn" %}
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_assembly type="ncbi-organism-assembly-btn" %}
                                 {% else %}
                                     NA
                                 {% endif %}
@@ -156,22 +194,8 @@
                             <td class="border-right fw-bold text-uppercase pe-3">uniprot proteomes</td>
                             <td>
                                 {% if organism.ncbi_taxonomy %}
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-primary"
-                                       rel="nofollow" target="_blank"
-                                       href="https://beta.uniprot.org/proteomes?query=(taxonomy_id:{{ organism.ncbi_taxonomy }})"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt proteomes page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
-                                    <a role="button"
-                                       class="btn rounded-pill btn-outline-success"
-                                       rel="nofollow" target="_blank"
-                                       href="https://beta.uniprot.org/uniprotkb?query=(taxonomy_id:{{ organism.ncbi_taxonomy }})"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" title="UniProt proteins page">
-                                        {{ organism.ncbi_taxonomy }}
-                                        <i class="bi bi-box-arrow-up-right ps-2"></i>
-                                    </a>
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="uniprot-proteomes-btn" %}
+                                    {% include "website/protrend_button.html" with identifier=organism.ncbi_taxonomy type="uniprot-proteins-btn" %}
                                 {% else %}
                                     NA
                                 {% endif %}
@@ -181,7 +205,7 @@
                     </table>
                 </div>
             </div>
-            <div class="col-6 align-self-center">
+            <div class="col-lg-6 py-2 py-lg-2 align-self-center">
                 <ul class="nav nav-tabs" id="graph-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active text-uppercase"
@@ -260,7 +284,7 @@
                 <div class="container">
                     <div class="row pt-2">
                         {% for source in organism.data_source %}
-                            <div class="col-sm-4 py-sm-2">
+                            <div class="col-lg-4 py-2">
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title text-uppercase">{{ source.name }}</h5>
@@ -270,12 +294,12 @@
                                                 has been retrieved from {{ source.name|upper }}.
                                             </p>
                                             <p>
-                                            {% if source.external_identifier %}
-                                                This organism is referred by the following external identifier
-                                                <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
-                                            {% else %}
-                                                This organism is available at {{ source.url }}.
-                                            {% endif %}
+                                                {% if source.external_identifier %}
+                                                    This organism is referred by the following external identifier
+                                                    <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
+                                                {% else %}
+                                                    This organism is available at {{ source.url }}.
+                                                {% endif %}
                                             </p>
                                         </div>
                                         <a class="btn rounded-pill btn-outline-success text-uppercase"
@@ -291,7 +315,7 @@
                 </div>
             </div>
         </div>
-        <div class="row align-items-center py-5">
+        <div class="row align-items-center pt-5">
             <div class="col align-self-center">
                 <h5 id="networks" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
                     Network <i class="bi bi-bezier2 ps-2"></i>
@@ -351,25 +375,276 @@
                          id="regulators"
                          role="tabpanel"
                          aria-labelledby="regulators-tab">
-                        {% include "website/protrend_table.html" with objs=organism.regulator fields=organism_regulators_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.regulator table_config=organism_regulators_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="genes"
                          role="tabpanel"
                          aria-labelledby="genes-tab">
-                        {% include "website/protrend_table.html" with objs=organism.gene fields=organism_genes_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.gene table_config=organism_genes_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="bindings"
                          role="tabpanel"
                          aria-labelledby="bindings-tab">
-                        {% include "website/protrend_table.html" with objs=organism.tfbs fields=organism_bindings_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.tfbs table_config=organism_bindings_table only %}
                     </div>
                     <div class="tab-pane fade"
                          id="interactions"
                          role="tabpanel"
                          aria-labelledby="interactions-tab">
-                        {% include "website/protrend_table.html" with objs=organism.regulatory_interaction fields=organism_interactions_table_fields only %}
+                        {% include "website/protrend_table.html" with objects=organism.regulatory_interaction table_config=organism_interactions_table only %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 id="visualizations" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Network Visualization <i class="fa-solid fa-code-merge ps-2"></i>
+                </h5>
+                <p class="blue-color">
+                    NETWORK VISUALIZATION IS LIMITED TO ONLY 15 REGULATORS!!!
+                </p>
+                <p class="text-justify pb-3">
+                    The network visualization is currently limited to only 15 regulators
+                    in order to ease nodes (regulators and genes) and edges (regulatory interactions).
+                    One can select the number of regulators to be displayed in the network by selecting the desired regulator
+                    in the table bellow and then run the launch network visualization button.
+                </p>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <ul class="nav nav-tabs" id="tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active text-uppercase"
+                                            id="network-graph-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#network-graph"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="network-graph"
+                                            aria-selected="true">graph network</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link text-uppercase"
+                                            id="heb-graph-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#heb-graph"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="heb-graph"
+                                            aria-selected="false">Hierarchical Edge Bundling</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content pt-3" id="tab">
+                                <div class="tab-pane fade show active"
+                                     id="network-graph"
+                                     role="tabpanel"
+                                     aria-labelledby="network-graph-tab">
+                                    <div id="network-toolbar">
+                                        <span class="text-start">
+                                            Select the regulators to be displayed in the network and then
+                                        </span>
+                                        <button id="network-btn"
+                                                class="btn btn-success text-uppercase"
+                                                data-bs-toggle="modal" data-bs-target="#network-modal"
+                                                disabled>
+                                            Launch Network <i class="bi bi-caret-right"></i>
+                                        </button>
+                                    </div>
+                                    <table class="table table-hover table-borderless" id="network-table"
+
+                                           data-toolbar="#network-toolbar"
+
+                                           data-toggle="table"
+
+                                           data-search="true"
+                                           data-regex-search="true"
+                                           data-search-accent-neutralise="true"
+                                           data-search-highlight="true"
+                                           data-search-time-out="1000"
+
+                                           data-sort-reset="true"
+                                           data-click-to-select="true"
+
+                                           data-buttons-class="primary"
+
+                                           data-id-field="id"
+
+                                           data-pagination="true"
+                                           data-page-size="15"
+                                           data-page-list="[15, 25, 50, 100, all]">
+                                        <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th class="text-uppercase"
+                                                data-field="id"
+                                                data-sortable="true">
+                                                PROTREND ID
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="locus_tag"
+                                                data-sortable="true">
+                                                locus tag
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="name"
+                                                data-sortable="true">
+                                                name
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="uniprot_id"
+                                                data-sortable="true">
+                                                uniprot
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for reg in organism.regulator %}
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.protrend_id }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.locus_tag }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.name }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.uniprot_accession }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="modal fade" id="network-modal" tabindex="-1"
+                                         aria-labelledby="network-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog modal-fullscreen">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-uppercase" id="network-modal-label">{{ organism.name }} network</h5>
+                                                    <button id="close-network-modal-1"
+                                                            type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="network-cy"></div>
+                                                    <div id="network-cy-config" class="config"></div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="close-network-modal-2"
+                                                            type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade"
+                                     id="heb-graph"
+                                     role="tabpanel"
+                                     aria-labelledby="heb-graph-tab">
+                                    <div id="heb-toolbar">
+                                        <span class="text-start">
+                                            Select the regulators to be displayed in the HEB and then
+                                        </span>
+                                        <button id="heb-btn"
+                                                class="btn btn-success text-uppercase"
+                                                data-bs-toggle="modal" data-bs-target="#heb-modal"
+                                                disabled>
+                                            Launch HEB <i class="bi bi-caret-right"></i>
+                                        </button>
+                                    </div>
+                                    <table class="table table-hover table-borderless" id="heb-table"
+
+                                           data-toolbar="#heb-toolbar"
+
+                                           data-toggle="table"
+
+                                           data-search="true"
+                                           data-regex-search="true"
+                                           data-search-accent-neutralise="true"
+                                           data-search-highlight="true"
+                                           data-search-time-out="1000"
+
+                                           data-sort-reset="true"
+                                           data-click-to-select="true"
+
+                                           data-buttons-class="primary"
+
+                                           data-id-field="id"
+
+                                           data-pagination="true"
+                                           data-page-size="15"
+                                           data-page-list="[15, 25, 50, 100, all]">
+                                        <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th class="text-uppercase"
+                                                data-field="id"
+                                                data-sortable="true">
+                                                PROTREND ID
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="locus_tag"
+                                                data-sortable="true">
+                                                locus tag
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="name"
+                                                data-sortable="true">
+                                                name
+                                            </th>
+                                            <th class="text-uppercase"
+                                                data-field="uniprot_id"
+                                                data-sortable="true">
+                                                uniprot
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for reg in organism.regulator %}
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.protrend_id }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.locus_tag }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.name }}
+                                                </td>
+                                                <td class="text-uppercase">
+                                                    {{ reg.uniprot_accession }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="modal fade" id="heb-modal" tabindex="-1"
+                                         aria-labelledby="heb-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog modal-fullscreen">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-uppercase" id="heb-modal-label">{{ organism.name }} Hierarchical Edge Bundling</h5>
+                                                    <button id="close-heb-modal-1"
+                                                            type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="heb-ds" class="text-center py-2"></div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="close-heb-modal-2"
+                                                            type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -377,18 +652,27 @@
     </div>
 {% endblock %}
 {% block script %}
-    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js">
-    </script>
-    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js">
-    </script>
-    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
-    </script>
-    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js">
-    </script>
-    <script src="{% static 'website/js/getChart.js' %}">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
+    <script src="https://unpkg.com/webcola@3.3.8/WebCola/cola.min.js"></script>
+    <script src="https://unpkg.com/popper.js@1.14.4/dist/umd/popper.js"></script>
+    <script src="https://unpkg.com/tippy.js@2.6.0/dist/tippy.all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.0/cytoscape.min.js"
+            integrity="sha512-6NNH8uUbdENB10r5FH/4DZviHTQ44GtZ+c+fwSiWM4GekjajHkYanpH0+jWt3meFll/HHWAcxKLcMpSAXuT/Dg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/cytoscape-cola@2.2.3/cytoscape-cola.js"></script>
+    <script src="https://unpkg.com/cytoscape-popper@1.0.2/cytoscape-popper.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="{% static 'website/js/getChart.js' %}"></script>
     {{ OrganismTRNChartData|json_script:'OrganismTRNChartData' }}
     {{ OrganismRegulatorsGenesChartData|json_script:'OrganismRegulatorsGenesChartData' }}
     {{ OrganismGenesRegulatorsChartData|json_script:'OrganismGenesRegulatorsChartData' }}
@@ -400,5 +684,21 @@
         const OrganismRegulatoryEffectChart = getChart('OrganismRegulatoryEffect',
             'OrganismRegulatoryEffectChartData')
     </script>
+
+    {{ organism|json_script:'organism-data' }}
+    <script src="{% static 'website/js/getNetwork.js' %}"></script>
+    <script>
+        getNetwork('#network-btn', '#network-table',
+            '#close-network-modal-1', '#close-network-modal-2',
+            '#network-cy', '#network-cy-config', '#organism-data')
+    </script>
+
+    <script src="{% static 'website/js/getHEB.js' %}"></script>
+    <script>
+        getHEB('#heb-btn', '#heb-table',
+            '#close-heb-modal-1', '#close-heb-modal-2',
+            '#heb-ds', '#organism-data')
+    </script>
+
 {% endblock %}
 </html>
