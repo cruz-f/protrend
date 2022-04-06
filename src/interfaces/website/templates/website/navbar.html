@@ -38,10 +38,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'tfbs' %} active {% endif %} text-uppercase" href="#">Binding Sites</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'interactions' %} active {% endif %} text-uppercase" href="#">Interactions</a>
+                        <a class="nav-link text-uppercase"
+                           target="_blank"
+                           href="{% url 'api' %}">
+                            API
+                        </a>
                     </li>
                 </ul>
                 {% if active_page != 'home' %}
