@@ -4,6 +4,18 @@ from typing import List
 import logomaker as lm
 import pandas as pd
 
+from application.sequences.lasagna import Align
+
+
+def lasagna_alignment(sequences: List[str]) -> str:
+    to_align = {'sequences': [], 'headers': []}
+    for i, seq in enumerate(sequences):
+        to_align['sequences'].append(seq.upper())
+        to_align['headers'].append(f'seq_{i}')
+
+    aligned_sequences = Align(to_align, k=0)
+    return aligned_sequences['sequences']
+
 
 def relative_frequency(*args, **kwargs):
     kwargs['normalize'] = True
@@ -11,7 +23,8 @@ def relative_frequency(*args, **kwargs):
 
 
 def make_pwm(sequences: List[str]) -> pd.DataFrame:
-    df = pd.DataFrame([list(seq) for seq in sequences])
+    aligned_sequences = lasagna_alignment(sequences)
+    df = pd.DataFrame([list(seq) for seq in aligned_sequences])
     pwm = df.apply(relative_frequency)
     pwm = pwm.fillna(0)
     pwm = pwm.transpose()
