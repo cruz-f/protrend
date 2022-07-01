@@ -1,3 +1,4 @@
+from .about import about
 from .index import (IndexView, fake_view)
 from .search import search
 from .paginate_regulators import regulators_page

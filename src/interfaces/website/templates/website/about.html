@@ -1,0 +1,52 @@
+{% extends "website/footer.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<body>
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="container my-5">
+                    <div class="row justify-content-center">
+                        <div class="col-8">
+                            <h1 class="pt-3">The database</h1>
+                            <p class="text-justify">
+                                ProTReND is an online database of transcriptional regulatory networks.
+                                Transcriptional regulatory networks (TRN)s can be thought of as a group of transcription factors (regulatory proteins)
+                                which may activate and/or repress certain gene’s expression.
+                            </p>
+                            <p class="text-justify">
+                                Obtaining and processing regulatory information is an important step towards the reconstruction of novel
+                                transcriptional regulatory networks.
+                                Furthermore, gathering bacterial TRNs, is not only important for reconstructing TRNs of model microorganisms
+                                such as <i>Escherichia coli</i> and <i>Bacillus subtilis</i>, but also for poorly described microorganisms.
+                            </p>
+                            <p class="text-justify">
+                                ProTReND is aimed to bridge the gap between organism-specific and non-organism-specific databases.
+                                This database provides TRNs for more than 500 organisms.
+                                In addition, the database also contain binding site motifs allowing the discovery of new regulator-binding site-gene interactions,
+                                through the combination of standardized data from multiple sources.
+                            </p>
+
+                            <h3>Team</h3>
+                            <ul>
+                                <li><a href="https://ceb.uminho.pt/People/Profile/fernandopereiracruz">Fernando Cruz</a></li>
+                                <li><a href="https://ceb.uminho.pt/People/Profile/odias">Oscar Dias</a></li>
+                                <li><a href="https://www.ceb.uminho.pt/People/Profile/mrocha">Miguel Rocha</a></li>
+                                <li><a href="https://ceb.uminho.pt/People/Profile/diogolima">Diogo Lima</a></li>
+                            </ul>
+                            <h3>BioSystems Group</h3>
+                            <ul>
+                                <li><a href="https://www.ceb.uminho.pt/biosystems">Visit the group</a></li>
+                                <li><a href="https://bio.di.uminho.pt/">Visit other projects</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>

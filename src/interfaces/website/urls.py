@@ -15,9 +15,10 @@ urlpatterns = [
     path(r'', include(router.urls)),
     path(r'search', views.search, name='search'),
     path(r'paginate-regulators', views.regulators_page, name='paginate-regulators'),
+    path(r'about', views.about, name='about'),
     # path('genes/<str:protrend_id>', views.fake_view, name='gene'),
-    path('binding-sites/<str:protrend_id>', views.fake_view, name='binding-site'),
-    path('interactions/<str:protrend_id>', views.fake_view, name='interaction'),
-    path('effectors/<str:protrend_id>', views.fake_view, name='effector'),
+    # path('binding-sites/<str:protrend_id>', views.fake_view, name='binding-site'),
+    # path('interactions/<str:protrend_id>', views.fake_view, name='interaction'),
+    # path('effectors/<str:protrend_id>', views.fake_view, name='effector'),
     path('utils/download-fasta/<str:identifier>/<str:locus_tag>/<str:name>/<str:sequence>',
          views.download_fasta, name='download-fasta')]
