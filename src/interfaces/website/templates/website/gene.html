@@ -1,0 +1,389 @@
+{% extends "website/footer.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/table.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/gene_box.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-start">
+                {% include "website/protrend_bread_crumb.html" with child="Home" sub_child=gene.protrend_id only %}
+            </div>
+        </div>
+        <div class="row align-items-center pt-3">
+            <div class="col-lg-8 py-2 py-lg-0 align-self-center">
+                <h2 class="text-uppercase blue-color">
+                    {{ gene.locus_tag }}
+                </h2>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="DownloadDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-download"></i>
+                    download
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="DownloadDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'genes-detail' gene.protrend_id %}?format=api">
+                            api
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'genes-detail' gene.protrend_id %}?format=json">
+                            json
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'genes-detail' gene.protrend_id %}?format=csv">
+                            csv
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'genes-detail' gene.protrend_id %}?format=xlsx">
+                            xlsx
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <button class="btn btn-outline-primary dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="NavigateDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-journal-plus"></i>
+                    navigate
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="NavigateDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#details">
+                            detail
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#sources">
+                            source
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#organism">
+                            organism
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <h5 id="details" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                Details <i class="bi bi-clipboard-data ps-2"></i>
+            </h5>
+            <div class="col-lg-6 py-2 py-md-0 align-self-center">
+                <div class="table-responsive">
+                    <table class="table-custom table-borderless">
+                        <tbody>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">identifier</td>
+                            <td>{{ gene.protrend_id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">locus tag</td>
+                            <td>{{ gene.locus_tag }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">name</td>
+                            <td>{% if gene.name %}{{ gene.name }}{% else %}NA{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">synonyms</td>
+                            <td>
+                                {% if gene.synonyms %}
+                                    {% for synonym in gene.synonyms %}
+                                        <span class="pe-1">{{ synonym }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">function</td>
+                            <td>
+                                {% if gene.function %}
+                                    {{ gene.function }}
+                                {% else %}
+                                    NA
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">description</td>
+                            <td>
+                                <button class="btn btn-outline-success text-uppercase"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#descriptionCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="descriptionCollapse">
+                                    show descriptions
+                                </button>
+                                <div class="collapse pt-2" id="descriptionCollapse">
+                                    <div class="card card-body">
+                                        {% if gene.description %}
+                                            {{ gene.description }}
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">UniProt Accession</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=gene.uniprot_accession type='uniprot-acc-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI Protein</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=gene.ncbi_protein type='ncbi-protein-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI GenBank Accession</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=gene.genbank_accession type='ncbi-genbank-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI RefSeq Accession</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=gene.refseq_accession type='ncbi-refseq-btn' %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-right fw-bold text-uppercase pe-3">NCBI Gene</td>
+                            <td>
+                                {% include 'website/protrend_button.html' with identifier=gene.ncbi_gene type='ncbi-gene-btn' %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-6 py-2 py-md-0 align-self-center">
+                <ul class="nav nav-tabs" id="graph-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-uppercase"
+                                id="genomic-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#genomic"
+                                type="button"
+                                role="tab"
+                                aria-controls="genomic"
+                                aria-selected="true">genomics</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="graph-tab-content">
+                    <div class="tab-pane fade show active"
+                         id="genomic"
+                         role="tabpanel"
+                         aria-labelledby="genomic-tab">
+                        <div class="card" style="min-height: 350px!important;">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-uppercase">{{ gene.locus_tag }}</h5>
+                                <p class="card-text text-uppercase py-2">
+                                    {% if gene.start %}
+                                        {% include 'website/gene_box.html' with strand=gene.strand start=gene.start stop=gene.stop %}
+                                    {% else %}
+                                        {% include 'website/gene_box.html' with strand=gene.strand start='NA' stop='NA' %}
+                                    {% endif %}
+                                </p>
+                                <p class="card-text text-uppercase text-justify">
+                                    {% if gene.sequence %}
+                                        SEQUENCE: {{ gene.sequence }}
+                                    {% else %}
+                                        NA
+                                    {% endif %}
+                                </p>
+                                <p class="card-text text-uppercase text-justify">
+                                    {% if gene.sequence %}
+                                        length: {{ gene.sequence|length }}
+                                    {% else %}
+                                        NA
+                                    {% endif %}
+                                </p>
+                                {% if gene.sequence %}
+                                    <button onclick="copySequence()"
+                                            class="btn btn-outline-primary text-uppercase">Copy</button>
+                                    <label for="ProteinSequence"></label>
+                                    <input type="text"
+                                           value="{{ gene.sequence }}"
+                                           id="ProteinSequence"
+                                           class="d-none">
+                                    <a href="{% url 'download-fasta' identifier=gene.protrend_id locus_tag=gene.locus_tag name=gene.name sequence=gene.sequence %}"
+                                       class="btn btn-outline-primary text-uppercase">Download</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="sources" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Source <i class="bi bi-collection ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        {% for source in gene.data_source %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-uppercase">{{ source.name }}</h5>
+                                        <div class="card-text">
+                                            <p class="pb-2">
+                                                The regulator named {{ gene.locus_tag }}
+                                                has been retrieved from {{ source.name|upper }}.
+                                            </p>
+                                            <p>
+                                                {% if source.external_identifier %}
+                                                    This regulator is referred by the following external identifier
+                                                    <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
+                                                {% else %}
+                                                    This regulator is available at {{ source.url }}.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <a class="btn rounded-pill btn-outline-success text-uppercase"
+                                           rel="nofollow" target="_blank"
+                                           href="{{ source.url }}">
+                                            Consult {{ source.name }} <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 id="organism" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Organism <i class="fa-solid fa-bacterium ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row align-items-center pt-2">
+                        <div class="col-md-6 py-2 py-md-0 align-self-center">
+                            <div class="card" style="min-height: 250px!important;">
+                                <div class="card-body">
+                                    {% if gene.organism %}
+                                        <h5 class="card-title">{{ gene.organism.0.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ gene.organism.0.protrend_id }}</h6>
+                                        <p class="card-text">Scientific name: {{ gene.organism.0.name }}</p>
+                                        <p class="card-text">Species:
+                                            {% if gene.organism.0.species %}
+                                                {{ gene.organism.0.species }}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">Strain:
+                                            {% if gene.organism.0.strain %}
+                                                {{ gene.organism.0.strain }}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">Taxonomy:
+                                            {% if gene.organism.0.ncbi_taxonomy %}
+                                                {% include "website/protrend_button.html" with identifier=gene.organism.0.ncbi_taxonomy type="ncbi-taxonomy-btn" %}
+                                                {% include "website/protrend_button.html" with identifier=gene.organism.0.ncbi_taxonomy type="uniprot-taxonomy-btn" %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                    {% else %}
+                                        <h5 class="card-title">Not Available</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Organism</h6>
+                                        <p class="card-text">Scientific name: There is no organism for this regulator</p>
+                                        <p class="card-text">Species: There is no organism for this regulator</p>
+                                        <p class="card-text">Strain: There is no organism for this regulator</p>
+                                        <p class="card-text">Taxonomy: There is no organism for this regulator</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 py-2 py-md-0 text-center">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col pb-3">
+                                        <img src="{% static 'website/images/bacteria.jpg' %}"
+                                             height="150"
+                                             alt="organisms">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {% if gene.organism %}
+                                            <a type="button"
+                                               class="btn btn-outline-success fs-6"
+                                               href="{% url 'organism' gene.organism.0.protrend_id %}">
+                                                Browse {{ gene.organism.0.name }}
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js">
+    </script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js">
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/export/bootstrap-table-export.min.js">
+    </script>
+    <script src="{% static 'website/js/copySequenceToClipBoard.js' %}">
+    </script>
+    <script>
+        const copySequence = function () {
+            const text = document.getElementById('ProteinSequence').value;
+            return copySequenceToClipBoard(text);
+        }
+    </script>
+    </html>
+{% endblock %}
