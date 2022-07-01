@@ -23,9 +23,10 @@
                             <h5 class="text-uppercase text-white text-center">
                                 Find a regulatory interaction
                             </h5>
-                            <form class="d-flex py-3 px-5 mx-5">
+                            <form class="d-flex py-3 px-5 mx-5" method="GET" action="{% url 'search' %}">
+                                {% csrf_token %}
                                 <input class="form-control form-control-lg me-2"
-                                       type="search" placeholder="lexA" aria-label="Search">
+                                       type="text" placeholder="lexA" aria-label="Search" name="q">
                                 <button class="btn btn-outline-light me-5"
                                         type="submit">
                                     <i class="bi bi-search font-size-xl"></i>

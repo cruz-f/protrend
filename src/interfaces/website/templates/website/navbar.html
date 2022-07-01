@@ -45,9 +45,11 @@
                         </a>
                     </li>
                 </ul>
-                {% if active_page != 'home' %}
-                    <form class="d-flex">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                {% if active_page != 'home' and active_page != 'search' %}
+                    <form class="d-flex" method="GET" action="{% url 'search' %}">
+                        {% csrf_token %}
+                        <input class="form-control me-2"
+                               type="text" placeholder="lexA" aria-label="Search" name="q">
                         <button class="btn btn-outline-success text-uppercase me-5" type="submit">Search</button>
                     </form>
                 {% endif %}

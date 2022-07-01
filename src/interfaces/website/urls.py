@@ -12,6 +12,7 @@ router.register(r'regulators', list_view=website_views.RegulatorsView, detail_vi
 
 urlpatterns = [
     path(r'', include(router.urls)),
+    path(r'search', views.search, name='search'),
     path('genes/<str:protrend_id>', views.fake_view, name='gene'),
     path('binding-sites/<str:protrend_id>', views.fake_view, name='binding-site'),
     path('interactions/<str:protrend_id>', views.fake_view, name='interaction'),
