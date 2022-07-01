@@ -26,9 +26,6 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
     fields = ['protrend_id', 'locus_tag', 'name', 'mechanism',
               'uniprot_accession', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession']
 
-    def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
-        return [tables.RegulatorsTable()]
-
     def get_charts(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Chart]:
         # performing a group_by_count in a linked query set is faster than obtaining a linked query set
         # at the instantiation of the view to retrieve all organisms and regulator objects
