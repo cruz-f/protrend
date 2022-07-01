@@ -92,9 +92,8 @@ class WebsiteListView(GenericWebsiteView):
     def get_tables(self, objects):
         return []
 
-    def get_charts(self,objects):
+    def get_charts(self, objects):
         return []
-
 
 
 class WebsiteDetailView(GenericWebsiteView):
@@ -129,5 +128,5 @@ class WebsiteDetailView(GenericWebsiteView):
     def get_tables(self, objects):
         return []
 
-    def get_charts(self,objects):
+    def get_charts(self, objects):
         return []
