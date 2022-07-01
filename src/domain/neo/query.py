@@ -3,13 +3,16 @@ from typing import List, Tuple
 from neomodel import db
 
 
-def cypher_closure(operator, quotation=False, takes_operand=True):
+def cypher_closure(operator, quotation=False, takes_operand=True, case_insensitive=False):
 
     def wrapper(left_operand=None, right_operand=None):
         if not takes_operand:
             return f"{left_operand} {operator}"
 
         if quotation:
+            if case_insensitive:
+                return f"{left_operand} {operator} '(?i).*{right_operand}.*'"
+
             return f"{left_operand} {operator} '{right_operand}'"
 
         return f"{left_operand} {operator} {right_operand}"
@@ -25,7 +28,7 @@ CYPHER_OPERATORS = {'exact': cypher_closure(operator='=', quotation=True),
                     'gte': cypher_closure(operator='>='),
                     'in': cypher_closure(operator='in'),
                     'isnull': cypher_closure(operator='IS NULL', takes_operand=False),
-                    'contains': cypher_closure(operator='CONTAINS'),
+                    'contains': cypher_closure(operator='=~', quotation=True, case_insensitive=True),
                     'startswith': cypher_closure(operator='STARTS WITH', quotation=True),
                     'endswith': cypher_closure(operator='ENDS WITH', quotation=True)}
 
