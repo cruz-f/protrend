@@ -12,6 +12,12 @@ def regulators_page(request):
 
     limit = int(request.GET.get('limit', 15))
     offset = int(request.GET.get('offset', 0))
+    sort = request.GET.get('sort', 'protrend_id')
+    order = request.GET.get('order', 'asc')
+    if order == 'desc':
+        reversed = True
+    else:
+        reversed = False
 
     search = request.GET.get('search')
     if search:
@@ -40,6 +46,8 @@ def regulators_page(request):
 
         if data['total'] > limit:
             data['rows'] = data['rows'][offset:offset + limit]
+
+        data['rows'] = sorted(data['rows'], reverse=reversed,  key=lambda k: k[sort])
         return JsonResponse(data)
 
     query_set = dpi.get_objects(cls=Regulator,
@@ -61,4 +69,5 @@ def regulators_page(request):
             'detail': f'<a role="button" class="btn rounded-pill btn-outline-success" href="{regulator_url}"><i class="bi bi-journal-plus pe-2"></i>detail</a>'
         })
 
+    data['rows'] = sorted(data['rows'], reverse=reversed, key=lambda k: k[sort])
     return JsonResponse(data)

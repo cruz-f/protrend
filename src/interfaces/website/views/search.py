@@ -6,14 +6,17 @@ from domain import dpi
 
 FILTER_MAP = [
     (Gene,
-     ['locus_tag',
+     ['protrend_id',
+      'locus_tag',
       'uniprot_accession',
       'name']),
     (Organism,
-     ['name',
+     ['protrend_id',
+      'name',
       'ncbi_taxonomy']),
     (Regulator,
-     ['locus_tag',
+     ['protrend_id',
+      'locus_tag',
       'uniprot_accession',
       'name']),
 ]
