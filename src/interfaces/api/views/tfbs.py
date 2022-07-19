@@ -1,6 +1,5 @@
 from typing import Union
 
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -9,7 +8,7 @@ from interfaces.api import serializers
 from utils import get_header
 
 
-class BindingSitesList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class BindingSitesList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -21,12 +20,12 @@ class BindingSitesList(views.APIListView, views.APICreateView, generics.GenericA
     Note that, a binding site might not be regulator-specific. Although these events are extremely rare, more than one regulator can bind to the same cis-element.
     """
     serializer_class = serializers.TFBSListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
+    permission_classes = [permissions.SuperUserOrReadOnly]
     model = data.TFBS
     fields = ['protrend_id', 'organism', 'sequence', 'strand', 'start', 'stop', 'length']
 
 
-class BindingSiteDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class BindingSiteDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -38,7 +37,7 @@ class BindingSiteDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
     Note that, a binding site might not be regulator-specific. Although these events are extremely rare, more than one regulator can bind to the same cis-element.
     """
     serializer_class = serializers.TFBSDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
+    permission_classes = [permissions.SuperUserOrReadOnly]
     model = data.TFBS
     fields = ['protrend_id', 'organism', 'sequence', 'strand', 'start', 'stop', 'length']
     targets = {'data_source': ['name', 'url'],
@@ -50,7 +49,7 @@ class BindingSiteDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
                'regulatory_interaction': ['protrend_id']}
     relationships = {'data_source': ['url']}
 
-    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 

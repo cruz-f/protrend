@@ -1,4 +1,3 @@
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -6,7 +5,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class EvidenceList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class EvidenceList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -17,12 +16,12 @@ class EvidenceList(views.APIListView, views.APICreateView, generics.GenericAPIVi
     We are working on improving the descriptions of all evidences list in ProTReND.
     """
     serializer_class = serializers.EvidenceListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
+    permission_classes = [permissions.SuperUserOrReadOnly]
     model = data.Evidence
     fields = ['protrend_id', 'name', 'description']
 
 
-class EvidenceDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class EvidenceDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -33,7 +32,7 @@ class EvidenceDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics
     We are working on improving the descriptions of all evidences list in ProTReND.
     """
     serializer_class = serializers.EvidenceDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
+    permission_classes = [permissions.SuperUserOrReadOnly]
     model = data.Evidence
     fields = ['protrend_id', 'name', 'description']
     targets = {'tfbs': ['protrend_id'],

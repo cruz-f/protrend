@@ -22,11 +22,6 @@
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right pe-5 text-uppercase">
-                    {% block userlinks %}
-                        {{ block.super }}
-                    {% endblock %}
-                </ul>
                 <ul class="nav navbar-nav navbar-right pe-5">
                     <li class="text-uppercase"><a href="{% url 'api' %}">Index</a></li>
                     <li class="text-uppercase"><a href="{% url 'organisms-list' %}">Organisms</a></li>
@@ -78,6 +73,13 @@
                             <li class="text-uppercase"><a href="{% url 'schema-redoc' %}">Redoc</a></li>
                             <li class="text-uppercase"><a href="{% url 'best-practices' %}">Best practices</a></li>
                         </ul>
+                    </li>
+                    <li>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'logout' %}" class="text-uppercase">Logout</a>
+                        {% else %}
+                            <a href="{% url 'sign-in' %}" class="text-uppercase">Sign In</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
