@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 
 from interfaces.website import views
@@ -12,13 +13,25 @@ router.register(r'regulators', list_view=website_views.RegulatorsView, detail_vi
 router.register(r'genes', detail_view=website_views.GeneView)
 
 urlpatterns = [
+    # website main endpoints
     path(r'', include(router.urls)),
-    path(r'search', views.search, name='search'),
-    path(r'paginate-regulators', views.regulators_page, name='paginate-regulators'),
     path(r'about', views.about, name='about'),
-    # path('genes/<str:protrend_id>', views.fake_view, name='gene'),
-    # path('binding-sites/<str:protrend_id>', views.fake_view, name='binding-site'),
-    # path('interactions/<str:protrend_id>', views.fake_view, name='interaction'),
-    # path('effectors/<str:protrend_id>', views.fake_view, name='effector'),
+
+    # search
+    path(r'search', views.search, name='search'),
+
+    # authentication
+    path('activate/<uidb64>/<token>', website_views.activate, name='activate'),
+    path('sign-in/', website_views.SignInView.as_view(), name="sign-in"),
+    path("logout/", website_views.LogoutView.as_view(), name="logout"),
+    path('sign-up/', website_views.sign_up, name="sign-up"),
+    path('password-reset/', website_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password-reset/done/', website_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>', website_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done', website_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    # utils
+    path(r'paginate-regulators', views.regulators_page, name='paginate-regulators'),
     path('utils/download-fasta/<str:identifier>/<str:locus_tag>/<str:name>/<str:sequence>',
-         views.download_fasta, name='download-fasta')]
+         views.download_fasta, name='download-fasta')
+]

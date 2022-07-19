@@ -65,7 +65,6 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'interfaces', 'api', 'templates'),
             os.path.join(BASE_DIR, 'interfaces', 'website', 'templates'),
-            os.path.join(BASE_DIR, 'interfaces', 'authentication', 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -134,7 +133,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'interfaces', 'api', 'static'),
     os.path.join(BASE_DIR, 'interfaces', 'website', 'static'),
-    os.path.join(BASE_DIR, 'interfaces', 'static'),
 ]
 
 # the static root should be only used in production.
@@ -144,6 +142,26 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Email settings
+EMAIL_BACKEND = Configuration.email_backend
+EMAIL_HOST = Configuration.email_host
+EMAIL_PORT = Configuration.email_port
+EMAIL_HOST_USER = Configuration.email_host_user
+EMAIL_HOST_PASSWORD = Configuration.email_host_password
+EMAIL_USE_TLS = Configuration.email_use_tls
+
+DEFAULT_FROM_EMAIL = Configuration.email_default
+
+ACCOUNT_EMAIL_VERIFICATION = Configuration.email_verification
+
+# Custom user authentication backend
+AUTHENTICATION_BACKENDS = ['interfaces.backends.EmailBackend']
+
+# Login
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'sign-in'
 
 # django-rest framework settings
 REST_FRAMEWORK = {

@@ -32,7 +32,7 @@ class Configuration:
     def __init__(self):
         self._source = Path(os.path.dirname(__file__))
         self._conf = self._source.joinpath('conf')
-        self._configurations = self._conf.joinpath('protrend.conf')
+        self._configurations = self._conf.joinpath('protrend_development.conf')
 
         config = RawConfigParser()
         config.read(self._configurations)
@@ -56,6 +56,15 @@ class Configuration:
         self._cache_db_ip = str(config.get('protrend-cache', 'ip'))
         self._cache_db_port = str(config.get('protrend-cache', 'port'))
         self._cache_db_password = str(config.get('protrend-cache', 'password'))
+
+        self._email_backend = str(config.get('protrend-email-configuration', 'email'))
+        self._email_host = str(config.get('protrend-email-configuration', 'host'))
+        self._email_port = str(config.get('protrend-email-configuration', 'port'))
+        self._email_host_user = str(config.get('protrend-email-configuration', 'host_user'))
+        self._email_host_password = str(config.get('protrend-email-configuration', 'host_password'))
+        self._email_use_tls = parse_boolean_string(str(config.get('protrend-email-configuration', 'use_tls')))
+        self._email_default = str(config.get('protrend-email-configuration', 'default_from_email'))
+        self._email_verification = str(config.get('protrend-email-configuration', 'email_verification'))
 
     @property
     def source(self):
@@ -140,6 +149,38 @@ class Configuration:
     @property
     def cache_url(self) -> str:
         return f'redis://{self.cache_db_ip}:{self.cache_db_port}'
+
+    @property
+    def email_backend(self):
+        return self._email_backend
+
+    @property
+    def email_host(self):
+        return self._email_host
+
+    @property
+    def email_port(self):
+        return self._email_port
+
+    @property
+    def email_host_user(self):
+        return self._email_host_user
+
+    @property
+    def email_host_password(self):
+        return self._email_host_password
+
+    @property
+    def email_use_tls(self):
+        return self._email_use_tls
+
+    @property
+    def email_default(self):
+        return self._email_default
+
+    @property
+    def email_verification(self):
+        return self._email_verification
 
 
 Configuration: Configuration
