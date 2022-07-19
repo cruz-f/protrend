@@ -12,7 +12,7 @@ class SuperUserOrReadOnly(permissions.BasePermission):
             return True
 
         # otherwise, only superusers should be able to edit the protrend database using the api
-        if request.user.is_superuser or request.user.is_staff:
+        if request.user.is_superuser:
             return True
 
         return False
