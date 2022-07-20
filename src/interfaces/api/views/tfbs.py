@@ -21,7 +21,7 @@ class BindingSitesList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.TFBSListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.TFBS
+    model = data.models.TFBS
     fields = ['protrend_id', 'organism', 'sequence', 'strand', 'start', 'stop', 'length']
 
 
@@ -38,7 +38,7 @@ class BindingSiteDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.TFBSDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.TFBS
+    model = data.models.TFBS
     fields = ['protrend_id', 'organism', 'sequence', 'strand', 'start', 'stop', 'length']
     targets = {'data_source': ['name', 'url'],
                'evidence': ['protrend_id'],

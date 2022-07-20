@@ -19,7 +19,7 @@ class PathwayList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.PathwayListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Pathway
+    model = data.models.Pathway
     fields = ['protrend_id', 'name', 'kegg_pathways']
 
 
@@ -37,7 +37,7 @@ class PathwayDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.PathwayDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Pathway
+    model = data.models.Pathway
     fields = ['protrend_id', 'name', 'kegg_pathways']
     targets = {'data_source': ['name', 'url'],
                'regulator': ['protrend_id'],

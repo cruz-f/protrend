@@ -19,7 +19,7 @@ class RegulatoryFamilyList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatoryFamilyListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryFamily
+    model = data.models.RegulatoryFamily
     fields = ['protrend_id', 'name', 'mechanism']
 
 
@@ -36,7 +36,7 @@ class RegulatoryFamilyDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatoryFamilyDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryFamily
+    model = data.models.RegulatoryFamily
     fields = ['protrend_id', 'name', 'mechanism', 'rfam', 'description']
     targets = {'data_source': ['name', 'url'],
                'regulator': ['protrend_id']}

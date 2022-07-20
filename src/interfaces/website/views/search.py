@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
-from data import Gene, Organism, Regulator
+from data.models import Gene, Organism, Regulator
 from domain import dpi
 
 FILTER_MAP = [

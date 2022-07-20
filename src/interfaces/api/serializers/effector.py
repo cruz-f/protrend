@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text
-from data import Effector
+from data.models import Effector
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField
 from interfaces.serializers.relationship import SourceRelationshipSerializer, RelationshipSerializer

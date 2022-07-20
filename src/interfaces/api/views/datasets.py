@@ -27,7 +27,7 @@ class TRNList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.TRNListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id']
 
 
@@ -49,7 +49,7 @@ class TRN(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.TRNDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain']
     targets = {'regulatory_interaction': ['protrend_id', 'regulator', 'gene', 'tfbs', 'effector', 'regulatory_effect']}
 
@@ -67,7 +67,7 @@ class OrganismsBindingSites(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.OrganismBindingSitesListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id']
 
 
@@ -85,7 +85,7 @@ class OrganismBindingSites(views.APIRetrieveView, generics.GenericAPIView):
     serializer_class = serializers.OrganismBindingSitesDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain']
     targets = {'tfbs': ['protrend_id', 'sequence', 'strand', 'start', 'stop']}
 
@@ -104,7 +104,7 @@ class RegulatorsBindingSites(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatorBindingSitesListSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id']
 
 
@@ -123,6 +123,6 @@ class RegulatorBindingSites(views.APIRetrieveView, generics.GenericAPIView):
     serializer_class = serializers.RegulatorBindingSitesDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'mechanism']
     targets = {'tfbs': ['protrend_id', 'sequence', 'strand', 'start', 'stop']}

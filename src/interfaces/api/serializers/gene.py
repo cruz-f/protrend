@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text, choices
-from data import Gene
+from data.models import Gene
 from interfaces.validation import validate_protein_sequence
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField

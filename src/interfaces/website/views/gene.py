@@ -22,7 +22,7 @@ class GeneView(views.WebsiteDetailView, generic.DetailView):
 
     active_page = ''
     serializer = serializers.GeneSerializer
-    model = data.Gene
+    model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'function', 'description',
               'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence',
               'strand', 'start', 'stop']

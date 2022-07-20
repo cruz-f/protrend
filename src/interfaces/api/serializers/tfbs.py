@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text, choices
-from data import TFBS
+from data.models import TFBS
 from interfaces.validation import validate_dna_sequence
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField

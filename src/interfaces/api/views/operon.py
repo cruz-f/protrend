@@ -24,7 +24,7 @@ class OperonList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.OperonListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Operon
+    model = data.models.Operon
     fields = ['protrend_id', 'operon_db_id', 'name', 'function', 'genes']
 
 
@@ -44,7 +44,7 @@ class OperonDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.OperonDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Operon
+    model = data.models.Operon
     fields = ['protrend_id', 'operon_db_id', 'name', 'function', 'genes', 'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id'],

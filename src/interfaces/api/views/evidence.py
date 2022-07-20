@@ -17,7 +17,7 @@ class EvidenceList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.EvidenceListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Evidence
+    model = data.models.Evidence
     fields = ['protrend_id', 'name', 'description']
 
 
@@ -33,7 +33,7 @@ class EvidenceDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.EvidenceDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Evidence
+    model = data.models.Evidence
     fields = ['protrend_id', 'name', 'description']
     targets = {'tfbs': ['protrend_id'],
                'regulatory_interaction': ['protrend_id']}

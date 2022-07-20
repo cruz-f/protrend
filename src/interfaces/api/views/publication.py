@@ -17,7 +17,7 @@ class PublicationList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.PublicationListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Publication
+    model = data.models.Publication
     fields = ['protrend_id', 'pmid', 'doi', 'title', 'author', 'year']
 
 
@@ -33,7 +33,7 @@ class PublicationDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.PublicationDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Publication
+    model = data.models.Publication
     fields = ['protrend_id', 'pmid', 'doi', 'title', 'author', 'year']
     targets = {'tfbs': ['protrend_id'],
                'regulatory_interaction': ['protrend_id']}

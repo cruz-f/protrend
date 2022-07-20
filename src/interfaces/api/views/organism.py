@@ -19,7 +19,7 @@ class OrganismList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.OrganismListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain']
 
 
@@ -37,7 +37,7 @@ class OrganismDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.OrganismDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain', 'refseq_accession', 'refseq_ftp',
               'genbank_accession', 'genbank_ftp', 'ncbi_assembly', 'assembly_accession']
     targets = {'data_source': ['name', 'url'],

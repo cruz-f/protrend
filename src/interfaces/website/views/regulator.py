@@ -22,7 +22,7 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
 
     active_page = 'regulators'
     serializer = serializers.RegulatorsSerializer
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'name', 'mechanism',
               'uniprot_accession', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession']
 
@@ -53,7 +53,7 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
 
     active_page = 'regulators'
     serializer = serializers.RegulatorSerializer
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'function', 'description',
               'mechanism', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence',
               'strand', 'start', 'stop']

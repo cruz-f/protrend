@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text
-from data import Evidence
+from data.models import Evidence
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField
 from interfaces.serializers.relationship import RelationshipSerializer

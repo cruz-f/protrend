@@ -20,7 +20,7 @@ class RegulatorList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatorListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism']
 
 
@@ -39,7 +39,7 @@ class RegulatorDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatorDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism',
               'function', 'description', 'ncbi_gene',
               'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence', 'strand', 'start', 'stop']

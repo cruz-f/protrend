@@ -18,7 +18,7 @@ class EffectorList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.EffectorListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Effector
+    model = data.models.Effector
     fields = ['protrend_id', 'name', 'kegg_compounds']
 
 
@@ -35,7 +35,7 @@ class EffectorDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.EffectorDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Effector
+    model = data.models.Effector
     fields = ['protrend_id', 'name', 'kegg_compounds']
     targets = {'data_source': ['name', 'url'],
                'regulator': ['protrend_id'],

@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.urls import reverse
 
-from data import Regulator
+from data.models import Regulator
 from domain import dpi
 
 

@@ -19,7 +19,7 @@ class GeneList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.GeneListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Gene
+    model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms']
 
 
@@ -37,7 +37,7 @@ class GeneDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.GeneDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.Gene
+    model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
               'function', 'description', 'ncbi_gene', 'ncbi_protein',
               'genbank_accession', 'refseq_accession', 'sequence', 'strand', 'start', 'stop']

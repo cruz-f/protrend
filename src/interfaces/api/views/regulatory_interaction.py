@@ -27,7 +27,7 @@ class InteractionsList(views.APIListView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatoryInteractionListSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryInteraction
+    model = data.models.RegulatoryInteraction
     fields = ['protrend_id', 'organism', 'regulator', 'gene', 'tfbs', 'effector', 'regulatory_effect']
 
 
@@ -50,7 +50,7 @@ class InteractionDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.RegulatoryInteractionDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryInteraction
+    model = data.models.RegulatoryInteraction
     fields = ['protrend_id', 'regulatory_effect']
     targets = {'data_source': ['name', 'url'],
                'evidence': ['protrend_id'],
