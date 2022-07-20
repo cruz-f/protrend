@@ -50,7 +50,7 @@
                     <div class="row align-items-center py-5">
                         <div class="col align-self-center">
                             <div class="container">
-                                <div class="row row-cols-1 row-cols-md-3 g-4">
+                                <div class="row row-cols-1 row-cols-md-4 g-4">
                                     <div class="col">
                                         <div class="card h-100">
                                             <img src="{% static 'website/images/bacteria.jpg' %}"
@@ -83,6 +83,27 @@
                                             </div>
                                             <a href="{% url 'regulators' %}" class="btn btn-primary text-uppercase">
                                                 Go to regulators
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <img src="{% static 'website/images/upload.png' %}"
+                                                 class="card-img-top"
+                                                 alt="regulator">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Community</h5>
+                                                <p class="card-text text-justify">
+                                                    ProTReND Community consists of a collection of regulatory
+                                                    interactions based on contributions from the scientific community.
+                                                    It is a useful resource for
+                                                    biologists to submit new and curated regulatory interactions.
+                                                    All registered users can contribute.
+                                                    <a href="{% url 'sign-up' %}">Register now!</a>
+                                                </p>
+                                            </div>
+                                            <a href="{% url 'community:index' %}" class="btn btn-primary text-uppercase">
+                                                Go to Community
                                             </a>
                                         </div>
                                     </div>
