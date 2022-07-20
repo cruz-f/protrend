@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django_neomodel',
     'drf_yasg',
     'data',
-    'interfaces'
+    'interfaces',
+    'community.apps.CommunityConfig'
 ]
 
 # do not change middleware order

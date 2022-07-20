@@ -10,6 +10,3 @@ from .protrend_database import RegulatoryFamily
 from .protrend_database import RegulatoryInteraction
 from .protrend_database import Source
 from .protrend_database import TFBS
-
-from .protrend_community import RegulatorCommunity
-from .protrend_community import GeneCommunity

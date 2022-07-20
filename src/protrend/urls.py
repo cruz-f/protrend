@@ -16,9 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from material.frontend.urls import modules
+
 
 urlpatterns = [
     path('', include('interfaces.website.urls')),
+    path('', include(modules.urls)),
     path('api/', include('interfaces.api.urls')),
     path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
