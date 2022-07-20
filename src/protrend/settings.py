@@ -32,6 +32,8 @@ ALLOWED_HOSTS = Configuration.allowed_hosts
 # Application definition
 
 INSTALLED_APPS = [
+    'material',
+    'material.frontend',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
