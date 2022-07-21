@@ -159,8 +159,8 @@ DEFAULT_FROM_EMAIL = Configuration.email_default
 
 ACCOUNT_EMAIL_VERIFICATION = Configuration.email_verification
 
-# Custom user authentication backend
-AUTHENTICATION_BACKENDS = ['interfaces.backends.EmailBackend']
+# Custom user
+AUTH_USER_MODEL = 'community.CommunityUser'
 
 # Login
 LOGIN_REDIRECT_URL = '/'
