@@ -1,9 +1,14 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from constants import help_text, choices
 
 
+User = get_user_model()
+
+
 class GeneCommunity(models.Model):
+    protrend_id = models.CharField(blank=True, max_length=100, help_text=help_text.protrend_id)
     locus_tag = models.CharField(blank=False, max_length=100, help_text=help_text.locus_tag)
     uniprot_accession = models.CharField(blank=True, max_length=50, help_text=help_text.uniprot_accession)
     name = models.CharField(blank=True, max_length=50, help_text=help_text.gene_name)
@@ -19,7 +24,7 @@ class GeneCommunity(models.Model):
     start = models.IntegerField(blank=True, null=True, help_text=help_text.start)
     stop = models.IntegerField(blank=True, null=True, help_text=help_text.stop)
 
-    user = models.OneToOneField('auth.User', related_name='genes', verbose_name='User', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='genes', verbose_name='User', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.locus_tag
