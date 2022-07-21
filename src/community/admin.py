@@ -16,7 +16,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = CommunityUser
-        fields = ('email', )
+        fields = ('username', 'email', 'first_name', 'last_name', 'institution')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -44,7 +44,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = CommunityUser
-        fields = ('email', 'password', 'is_active', 'is_admin')
+        fields = ('username', 'email', 'password', 'is_active', 'is_staff', 'is_admin')
 
 
 class UserAdmin(BaseUserAdmin):
@@ -52,27 +52,27 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User.
-    list_display = ('email', 'is_admin')
-    list_filter = ('is_admin',)
-    fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ()}),
-        ('Permissions', {'fields': ('is_admin',)}),
-    )
-    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
-    # overrides get_fieldsets to use this attribute when creating a user.
+    # # The fields to be used in displaying the User model.
+    # # These override the definitions on the base UserAdmin
+    # # that reference specific fields on auth.User.
+    # list_display = ('email', 'username', 'is_admin')
+    # list_filter = ('is_admin',)
+    # fieldsets = (
+    #     (None, {'fields': ('email', 'password')}),
+    #     ('Personal info', {'fields': ('username', )}),
+    #     ('Permissions', {'fields': ('is_admin',)}),
+    # )
+    # # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
+    # # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('username', 'email', 'first_name', 'last_name', 'institution', 'password1', 'password2'),
         }),
     )
-    search_fields = ('email',)
-    ordering = ('email',)
-    filter_horizontal = ()
+    # search_fields = ('email',)
+    # ordering = ('email',)
+    # filter_horizontal = ()
 
 
 # Now register the new UserAdmin...
