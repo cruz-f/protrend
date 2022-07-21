@@ -1,19 +1,17 @@
-from material.frontend.views import ModelViewSet
-
 from . import models
+from .community_view_set import CommunityViewSet
 from .forms import RegulatorForm, GeneForm
-from .permissions import CommunityPermissionsMixIn
 
 
-class RegulatorCommunityViewSet(CommunityPermissionsMixIn, ModelViewSet):
+class RegulatorCommunityViewSet(CommunityViewSet):
     model = models.RegulatorCommunity
     form_class = RegulatorForm
-    ordering = ['-locus_tag', 'uniprot_accession', '-name']
-    list_display = ('locus_tag', 'uniprot_accession', 'name', 'user')
+    ordering = ['-protrend_id', '-locus_tag', 'uniprot_accession', '-name']
+    list_display = ('protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'user')
 
 
-class GeneCommunityViewSet(CommunityPermissionsMixIn, ModelViewSet):
+class GeneCommunityViewSet(CommunityViewSet):
     model = models.GeneCommunity
     form_class = GeneForm
-    ordering = ['-locus_tag', 'uniprot_accession', '-name']
-    list_display = ('locus_tag', 'uniprot_accession', 'name', 'user')
+    ordering = ['-protrend_id', '-locus_tag', 'uniprot_accession', '-name']
+    list_display = ('protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'user')
