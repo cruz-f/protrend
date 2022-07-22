@@ -1,10 +1,9 @@
-from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 
-from interfaces.website import views
-
 import interfaces.website.views as website_views
+from interfaces.website import views
 from .router import WebsiteRouter
+
 
 # Create a router and register our class-based views.
 router = WebsiteRouter(r'')
