@@ -28,7 +28,7 @@ class OrganismsView(views.WebsiteListView, generic.ListView):
                                      fields=['protrend_id'],
                                      target='regulator',
                                      target_fields=['protrend_id'])
-        counts = queryset.group_by_count()
+        counts = queryset.group_by_count(field='name')
         return [charts.OrganismsRegulatorsChart(objects=counts),
                 charts.OrganismsRegulatorsTopChart(objects=counts),
                 charts.OrganismsTaxaChart(objects=objects),

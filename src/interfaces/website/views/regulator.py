@@ -33,12 +33,12 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
                                            fields=['protrend_id'],
                                            target='gene',
                                            target_fields=['protrend_id'])
-        genes_counts = genes_queryset.group_by_count()
+        genes_counts = genes_queryset.group_by_count(field='locus_tag')
         rfams_queryset = NeoLinkedQuerySet(source=data.models.RegulatoryFamily,
                                            fields=['name'],
                                            target='regulator',
                                            target_fields=['protrend_id'])
-        rfams_counts = rfams_queryset.group_by_count()
+        rfams_counts = rfams_queryset.group_by_count(field='name')
         return [charts.RegulatorsGenesChart(objects=genes_counts),
                 charts.RegulatorsGenesTopChart(objects=genes_counts),
                 charts.RegulatoryFamiliesRegulatorsTopChart(objects=rfams_counts),

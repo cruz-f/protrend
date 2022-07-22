@@ -223,7 +223,6 @@ const filterHebData = (regulatorsIds, data) => {
                     return item.regulator === id;
                 });
         });
-    console.log(filteredInteractions);
     const interactions = filteredInteractions.map(
         function (item) {
             const organism = "org";
