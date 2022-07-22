@@ -1,18 +1,33 @@
 {% extends 'material/frontend/base_module.html' %}
+{% load static %}
+{% block favicon %}{% endblock %}
 {% block title %}ProTReND Community{% endblock %}
-{% block sidenav_items %}
-    {{ block.super }}
+{% block sidenav_header %}
     <li>
-        <a class="collapsible-header" href="{% url 'home' %}">
-            <i class="material-icons">home</i> Home
-        </a>
+        <div class="user-view">
+            <div class="background" >
+                <img alt="sidenav" src="{% static 'material/imgs/sidenav.svg' %}">
+            </div>
+            {% block userphoto %}
+                {% if user.photo.url %}
+                    <a href="#"><img class="circle" src="{{ user.photo.url }}" alt=""></a>
+                {% else %}
+                    <a href="#"><img class="circle" src="{% static 'material/imgs/user.png' %}" alt=""></a>
+                {% endif %}
+            {% endblock %}
+            <a href="#"><span class="white-text name">{{ request.user.username }}</span></a>
+            <a href="#"><span class="white-text email">{{ request.user.email }}</span></a>
+        </div>
     </li>
 {% endblock %}
 
 {% block topbar_links %}
-{% if user.is_authenticated %}
-<li><a href="{% url 'logout' %}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>Log out</a></li>
-{% else %}
-<li><a href="{% url 'sign-in' %}" data-turbolinks="false"><i class="material-icons right">lock_open</i>Sign In</a></li>
-{% endif %}
+    <li><a href="{% url 'home' %}" data-turbolinks="false">
+        <i class="material-icons right">home</i>Home</a>
+    </li>
+    {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>Log out</a></li>
+    {% else %}
+        <li><a href="{% url 'sign-in' %}" data-turbolinks="false"><i class="material-icons right">lock_open</i>Sign In</a></li>
+    {% endif %}
 {% endblock %}
