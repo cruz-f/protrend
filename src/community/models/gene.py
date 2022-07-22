@@ -8,6 +8,7 @@ User = get_user_model()
 
 
 class GeneCommunity(models.Model):
+    # properties
     protrend_id = models.CharField(blank=True, max_length=100, help_text=help_text.protrend_id)
     locus_tag = models.CharField(blank=False, max_length=100, help_text=help_text.locus_tag)
     uniprot_accession = models.CharField(blank=True, max_length=50, help_text=help_text.uniprot_accession)
@@ -24,6 +25,11 @@ class GeneCommunity(models.Model):
     start = models.IntegerField(blank=True, null=True, help_text=help_text.start)
     stop = models.IntegerField(blank=True, null=True, help_text=help_text.stop)
 
+    # evidences and others
+    evidence = models.CharField(blank=True, max_length=250, help_text=help_text.required_name)
+    pmid = models.IntegerField(blank=True, help_text=help_text.pmid)
+
+    # connections
     user = models.ForeignKey(User, related_name='genes', verbose_name='User', on_delete=models.CASCADE)
 
     def __str__(self):
