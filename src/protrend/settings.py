@@ -162,7 +162,8 @@ ACCOUNT_EMAIL_VERIFICATION = Configuration.email_verification
 # Custom user
 AUTH_USER_MODEL = 'community.CommunityUser'
 
-# Login
+# Login/Logout
+LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'sign-in'
 
