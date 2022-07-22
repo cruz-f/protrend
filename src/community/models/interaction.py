@@ -9,13 +9,13 @@ User = get_user_model()
 
 class InteractionCommunity(models.Model):
     # properties
-    protrend_id = models.CharField(blank=True, max_length=100, help_text=help_text.protrend_id)
+    protrend_id = models.CharField(blank=True, null=True, max_length=100, help_text=help_text.protrend_id)
     regulatory_effect = models.CharField(blank=False, max_length=50, choices=list(choices.regulatory_effect.items()),
                                          help_text=help_text.regulatory_effect)
 
     # evidences and others
-    evidence = models.CharField(blank=True, max_length=250, help_text=help_text.required_name)
-    pmid = models.IntegerField(blank=True, help_text=help_text.pmid)
+    evidence = models.CharField(blank=True, null=True, max_length=250, help_text=help_text.required_name)
+    pmid = models.IntegerField(blank=True, null=True, help_text=help_text.pmid)
 
     # connections
     user = models.ForeignKey(User, related_name='interactions', verbose_name='User', on_delete=models.CASCADE)

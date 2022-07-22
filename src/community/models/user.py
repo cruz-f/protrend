@@ -35,7 +35,7 @@ class CommunityUser(AbstractUser):
     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
     institution = models.CharField(_('institution'),
                                    max_length=200,
-                                   blank=True)
+                                   blank=True, null=True)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(
