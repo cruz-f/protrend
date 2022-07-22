@@ -34,7 +34,7 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
                                            target='gene',
                                            target_fields=['protrend_id'])
         genes_counts = genes_queryset.group_by_count()
-        rfams_queryset = NeoLinkedQuerySet(source=data.RegulatoryFamily,
+        rfams_queryset = NeoLinkedQuerySet(source=data.models.RegulatoryFamily,
                                            fields=['name'],
                                            target='regulator',
                                            target_fields=['protrend_id'])
