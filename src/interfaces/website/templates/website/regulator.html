@@ -577,6 +577,12 @@
                                             aria-selected="false">
                                         Sequences
                                     </button>
+                                    <button class="nav-link text-uppercase" id="v-pills-aligned-sequences-tab"
+                                            data-bs-toggle="pill" data-bs-target="#v-pills-aligned-sequences"
+                                            type="button" role="tab" aria-controls="v-pills-aligned-sequences"
+                                            aria-selected="false">
+                                        Aligned Sequences
+                                    </button>
                                 </div>
                                 <div class="tab-content" id="v-pills-tabContent">
                                     <div class="tab-pane fade show active"
@@ -625,6 +631,26 @@
                                                             {% for sequence in sequences %}
                                                                 <li class="list-group-item flex-fill text-uppercase">
                                                                     {{ sequence }}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade"
+                                         id="v-pills-aligned-sequences"
+                                         role="tabpanel"
+                                         aria-labelledby="v-pills-aligned-sequences-tab">
+                                        <div class="container">
+                                            <div class="row">
+                                                {% for aligned_sequences in motif_aligned_sequences %}
+                                                    <div class="col-3">
+                                                        <ul class="list-group list-group-flush">
+                                                            {% for aligned_sequence in aligned_sequences %}
+                                                                <li class="list-group-item flex-fill text-uppercase">
+                                                                    {{ aligned_sequence }}
                                                                 </li>
                                                             {% endfor %}
                                                         </ul>

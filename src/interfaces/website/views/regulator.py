@@ -80,14 +80,15 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
     @staticmethod
     def get_binding_motif(binding_sites: List[Dict]):
         sequences = [tfbs.get('sequence', '') for tfbs in binding_sites]
-        pwm = make_pwm(sequences)
+        pwm, aligned_sequences = make_pwm(sequences)
         logo = make_motif_logo(pwm)
         img = make_motif_img(logo)
         img = img.replace('height="180pt"', '').replace('width="720pt"', '')
 
         # split sequences
         sequences = np.array_split(sequences, 4)
-        return pwm, sequences, img
+        aligned_sequences = np.array_split(aligned_sequences, 4)
+        return pwm, sequences, aligned_sequences, img
 
     def get_context_data(self, **kwargs):
         context = super(RegulatorView, self).get_context_data(**kwargs)
@@ -95,10 +96,11 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
         binding_sites = context[self.context_object_name].get('tfbs', [])
 
         if binding_sites:
-            pwm, sequences, img = self.get_binding_motif(binding_sites)
+            pwm, sequences, aligned_sequences, img = self.get_binding_motif(binding_sites)
 
             context['pwm'] = pwm
             context['motif_sequences'] = sequences
+            context['motif_aligned_sequences'] = aligned_sequences
             context['motif'] = img
 
         else:

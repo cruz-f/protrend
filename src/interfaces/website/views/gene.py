@@ -1,16 +1,6 @@
-from typing import Union, List, Dict
-
-import numpy as np
-import pandas as pd
 from django.views import generic
-from django_neomodel import DjangoNode
 
 import data
-from application import tables, charts
-from application.charts.chart import Chart
-from application.sequences import make_motif_logo, make_motif_img, make_pwm
-from application.tables.table import Table
-from domain.neo import NeoNode, NeoLinkedQuerySet
 from interfaces import views
 from interfaces.website import serializers
 
