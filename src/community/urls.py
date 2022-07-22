@@ -1,10 +1,11 @@
 from django.urls import path, include
 from django.views import generic
 
-from .views import RegulatorCommunityViewSet, GeneCommunityViewSet
+from . import views
 
 urlpatterns = [
-    path('', generic.RedirectView.as_view(url='./regulator/'), name="index"),
-    path('regulator/', include(RegulatorCommunityViewSet().urls)),
-    path('gene/', include(GeneCommunityViewSet().urls)),
+    path('', generic.RedirectView.as_view(url='./effector/'), name="index"),
+    path('effector/', include(views.EffectorCommunityViewSet().urls)),
+    path('gene/', include(views.GeneCommunityViewSet().urls)),
+    path('regulator/', include(views.RegulatorCommunityViewSet().urls)),
 ]
