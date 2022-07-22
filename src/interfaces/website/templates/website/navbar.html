@@ -1,6 +1,5 @@
 {% extends "website/base.html" %}
 {% load static %}
-{% load get_email_user %}
 <!DOCTYPE html>
 <html lang="en">
 {% block navbar_style %}
@@ -65,10 +64,10 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary text-uppercase dropdown-toggle me-5"
                                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle">  {{ user.email|get_email_user }}</i>
+                                <i class="bi bi-person-circle">  {{ user.username }}</i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'password_reset' %}">Change Password</a></li>
+                                <li><a class="dropdown-item" href="{% url 'password_reset' %}">Reset Password</a></li>
                                 <li><a class="dropdown-item" href="{% url 'sign-in' %}">Switch Account</a></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
