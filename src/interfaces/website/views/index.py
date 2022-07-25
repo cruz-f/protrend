@@ -1,5 +1,6 @@
-from django.shortcuts import render
 from django.views import generic
+
+from interfaces.website.forms import SearchForm
 
 
 class IndexView(generic.TemplateView):
@@ -11,10 +12,6 @@ class IndexView(generic.TemplateView):
         # the view context
         # noinspection PyUnresolvedReferences
         context = super().get_context_data(**kwargs)
-
+        context['form'] = SearchForm()
         context['active_page'] = 'home'
         return context
-
-
-def fake_view(request, param=None):
-    return render(request, "website/index.html", {'active_page': 'home'})

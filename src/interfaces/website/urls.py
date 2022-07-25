@@ -1,7 +1,6 @@
 from django.urls import path, include
 
 import interfaces.website.views as website_views
-from interfaces.website import views
 from .router import WebsiteRouter
 
 
@@ -14,10 +13,10 @@ router.register(r'genes', detail_view=website_views.GeneView)
 urlpatterns = [
     # website main endpoints
     path(r'', include(router.urls)),
-    path(r'about', views.about, name='about'),
+    path(r'about', website_views.about, name='about'),
 
     # search
-    path(r'search', views.search, name='search'),
+    path(r'search', website_views.search, name='search'),
 
     # authentication
     path('sign-in/', website_views.SignInView.as_view(), name="sign-in"),
@@ -30,7 +29,7 @@ urlpatterns = [
     path('reset/done', website_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # utils
-    path(r'paginate-regulators', views.regulators_page, name='paginate-regulators'),
+    path(r'paginate-regulators', website_views.regulators_page, name='paginate-regulators'),
     path('utils/download-fasta/<str:identifier>/<str:locus_tag>/<str:name>/<str:sequence>',
-         views.download_fasta, name='download-fasta')
+         website_views.download_fasta, name='download-fasta')
 ]

@@ -179,3 +179,17 @@ class UserPasswordSetForm(SetPasswordForm):
                    "class": "form-control"}
         ),
     )
+
+
+class SearchForm(forms.Form):
+    search = forms.CharField(
+        label=_("Search"),
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={'autocomplete': 'off',
+                   'type': 'search',
+                   'name': 'search',
+                   "placeholder": "Search for organisms, genes, regulators, etc.",
+                   "class": "form-control"}
+        )
+    )

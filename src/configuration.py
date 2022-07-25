@@ -66,6 +66,8 @@ class Configuration:
         self._email_default = str(config.get('protrend-email-configuration', 'default_from_email'))
         self._email_verification = str(config.get('protrend-email-configuration', 'email_verification'))
 
+        self._search_index = str(config.get('search-configuration', 'search_index'))
+
     @property
     def source(self):
         return self._source
@@ -181,6 +183,10 @@ class Configuration:
     @property
     def email_verification(self):
         return self._email_verification
+
+    @property
+    def search_index(self):
+        return self._search_index
 
 
 Configuration: Configuration
