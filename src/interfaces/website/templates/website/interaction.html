@@ -1,0 +1,642 @@
+{% extends "website/footer.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/table.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'website/css/gene_box.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-start">
+                {% include "website/protrend_bread_crumb.html" %}
+            </div>
+        </div>
+        <div class="row align-items-center pt-3">
+            <div class="col-lg-8 py-2 py-lg-0 align-self-center">
+                <h2 class="text-uppercase blue-color">
+                    {{ interaction.protrend_id }}
+                </h2>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="DownloadDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-download"></i>
+                    download
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="DownloadDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'interactions-detail' interaction.protrend_id %}?format=api">
+                            api
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'interactions-detail' interaction.protrend_id %}?format=json">
+                            json
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'interactions-detail' interaction.protrend_id %}?format=csv">
+                            csv
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'interactions-detail' interaction.protrend_id %}?format=xlsx">
+                            xlsx
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <button class="btn btn-outline-primary dropdown-toggle text-uppercase fs-5"
+                        type="button"
+                        id="NavigateDropDown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="bi bi-journal-plus"></i>
+                    navigate
+                </button>
+                <ul class="dropdown-menu"
+                    aria-labelledby="NavigateDropDown">
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#details">
+                            detail
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#organism">
+                            organism
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#sources">
+                            source
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#publications">
+                            publications
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="#evidences">
+                            evidences
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <h5 id="details" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                Details <i class="bi bi-clipboard-data ps-2"></i>
+            </h5>
+            <div class="container">
+                <div class="row align-items-start pt-2">
+                    <div class="col-lg-4 py-2">
+                        <div class="table-responsive">
+                            <table class="table-custom table-borderless">
+                                <tbody>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">identifier</td>
+                                    <td>{{ interaction.protrend_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">Regulatory effect</td>
+                                    <td>{{ interaction.regulatory_effect }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">organism</td>
+                                    <td>{{ interaction.organism }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">regulator</td>
+                                    <td>{{ interaction.regulator }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">gene</td>
+                                    <td>{{ interaction.gene }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">tfbs</td>
+                                    <td>
+                                        {% if interaction.tfbs %}
+                                            {{ interaction.tfbs }}
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">effector</td>
+                                    <td>
+                                        {% if interaction.effector %}
+                                            {{ interaction.effector }}
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">source</td>
+                                    <td>
+                                        {% if interaction.data_source %}
+                                            {{ interaction.data_source.0.name }}, ...
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">evidences</td>
+                                    <td>
+                                        {% if interaction.evidence %}
+                                            {{ interaction.evidence.0.protrend_id }}, ...
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-right fw-bold text-uppercase pe-3">publications</td>
+                                    <td>
+                                        {% if interaction.publication %}
+                                            {{ interaction.publication.0.protrend_id }}, ...
+                                        {% else %}
+                                            NA
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 py-2">
+                        <div class="container">
+                            <div class="row align-items-start">
+                                <div class="col-lg-6 py-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-uppercase">Regulator</h5>
+                                            <div class="card-text">
+                                                <ol class="list-group my-3">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">IDENTIFIER</div>
+                                                            {{ interaction.data_regulator.0.protrend_id }}
+                                                        </div>
+                                                        <a href="{% url 'regulator' interaction.data_regulator.0.protrend_id %}"
+                                                           target="_blank"
+                                                           class="badge bg-primary rounded-pill">
+                                                            <i class="bi bi-box-arrow-up-right"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">locus tag</div>
+                                                            {{ interaction.data_regulator.0.locus_tag }}
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">name</div>
+                                                            {{ interaction.data_regulator.0.name }}
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">mechanism</div>
+                                                            {{ interaction.data_regulator.0.mechanism }}
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        {% if interaction.data_regulator.0.uniprot_accession %}
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">uniprot accession</div>
+                                                                {{ interaction.data_regulator.0.uniprot_accession }}
+                                                            </div>
+                                                            <a href="https://uniprot.org/uniprotkb/{{ interaction.data_regulator.0.uniprot_accession }}"
+                                                               target="_blank"
+                                                               class="badge bg-primary rounded-pill">
+                                                                <i class="bi bi-box-arrow-up-right"></i>
+                                                            </a>
+                                                        {% else %}
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">uniprot accession</div>
+                                                                NA
+                                                            </div>
+                                                        {% endif %}
+                                                    </li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 py-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-uppercase">gene</h5>
+                                            <div class="card-text">
+                                                <ol class="list-group my-3">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">IDENTIFIER</div>
+                                                            {{ interaction.data_gene.0.protrend_id }}
+                                                        </div>
+                                                        <a href="{% url 'gene' interaction.data_gene.0.protrend_id %}"
+                                                           target="_blank"
+                                                           class="badge bg-primary rounded-pill">
+                                                            <i class="bi bi-box-arrow-up-right"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">locus tag</div>
+                                                            {{ interaction.data_gene.0.locus_tag }}
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        <div class="ms-2 me-auto">
+                                                            <div class="fw-bold text-uppercase">name</div>
+                                                            {{ interaction.data_gene.0.name }}
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                        {% if interaction.data_gene.0.uniprot_accession %}
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">uniprot accession</div>
+                                                                {{ interaction.data_gene.0.uniprot_accession }}
+                                                            </div>
+                                                            <a href="https://uniprot.org/uniprotkb/{{ interaction.data_gene.0.uniprot_accession }}"
+                                                               target="_blank"
+                                                               class="badge bg-primary rounded-pill">
+                                                                <i class="bi bi-box-arrow-up-right"></i>
+                                                            </a>
+                                                        {% else %}
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">uniprot accession</div>
+                                                                NA
+                                                            </div>
+                                                        {% endif %}
+                                                    </li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-start">
+                                <div class="col-lg-6 py-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-uppercase">effector</h5>
+                                            <div class="card-text">
+                                                {% if interaction.data_effector %}
+                                                    <ol class="list-group my-3">
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">IDENTIFIER</div>
+                                                                {{ interaction.data_effector.0.protrend_id }}
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">name</div>
+                                                                {{ interaction.data_effector.0.name }}
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">kegg compounds</div>
+                                                                {{ interaction.data_effector.0.kegg_compounds }}
+                                                            </div>
+                                                        </li>
+                                                    </ol>
+                                                {% else %}
+                                                    <div class="ms-2 me-auto">
+                                                        <div class="fw-bold text-uppercase">IDENTIFIER</div>
+                                                        NA
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 py-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-uppercase">TFBS</h5>
+                                            <div class="card-text">
+                                                {% if interaction.data_tfbs %}
+                                                    <ol class="list-group my-3">
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">IDENTIFIER</div>
+                                                                {{ interaction.data_tfbs.0.protrend_id }}
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">sequence</div>
+                                                                {{ interaction.data_tfbs.0.sequence }}
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">strand</div>
+                                                                {{ interaction.data_tfbs.0.strand }}
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">start</div>
+                                                                {% if interaction.data_tfbs.0.start %}
+                                                                    {{ interaction.data_tfbs.0.start }}
+                                                                {% else %}
+                                                                    NA
+                                                                {% endif %}
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                            <div class="ms-2 me-auto">
+                                                                <div class="fw-bold text-uppercase">stop</div>
+                                                                {% if interaction.data_tfbs.0.stop %}
+                                                                    {{ interaction.data_tfbs.0.stop }}
+                                                                {% else %}
+                                                                    NA
+                                                                {% endif %}
+                                                            </div>
+                                                        </li>
+                                                    </ol>
+                                                {% else %}
+                                                    <div class="ms-2 me-auto">
+                                                        <div class="fw-bold text-uppercase">IDENTIFIER</div>
+                                                        NA
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="organism" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Organism <i class="fa-solid fa-bacterium ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row align-items-center pt-2">
+                        <div class="col-md-6 py-2 py-md-0 align-self-center">
+                            <div class="card" style="min-height: 250px!important;">
+                                <div class="card-body">
+                                    {% if interaction.data_organism %}
+                                        <h5 class="card-title">{{ interaction.data_organism.0.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ interaction.data_organism.0.protrend_id }}</h6>
+                                        <p class="card-text">Scientific name: {{ interaction.data_organism.0.name }}</p>
+                                        <p class="card-text">Species:
+                                            {% if interaction.data_organism.0.species %}
+                                                {{ interaction.data_organism.0.species }}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">Strain:
+                                            {% if interaction.data_organism.0.strain %}
+                                                {{ interaction.data_organism.0.strain }}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">Taxonomy:
+                                            {% if interaction.data_organism.0.ncbi_taxonomy %}
+                                                {% include "website/protrend_button.html" with identifier=interaction.data_organism.0.ncbi_taxonomy type="ncbi-taxonomy-btn" %}
+                                                {% include "website/protrend_button.html" with identifier=interaction.data_organism.0.ncbi_taxonomy type="uniprot-taxonomy-btn" %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </p>
+                                    {% else %}
+                                        <h5 class="card-title">Not Available</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Organism</h6>
+                                        <p class="card-text">Scientific name: There is no organism for this regulator</p>
+                                        <p class="card-text">Species: There is no organism for this regulator</p>
+                                        <p class="card-text">Strain: There is no organism for this regulator</p>
+                                        <p class="card-text">Taxonomy: There is no organism for this regulator</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 py-2 py-md-0 text-center">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col pb-3">
+                                        <img src="{% static 'website/images/bacteria.jpg' %}"
+                                             height="150"
+                                             alt="organisms">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {% if gene.organism %}
+                                            <a type="button"
+                                               class="btn btn-outline-success fs-6"
+                                               href="{% url 'organism' gene.organism.0.protrend_id %}">
+                                                Browse {{ gene.organism.0.name }}
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="sources" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Source <i class="bi bi-collection ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row pt-2">
+                        {% for source in interaction.data_source %}
+                            <div class="col-lg-4 py-2">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-uppercase">{{ source.name }}</h5>
+                                        <div class="card-text">
+                                            <p class="pb-2">
+                                                The interaction {{ interaction.protrend_id }}
+                                                has been retrieved from {{ source.name|upper }}.
+                                            </p>
+                                            <p>
+                                                {% if source.external_identifier %}
+                                                    This interaction is referred by the following external identifier
+                                                    <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
+                                                {% else %}
+                                                    This interaction is available at {{ source.url }}.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <a class="btn rounded-pill btn-outline-success text-uppercase"
+                                           rel="nofollow" target="_blank"
+                                           href="{{ source.url }}">
+                                            Consult {{ source.name }} <i class="bi bi-box-arrow-up-right ps-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-5">
+            <div class="col align-self-center">
+                <h5 id="publications" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Publications <i class="fa-solid fa-sheet-plastic ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h6 class="text-uppercase pt-4 pb-2">
+                                Publications associated with this interaction
+                            </h6>
+                            <div class="accordion accordion-flush" id="accordionPublications">
+                                {% if interaction.publication %}
+                                    {% for publication in interaction.publication %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="flush-{{ publication.pmid }}">
+                                                <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ publication.pmid }}"
+                                                        aria-expanded="false" aria-controls="flush-collapse{{ publication.pmid }}">
+                                                    {% if publication.title %}
+                                                        {{ publication.title }}
+                                                    {% else %}
+                                                        {{ publication.pmid }}
+                                                    {% endif %}
+                                                </button>
+                                            </h2>
+                                            <div id="flush-collapse{{ publication.pmid }}" class="accordion-collapse collapse"
+                                                 aria-labelledby="flush-{{ publication.pmid }}"
+                                                 data-bs-parent="#accordionPublications">
+                                                <div class="accordion-body text-start">
+                                                    <p class="fs-4 text-lead">
+                                                        {% if publication.title %}
+                                                            {{ publication.title }}, ({{ publication.year }})
+                                                        {% else %}
+                                                            No title available
+                                                        {% endif %}
+                                                    </p>
+                                                    <p class="card-text">
+                                                        {% if publication.author %}
+                                                            Main author: {{ publication.author }}
+                                                        {% else %}
+                                                            No author available
+                                                        {% endif %}
+                                                    </p>
+                                                    <p class="card-text">
+                                                        <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ publication.pmid }}"
+                                                           class="btn btn-outline-primary"
+                                                           rel="nofollow" target="_blank">
+                                                            PubMed ID: {{ publication.pmid }}
+                                                        </a>
+                                                        {% if publication.doi %}
+                                                            <a href="https://doi.org/{{ publication.doi }}"
+                                                               class="btn btn-outline-primary"
+                                                               rel="nofollow" target="_blank">
+                                                                DOI: {{ publication.doi }}
+                                                            </a>
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>There is no publication associated with this interaction</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-5">
+            <div class="col align-self-center">
+                <h5 id="evidences" class="text-uppercase blue-color pb-2 mb-2 border-2 border-bottom">
+                    Evidences <i class="fa-solid fa-scissors ps-2"></i>
+                </h5>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h6 class="text-uppercase pt-4 pb-2">
+                                Evidences associated with this interaction
+                            </h6>
+                            <div class="accordion accordion-flush" id="accordionEvidences">
+                                {% if interaction.evidence %}
+                                    {% for evidence in interaction.evidence %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="flush-{{ evidence.name }}">
+                                                <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ evidence.name }}"
+                                                        aria-expanded="false" aria-controls="flush-collapse{{ evidence.name }}">
+                                                    {{ evidence.name }}
+                                                </button>
+                                            </h2>
+                                            <div id="flush-collapse{{ evidence.name }}" class="accordion-collapse collapse"
+                                                 aria-labelledby="flush-{{ evidence.name }}"
+                                                 data-bs-parent="#accordionEvidences">
+                                                <div class="accordion-body text-start">
+                                                    <p class="fs-4 text-lead">
+                                                        {{ evidence.name }}
+                                                    </p>
+                                                    <p class="card-text">
+                                                        {% if evidence.description %}
+                                                            Description: {{ evidence.description }}
+                                                        {% else %}
+                                                            No description available
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>There is no evidences associated with this interaction</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

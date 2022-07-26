@@ -20,6 +20,8 @@ class EffectorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
     name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    kegg_compounds = serializers.ListField(read_only=True, required=False, child=serializers.CharField(required=False),
+                                           help_text=help_text.kegg_compounds)
 
 
 class PathwayField(NestedField):
@@ -37,6 +39,8 @@ class RegulatorField(NestedField):
     name = serializers.CharField(read_only=True, max_length=50, help_text=help_text.gene_name)
     uniprot_accession = serializers.CharField(read_only=True, max_length=50, help_text=help_text.uniprot_accession)
     ncbi_gene = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_gene)
+    mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
+                                        help_text=help_text.mechanism)
 
 
 class GeneField(NestedField):
@@ -78,3 +82,20 @@ class RegulatoryFamilyField(NestedField):
                                         help_text=help_text.mechanism)
     rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
     description = serializers.CharField(required=False, help_text=help_text.generic_description)
+
+
+class EvidenceField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    description = serializers.CharField(read_only=True, help_text=help_text.generic_description)
+
+
+class PublicationField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    pmid = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.pmid)
+    doi = serializers.CharField(required=False, max_length=250, help_text=help_text.doi)
+    title = serializers.CharField(required=False, max_length=500, help_text=help_text.title)
+    author = serializers.CharField(required=False, max_length=250, help_text=help_text.author)
+    year = serializers.IntegerField(required=False, min_value=0, help_text=help_text.year)

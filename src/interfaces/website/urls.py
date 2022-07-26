@@ -9,6 +9,7 @@ router = WebsiteRouter(r'')
 router.register(r'organisms', list_view=website_views.OrganismsView, detail_view=website_views.OrganismView)
 router.register(r'regulators', list_view=website_views.RegulatorsView, detail_view=website_views.RegulatorView)
 router.register(r'genes', detail_view=website_views.GeneView)
+router.register(r'interactions', detail_view=website_views.InteractionView)
 
 urlpatterns = [
     # website main endpoints

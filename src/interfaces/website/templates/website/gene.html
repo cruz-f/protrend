@@ -268,15 +268,15 @@
                                         <h5 class="card-title text-uppercase">{{ source.name }}</h5>
                                         <div class="card-text">
                                             <p class="pb-2">
-                                                The regulator named {{ gene.locus_tag }}
+                                                The gene named {{ gene.locus_tag }}
                                                 has been retrieved from {{ source.name|upper }}.
                                             </p>
                                             <p>
                                                 {% if source.external_identifier %}
-                                                    This regulator is referred by the following external identifier
+                                                    This gene is referred by the following external identifier
                                                     <b>{{ source.external_identifier }}</b> in {{ source.name|upper }}
                                                 {% else %}
-                                                    This regulator is available at {{ source.url }}.
+                                                    This gene is available at {{ source.url }}.
                                                 {% endif %}
                                             </p>
                                         </div>
