@@ -53,10 +53,6 @@ class Configuration:
         self._users_db_ip = str(config.get('protrend-db-users', 'ip'))
         self._users_db_port = str(config.get('protrend-db-users', 'port'))
 
-        self._cache_db_ip = str(config.get('protrend-cache', 'ip'))
-        self._cache_db_port = str(config.get('protrend-cache', 'port'))
-        self._cache_db_password = str(config.get('protrend-cache', 'password'))
-
         self._email_backend = str(config.get('protrend-email-configuration', 'email'))
         self._email_host = str(config.get('protrend-email-configuration', 'host'))
         self._email_port = str(config.get('protrend-email-configuration', 'port'))
@@ -139,18 +135,6 @@ class Configuration:
     @property
     def cache_db_ip(self):
         return self._cache_db_ip
-
-    @property
-    def cache_db_port(self):
-        return self._cache_db_port
-
-    @property
-    def cache_db_password(self):
-        return self._cache_db_password
-
-    @property
-    def cache_url(self) -> str:
-        return f'redis://{self.cache_db_ip}:{self.cache_db_port}'
 
     @property
     def email_backend(self):
