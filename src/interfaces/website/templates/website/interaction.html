@@ -511,11 +511,11 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        {% if gene.organism %}
+                                        {% if interaction.data_organism %}
                                             <a type="button"
                                                class="btn btn-outline-success fs-6"
-                                               href="{% url 'organism' gene.organism.0.protrend_id %}">
-                                                Browse {{ gene.organism.0.name }}
+                                               href="{% url 'organism' interaction.data_organism.0.protrend_id %}">
+                                                Browse {{ interaction.data_organism.0.name }}
                                             </a>
                                         {% endif %}
                                     </div>
