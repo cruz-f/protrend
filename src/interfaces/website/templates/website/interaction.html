@@ -23,10 +23,57 @@
             </div>
         </div>
         <div class="row align-items-center pt-3">
-            <div class="col-lg-8 py-2 py-lg-0 align-self-center">
+            <div class="col-lg-6 py-2 py-lg-0 align-self-center">
                 <h2 class="text-uppercase blue-color">
                     {{ interaction.protrend_id }}
                 </h2>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <p class="text-uppercase blue-color p-0 m-0">confidence level</p>
+
+                <i class="bi bi-circle-fill pe-1"
+                   data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="NO EVIDENCE"
+                   style="color: #0a53be; cursor: pointer"></i>
+
+                {% if interaction.data_source %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="SOURCE ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="SOURCE ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
+
+                {% if interaction.data_regulator.0.uniprot_accession or interaction.data_gene.0.uniprot_accession %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="AUTOMATIC ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="AUTOMATIC ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
+
+                {% if interaction.publication.0.pmid %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="LITERATURE ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="LITERATURE ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
+
+                {% if interaction.data_source.0.name == 'manual_curation' %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="MANUAL REVISION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="MANUAL REVISION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
             </div>
             <div class="col-lg-2 py-2 py-lg-0 align-self-center">
                 <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
@@ -533,10 +580,10 @@
                                 {% if interaction.publication %}
                                     {% for publication in interaction.publication %}
                                         <div class="accordion-item">
-                                            <h2 class="accordion-header" id="flush-{{ publication.pmid }}">
+                                            <h2 class="accordion-header" id="flush-{{ forloop.counter }}">
                                                 <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ publication.pmid }}"
-                                                        aria-expanded="false" aria-controls="flush-collapse{{ publication.pmid }}">
+                                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ forloop.counter }}"
+                                                        aria-expanded="false" aria-controls="flush-collapse{{ forloop.counter }}">
                                                     {% if publication.title %}
                                                         {{ publication.title }}
                                                     {% else %}
@@ -544,8 +591,8 @@
                                                     {% endif %}
                                                 </button>
                                             </h2>
-                                            <div id="flush-collapse{{ publication.pmid }}" class="accordion-collapse collapse"
-                                                 aria-labelledby="flush-{{ publication.pmid }}"
+                                            <div id="flush-collapse{{ forloop.counter }}" class="accordion-collapse collapse"
+                                                 aria-labelledby="flush-{{ forloop.counter }}"
                                                  data-bs-parent="#accordionPublications">
                                                 <div class="accordion-body text-start">
                                                     <p class="fs-4 text-lead">
@@ -604,15 +651,15 @@
                                 {% if interaction.evidence %}
                                     {% for evidence in interaction.evidence %}
                                         <div class="accordion-item">
-                                            <h2 class="accordion-header" id="flush-{{ evidence.name }}">
+                                            <h2 class="accordion-header" id="flush-{{ forloop.counter }}-evidences">
                                                 <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ evidence.name }}"
-                                                        aria-expanded="false" aria-controls="flush-collapse{{ evidence.name }}">
+                                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ forloop.counter }}-evidences"
+                                                        aria-expanded="false" aria-controls="flush-collapse{{ forloop.counter }}-evidences">
                                                     {{ evidence.name }}
                                                 </button>
                                             </h2>
-                                            <div id="flush-collapse{{ evidence.name }}" class="accordion-collapse collapse"
-                                                 aria-labelledby="flush-{{ evidence.name }}"
+                                            <div id="flush-collapse{{ forloop.counter }}-evidences" class="accordion-collapse collapse"
+                                                 aria-labelledby="flush-{{ forloop.counter }}-evidences"
                                                  data-bs-parent="#accordionEvidences">
                                                 <div class="accordion-body text-start">
                                                     <p class="fs-4 text-lead">
@@ -639,4 +686,10 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    </script>
 {% endblock %}
