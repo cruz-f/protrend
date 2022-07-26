@@ -31,10 +31,47 @@
             </div>
         </div>
         <div class="row align-items-center pt-3">
-            <div class="col-lg-8 py-2 py-lg-0 align-self-center">
+            <div class="col-lg-6 py-2 py-lg-0 align-self-center">
                 <h2 class="text-uppercase blue-color">
                     {{ regulator.locus_tag }}
                 </h2>
+            </div>
+            <div class="col-lg-2 py-2 py-lg-0 align-self-center">
+                <p class="text-uppercase blue-color p-0 m-0">confidence level</p>
+
+                <i class="bi bi-circle-fill pe-1"
+                   data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="NO EVIDENCE"
+                   style="color: #0a53be; cursor: pointer"></i>
+
+                {% if regulator.data_source %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="SOURCE ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="SOURCE ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
+
+                {% if regulator.uniprot_accession or regulator.ncbi_protein or regulator.ncbi_gene or regulator.genbank_accession %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="AUTOMATIC ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="AUTOMATIC ANNOTATION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
+
+                {% if interaction.data_source.0.name == 'manual_curation' %}
+                    <i class="bi bi-circle-fill pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="MANUAL REVISION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% else %}
+                    <i class="bi bi-circle pe-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="MANUAL REVISION"
+                       style="color: #0a53be; cursor: pointer"></i>
+                {% endif %}
             </div>
             <div class="col-lg-2 py-2 py-lg-0 align-self-center">
                 <button class="btn btn-outline-success dropdown-toggle text-uppercase fs-5"
@@ -784,6 +821,10 @@
         const RegulatorTRNChart = getChart('RegulatorTRN', 'RegulatorTRNChartData')
         const RegulatorRegulatoryEffectChart = getChart('RegulatorRegulatoryEffect',
             'RegulatorRegulatoryEffectChartData')
+    </script>
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     </script>
     </html>
 {% endblock %}
