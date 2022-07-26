@@ -52,24 +52,8 @@
                     </li>
                 </ul>
                 {% if active_page != 'home' and active_page != 'search' %}
-                    <form class="d-flex" action="{% url 'search' %}" method="post">
-
-                        {% csrf_token %}
-
-                        {{ form.search }}
-                        <span class="text-error">{{ form.search.errors }}</span>
-
-                        {% if form.errors %}
-                            {% for error in form.errors.values %}
-                                <div class="alert alert-danger mt-3" role="alert">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-
-                        <input type="hidden" name="next" value="{{ next }}">
-                        <button class="btn btn-outline-success text-uppercase me-5" type="submit">Search</button>
-                    </form>
+                    <a class="btn btn-outline-success text-uppercase me-4"
+                       href="{% url 'search' %}">Search</a>
                 {% endif %}
                 <form class="d-flex">
                     {% if user.is_authenticated %}
