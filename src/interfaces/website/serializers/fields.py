@@ -99,3 +99,17 @@ class PublicationField(NestedField):
     title = serializers.CharField(required=False, max_length=500, help_text=help_text.title)
     author = serializers.CharField(required=False, max_length=250, help_text=help_text.author)
     year = serializers.IntegerField(required=False, min_value=0, help_text=help_text.year)
+
+
+class OperonField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    operon_db_id = serializers.CharField(required=True, max_length=50, help_text=help_text.operon_db_id)
+    name = serializers.CharField(required=False, max_length=50, help_text=help_text.operon_name)
+    function = serializers.CharField(read_only=True, help_text=help_text.operon_function)
+    genes = serializers.ListField(read_only=True,
+                                  child=serializers.CharField(required=False),
+                                  help_text=help_text.operon_genes)
+    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)

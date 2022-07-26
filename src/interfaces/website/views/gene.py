@@ -18,5 +18,5 @@ class GeneView(views.WebsiteDetailView, generic.DetailView):
               'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id', 'name', 'species', 'strain', 'ncbi_taxonomy'],
-               }
+               'operon': ['protrend_id', 'operon_db_id', 'name', 'function', 'genes']}
     relationships = {'data_source': ['external_identifier', 'url']}

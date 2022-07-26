@@ -3,10 +3,9 @@ from rest_framework import serializers
 from constants import help_text, choices
 from data.models import Gene
 from interfaces.serializers.base import BaseSerializer
-from interfaces.serializers.fields import URLField, SourceField
+from interfaces.serializers.fields import SourceField
 from interfaces.serializers.relationship import SourceRelationshipSerializer
-from interfaces.website.serializers.fields import (OrganismField, TFBSField,
-                                                   RegulatoryInteractionField, RegulatorField)
+from interfaces.website.serializers.fields import OrganismField, OperonField
 
 
 class GeneSerializer(BaseSerializer):
@@ -31,16 +30,9 @@ class GeneSerializer(BaseSerializer):
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
 
-    url = URLField(read_only=True,
-                   view_name='gene',
-                   lookup_field='protrend_id',
-                   lookup_url_kwarg='protrend_id')
-
     # relationships
     organism = OrganismField(read_only=True, many=True)
-    regulator = RegulatorField(read_only=True, many=True)
-    tfbs = TFBSField(read_only=True, many=True)
-    regulatory_interaction = RegulatoryInteractionField(read_only=True, many=True)
+    operon = OperonField(read_only=True, many=True)
 
     data_source = SourceRelationshipSerializer(read_only=True,
                                                child=SourceField(read_only=True))
