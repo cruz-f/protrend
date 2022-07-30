@@ -389,7 +389,7 @@ const buildNetwork = (networkId, networkConfig, networkData) => {
 
         const links = zip(interactions, effects).map(function (interaction) {
             return h('a', {
-                href: '#',
+                href: '/interactions/' + interaction[0],
                 'class': 'network-edge-paragraph'
             }, [t(interaction[0] + ' - ' + interaction[1])]);
         });
