@@ -23,10 +23,7 @@ router.register(r'rfams', list_view=api_views.RegulatoryFamilyList, detail_view=
 router.register(r'interactions', list_view=api_views.InteractionsList, detail_view=api_views.InteractionDetail)
 router.register(r'binding-sites', list_view=api_views.BindingSitesList, detail_view=api_views.BindingSiteDetail)
 router.register(r'trns', list_view=api_views.TRNList, detail_view=api_views.TRN)
-router.register(r'organisms-binding-sites', list_view=api_views.OrganismsBindingSites,
-                detail_view=api_views.OrganismBindingSites)
-router.register(r'regulators-binding-sites', list_view=api_views.RegulatorsBindingSites,
-                detail_view=api_views.RegulatorBindingSites)
+router.register(r'motifs', list_view=api_views.MotifList, detail_view=api_views.MotifDetail)
 
 
 schema_view = get_schema_view(

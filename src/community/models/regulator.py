@@ -22,14 +22,15 @@ class RegulatorCommunity(models.Model):
     genbank_accession = models.CharField(blank=True, max_length=50, help_text=help_text.genbank_accession)
     refseq_accession = models.CharField(blank=True, max_length=50, help_text=help_text.refseq_accession)
     gene_sequence = models.TextField(blank=True)
-    protein_sequence = models.TextField(blank=True, help_text=help_text.sequence)
+    gene_sequence = models.TextField(blank=True, help_text=help_text.gene_sequence)
+    protein_sequence = models.TextField(blank=True, help_text=help_text.protein_sequence)
     strand = models.CharField(blank=True, max_length=50, choices=list(choices.strand.items()),
                               help_text=help_text.strand)
     start = models.IntegerField(blank=True, null=True, help_text=help_text.start)
     stop = models.IntegerField(blank=True, null=True, help_text=help_text.stop)
 
     # evidences and others
-    evidence = models.CharField(blank=True, max_length=250, help_text=help_text.required_name)
+    evidence = models.CharField(blank=True, max_length=250, help_text=help_text.evidence_name)
     pmid = models.IntegerField(blank=True, null=True, help_text=help_text.pmid)
 
     # connections

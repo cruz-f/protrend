@@ -11,7 +11,7 @@ class EffectorListSerializer(BaseSerializer):
     model = Effector
 
     # properties
-    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.effector_name)
     kegg_compounds = serializers.ListField(child=serializers.CharField(required=False), required=False,
                                            help_text=help_text.kegg_compounds)
 

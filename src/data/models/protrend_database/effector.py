@@ -7,8 +7,8 @@ from constants import help_text
 
 class Effector(BaseNode):
     # properties
-    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
+    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.effector_name)
+    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.effector_name)
     kegg_compounds = ArrayProperty(StringProperty(), help_text=help_text.kegg_compounds)
 
     # relationships

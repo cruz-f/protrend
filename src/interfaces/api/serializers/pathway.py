@@ -11,7 +11,7 @@ class PathwayListSerializer(BaseSerializer):
     model = Pathway
 
     # properties
-    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.pathway_name)
     kegg_pathways = serializers.ListField(required=False, child=serializers.CharField(required=False),
                                           help_text=help_text.kegg_pathways)
 

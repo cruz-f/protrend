@@ -14,7 +14,7 @@ class TFBS(BaseNode):
     strand = StringProperty(choices=choices.strand, help_text=help_text.strand)
     start = IntegerProperty(help_text=help_text.start)
     stop = IntegerProperty(help_text=help_text.stop)
-    length = IntegerProperty(required=True, help_text=help_text.length)
+    length = IntegerProperty(required=True, help_text=help_text.tfbs_length)
 
     # relationships
     data_source = RelationshipTo('.source.Source', SOURCE_REL_TYPE, model=SourceRelationship)
@@ -25,3 +25,4 @@ class TFBS(BaseNode):
     gene = RelationshipTo('.gene.Gene', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
+    motif = RelationshipTo('.motif.Motif', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)

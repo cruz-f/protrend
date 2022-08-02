@@ -7,14 +7,14 @@ from .relationships import SourceRelationship, SOURCE_REL_TYPE
 
 class Source(BaseNode):
     # properties
-    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
+    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.source_name)
+    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.source_name)
     type = StringProperty(required=True, choices=choices.data_source_type,
-                          help_text=help_text.data_source_type)
-    url = StringProperty(max_length=300, help_text=help_text.url)
+                          help_text=help_text.source_type)
+    url = StringProperty(max_length=300, help_text=help_text.source_url)
     doi = StringProperty(max_length=250, help_text=help_text.doi)
     authors = ArrayProperty(StringProperty(), help_text=help_text.source_author)
-    description = StringProperty(help_text=help_text.generic_description)
+    description = StringProperty(help_text=help_text.source_description)
 
     # relationships
     organism = RelationshipTo('.organism.Organism', SOURCE_REL_TYPE, model=SourceRelationship)
@@ -27,3 +27,4 @@ class Source(BaseNode):
     effector = RelationshipTo('.effector.Effector', SOURCE_REL_TYPE, model=SourceRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', SOURCE_REL_TYPE,
                                             model=SourceRelationship)
+    motif = RelationshipTo('.motif.Motif', SOURCE_REL_TYPE, model=SourceRelationship)

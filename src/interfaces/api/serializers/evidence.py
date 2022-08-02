@@ -11,8 +11,8 @@ class EvidenceListSerializer(BaseSerializer):
     model = Evidence
 
     # properties
-    name = serializers.CharField(required=True, max_length=250, help_text=help_text.required_name)
-    description = serializers.CharField(required=False, help_text=help_text.generic_description)
+    name = serializers.CharField(required=True, max_length=250, help_text=help_text.evidence_name)
+    description = serializers.CharField(required=False, help_text=help_text.evidence_description)
 
     # url
     url = URLField(read_only=True,

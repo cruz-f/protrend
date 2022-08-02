@@ -14,7 +14,7 @@ class InteractionCommunity(models.Model):
                                          help_text=help_text.regulatory_effect)
 
     # evidences and others
-    evidence = models.CharField(blank=True, max_length=250, help_text=help_text.required_name)
+    evidence = models.CharField(blank=True, max_length=250, help_text=help_text.evidence_name)
     pmid = models.IntegerField(blank=True, null=True, help_text=help_text.pmid)
 
     # connections

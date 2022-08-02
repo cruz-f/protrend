@@ -18,7 +18,7 @@ class TFBSListSerializer(BaseSerializer):
     strand = serializers.ChoiceField(required=True, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
-    length = serializers.IntegerField(required=True, min_value=0, help_text=help_text.length)
+    length = serializers.IntegerField(required=True, min_value=0, help_text=help_text.tfbs_length)
 
     # url
     url = URLField(read_only=True,
@@ -74,3 +74,9 @@ class TFBSDetailSerializer(TFBSListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
+    motif = RelationshipSerializer(read_only=True,
+                                   child=serializers.HyperlinkedRelatedField(
+                                       read_only=True,
+                                       view_name='motifs-detail',
+                                       lookup_field='protrend_id',
+                                       lookup_url_kwarg='protrend_id'))

@@ -48,5 +48,6 @@ class RegulatorDetail(views.APIRetrieveView, generics.GenericAPIView):
                'effector': ['protrend_id'],
                'gene': ['protrend_id'],
                'tfbs': ['protrend_id'],
-               'regulatory_interaction': ['protrend_id']}
+               'regulatory_interaction': ['protrend_id'],
+               'motif': ['protrend_id']}
     relationships = {'data_source': ['url']}

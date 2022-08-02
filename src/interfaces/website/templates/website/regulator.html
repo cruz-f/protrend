@@ -86,26 +86,50 @@
                     aria-labelledby="DownloadDropDown">
                     <li>
                         <a class="dropdown-item text-uppercase"
-                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=api">
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=api">
                             api
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
-                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=json">
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=json">
                             json
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
-                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=csv">
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=csv">
                             csv
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
-                           href="{% url 'regulators-binding-sites-detail' regulator.protrend_id %}?format=xlsx">
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=xlsx">
                             xlsx
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=json">
+                            motif-json
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=csv">
+                            motif-csv
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=xlsx">
+                            motif-xlsx
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=fasta">
+                            motif-fasta
                         </a>
                     </li>
                 </ul>

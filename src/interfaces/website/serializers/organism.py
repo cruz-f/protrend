@@ -44,5 +44,3 @@ class OrganismSerializer(OrganismsSerializer):
 
     data_source = SourceRelationshipSerializer(read_only=True,
                                                child=SourceField(read_only=True))
-
-

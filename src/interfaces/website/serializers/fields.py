@@ -19,7 +19,7 @@ class OrganismField(NestedField):
 class EffectorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.effector_name)
     kegg_compounds = serializers.ListField(read_only=True, required=False, child=serializers.CharField(required=False),
                                            help_text=help_text.kegg_compounds)
 
@@ -27,7 +27,7 @@ class EffectorField(NestedField):
 class PathwayField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.pathway_name)
     kegg_pathways = serializers.ListField(required=False, child=serializers.CharField(required=False),
                                           help_text=help_text.kegg_pathways)
 
@@ -76,19 +76,19 @@ class RegulatoryInteractionField(NestedField):
 class RegulatoryFamilyField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.rfam_name)
     mechanism = serializers.ChoiceField(required=False,
                                         choices=choices.mechanism,
                                         help_text=help_text.mechanism)
     rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
-    description = serializers.CharField(required=False, help_text=help_text.generic_description)
+    description = serializers.CharField(required=False, help_text=help_text.rfam_description)
 
 
 class EvidenceField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
-    description = serializers.CharField(read_only=True, help_text=help_text.generic_description)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.evidence_name)
+    description = serializers.CharField(read_only=True, help_text=help_text.evidence_description)
 
 
 class PublicationField(NestedField):

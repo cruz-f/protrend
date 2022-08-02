@@ -1,9 +1,5 @@
-from .datasets import (OrganismBindingSites,
-                       OrganismsBindingSites,
-                       RegulatorBindingSites,
-                       RegulatorsBindingSites,
-                       TRN,
-                       TRNList)
+from .trn import (TRN,
+                  TRNList)
 from .documentation import best_practices
 from .effector import (EffectorDetail,
                        EffectorList)
@@ -11,6 +7,8 @@ from .evidence import (EvidenceDetail,
                        EvidenceList)
 from .gene import (GeneDetail,
                    GeneList)
+from .motif import (MotifDetail,
+                    MotifList)
 from .index import IndexView
 from .operon import (OperonDetail,
                      OperonList)

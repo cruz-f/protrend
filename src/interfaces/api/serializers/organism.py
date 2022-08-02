@@ -73,3 +73,9 @@ class OrganismDetailSerializer(OrganismListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
+    motif = RelationshipSerializer(read_only=True,
+                                   child=serializers.HyperlinkedRelatedField(
+                                       read_only=True,
+                                       view_name='motifs-detail',
+                                       lookup_field='protrend_id',
+                                       lookup_url_kwarg='protrend_id'))

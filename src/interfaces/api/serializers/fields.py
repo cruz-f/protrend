@@ -17,7 +17,7 @@ class OrganismField(NestedField):
 class EffectorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.effector_name)
 
 
 class RegulatorField(NestedField):

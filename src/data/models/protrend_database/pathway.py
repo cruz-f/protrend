@@ -7,8 +7,8 @@ from constants import help_text
 
 class Pathway(BaseNode):
     # properties
-    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
+    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.pathway_name)
+    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.pathway_name)
     kegg_pathways = ArrayProperty(StringProperty(), help_text=help_text.kegg_pathways)
 
     # relationships

@@ -9,7 +9,7 @@ class Regulator(BaseNode):
     # properties
     locus_tag = StringProperty(required=True, unique_index=True, max_length=100, help_text=help_text.locus_tag)
     locus_tag_factor = StringProperty(required=True, unique_index=True, max_length=100,
-                                      help_text=help_text.required_name)
+                                      help_text=help_text.locus_tag)
     uniprot_accession = StringProperty(unique_index=True, max_length=50, help_text=help_text.uniprot_accession)
     uniprot_accession_factor = StringProperty(unique_index=True, max_length=50, help_text=help_text.uniprot_accession)
     name = StringProperty(max_length=50, help_text=help_text.gene_name)
@@ -22,7 +22,8 @@ class Regulator(BaseNode):
     ncbi_protein = IntegerProperty(max_length=50, help_text=help_text.ncbi_protein)
     genbank_accession = StringProperty(max_length=50, help_text=help_text.genbank_accession)
     refseq_accession = StringProperty(max_length=50, help_text=help_text.refseq_accession)
-    sequence = StringProperty(help_text=help_text.sequence)
+    protein_sequence = StringProperty(help_text=help_text.protein_sequence)
+    gene_sequence = StringProperty(help_text=help_text.gene_sequence)
     strand = StringProperty(choices=choices.strand, help_text=help_text.strand)
     start = IntegerProperty(help_text=help_text.start)
     stop = IntegerProperty(help_text=help_text.stop)
@@ -40,3 +41,4 @@ class Regulator(BaseNode):
     tfbs = RelationshipTo('.tfbs.TFBS', BASE_REL_TYPE, model=BaseRelationship)
     regulatory_interaction = RelationshipTo('.regulatory_interaction.RegulatoryInteraction', BASE_REL_TYPE,
                                             model=BaseRelationship)
+    motif = RelationshipTo('.motif.Motif', BASE_REL_TYPE, cardinality=ZeroOrOne, model=BaseRelationship)

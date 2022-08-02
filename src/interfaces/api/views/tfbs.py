@@ -46,7 +46,8 @@ class BindingSiteDetail(views.APIRetrieveView, generics.GenericAPIView):
                'data_organism': ['protrend_id', 'name', 'ncbi_taxonomy'],
                'regulator': ['protrend_id'],
                'gene': ['protrend_id'],
-               'regulatory_interaction': ['protrend_id']}
+               'regulatory_interaction': ['protrend_id'],
+               'motif': ['protrend_id']}
     relationships = {'data_source': ['url']}
 
     def get_renderer_context(self: Union['views.APIListView', generics.GenericAPIView]):
