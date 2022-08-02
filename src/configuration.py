@@ -32,26 +32,26 @@ class Configuration:
     def __init__(self):
         self._source = Path(os.path.dirname(__file__))
         self._conf = self._source.joinpath('conf')
-        self._configurations = self._conf.joinpath('protrend_development.conf')
+        self._configurations = self._conf.joinpath('protrend_production.conf')
 
         config = RawConfigParser()
         config.read(self._configurations)
 
-        self._db_user_name = str(config.get('protrend-db-configuration', 'user_name'))
-        self._db_password = str(config.get('protrend-db-configuration', 'password'))
-        self._db_ip = str(config.get('protrend-db-configuration', 'ip'))
-        self._db_port = str(config.get('protrend-db-configuration', 'port'))
+        self._db_user_name = str(config.get('protrend-db', 'user_name'))
+        self._db_password = str(config.get('protrend-db', 'password'))
+        self._db_ip = str(config.get('protrend-db', 'ip'))
+        self._db_port = str(config.get('protrend-db', 'port'))
 
         self._secret_key = str(config.get('django-configuration', 'secret_key'))
         self._debug = parse_boolean_string(str(config.get('django-configuration', 'debug')))
         self._allowed_hosts = parse_allowed_hosts(config.get('django-configuration', 'allowed_hosts'))
 
-        self._users_db_engine = str(config.get('protrend-db-users', 'db_engine'))
-        self._users_db_name = str(config.get('protrend-db-users', 'db_name'))
-        self._users_db_user = str(config.get('protrend-db-users', 'user_name'))
-        self._users_db_password = str(config.get('protrend-db-users', 'password'))
-        self._users_db_ip = str(config.get('protrend-db-users', 'ip'))
-        self._users_db_port = str(config.get('protrend-db-users', 'port'))
+        self._community_db_engine = str(config.get('protrend-community', 'db_engine'))
+        self._community_db_name = str(config.get('protrend-community', 'db_name'))
+        self._community_db_user = str(config.get('protrend-community', 'user_name'))
+        self._community_db_password = str(config.get('protrend-community', 'password'))
+        self._community_db_ip = str(config.get('protrend-community', 'ip'))
+        self._community_db_port = str(config.get('protrend-community', 'port'))
 
         self._email_backend = str(config.get('protrend-email-configuration', 'email'))
         self._email_host = str(config.get('protrend-email-configuration', 'host'))
@@ -109,32 +109,28 @@ class Configuration:
         return self._allowed_hosts
 
     @property
-    def users_db_engine(self):
-        return self._users_db_engine
+    def community_db_engine(self):
+        return self._community_db_engine
 
     @property
-    def users_db_name(self):
-        return self._users_db_name
+    def community_db_name(self):
+        return self._community_db_name
 
     @property
-    def users_db_user(self):
-        return self._users_db_user
+    def community_db_user(self):
+        return self._community_db_user
 
     @property
-    def users_db_password(self):
-        return self._users_db_password
+    def community_db_password(self):
+        return self._community_db_password
 
     @property
-    def users_db_ip(self):
-        return self._users_db_ip
+    def community_db_ip(self):
+        return self._community_db_ip
 
     @property
-    def users_db_port(self):
-        return self._users_db_port
-
-    @property
-    def cache_db_ip(self):
-        return self._cache_db_ip
+    def community_db_port(self):
+        return self._community_db_port
 
     @property
     def email_backend(self):

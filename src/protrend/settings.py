@@ -88,12 +88,12 @@ WSGI_APPLICATION = 'protrend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': Configuration.users_db_engine,
-        'NAME': Configuration.users_db_name,
-        'USER': Configuration.users_db_user,
-        'PASSWORD': Configuration.users_db_password,
-        'HOST': Configuration.users_db_ip,
-        'PORT': Configuration.users_db_port,
+        'ENGINE': Configuration.community_db_engine,
+        'NAME': Configuration.community_db_name,
+        'USER': Configuration.community_db_user,
+        'PASSWORD': Configuration.community_db_password,
+        'HOST': Configuration.community_db_ip,
+        'PORT': Configuration.community_db_port,
     }
 }
 
