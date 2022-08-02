@@ -42,7 +42,8 @@ class RegulatorDetail(views.APIRetrieveView, generics.GenericAPIView):
     model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism',
               'function', 'description', 'ncbi_gene',
-              'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence', 'strand', 'start', 'stop']
+              'ncbi_protein', 'genbank_accession', 'refseq_accession', 'gene_sequence', 'protein_sequence',
+              'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id'],
                'effector': ['protrend_id'],

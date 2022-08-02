@@ -55,7 +55,8 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
     serializer = serializers.RegulatorSerializer
     model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'function', 'description',
-              'mechanism', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence',
+              'mechanism', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'gene_sequence',
+              'protein_sequence',
               'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id', 'name', 'species', 'strain', 'ncbi_taxonomy'],

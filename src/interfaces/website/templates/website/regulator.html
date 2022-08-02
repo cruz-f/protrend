@@ -341,28 +341,28 @@
                                     {% endif %}
                                 </p>
                                 <p class="card-text text-uppercase text-justify">
-                                    {% if regulator.sequence %}
-                                        SEQUENCE: {{ regulator.sequence }}
+                                    {% if regulator.gene_sequence %}
+                                        DNA SEQUENCE: {{ regulator.gene_sequence }}
                                     {% else %}
-                                        NA
+                                        DNA SEQUENCE: NA
                                     {% endif %}
                                 </p>
                                 <p class="card-text text-uppercase text-justify">
-                                    {% if regulator.sequence %}
-                                        length: {{ regulator.sequence|length }}
+                                    {% if regulator.protein_sequence %}
+                                        AMINO ACID SEQUENCE: {{ regulator.protein_sequence }}
                                     {% else %}
-                                        NA
+                                        AMINO ACID SEQUENCE: NA
                                     {% endif %}
                                 </p>
-                                {% if regulator.sequence %}
+                                {% if regulator.protein_sequence %}
                                     <button onclick="copySequence()"
                                             class="btn btn-outline-primary text-uppercase">Copy</button>
                                     <label for="ProteinSequence"></label>
                                     <input type="text"
-                                           value="{{ regulator.sequence }}"
+                                           value="{{ regulator.protein_sequence }}"
                                            id="ProteinSequence"
                                            class="d-none">
-                                    <a href="{% url 'download-fasta' identifier=regulator.protrend_id locus_tag=regulator.locus_tag name=regulator.name sequence=regulator.sequence %}"
+                                    <a href="{% url 'download-fasta' identifier=regulator.protrend_id locus_tag=regulator.locus_tag name=regulator.name sequence=regulator.protein_sequence %}"
                                        class="btn btn-outline-primary text-uppercase">Download</a>
                                 {% endif %}
                             </div>

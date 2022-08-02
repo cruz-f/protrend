@@ -267,28 +267,28 @@
                                     {% endif %}
                                 </p>
                                 <p class="card-text text-uppercase text-justify">
-                                    {% if gene.sequence %}
-                                        SEQUENCE: {{ gene.sequence }}
+                                    {% if gene.gene_sequence %}
+                                        DNA SEQUENCE: {{ gene.gene_sequence }}
                                     {% else %}
-                                        NA
+                                        DNA SEQUENCE: NA
                                     {% endif %}
                                 </p>
                                 <p class="card-text text-uppercase text-justify">
-                                    {% if gene.sequence %}
-                                        length: {{ gene.sequence|length }}
+                                    {% if gene.protein_sequence %}
+                                        AMINO ACID SEQUENCE: {{ gene.protein_sequence }}
                                     {% else %}
-                                        NA
+                                        AMINO ACID SEQUENCE: NA
                                     {% endif %}
                                 </p>
-                                {% if gene.sequence %}
+                                {% if gene.protein_sequence %}
                                     <button onclick="copySequence()"
                                             class="btn btn-outline-primary text-uppercase">Copy</button>
                                     <label for="ProteinSequence"></label>
                                     <input type="text"
-                                           value="{{ gene.sequence }}"
+                                           value="{{ gene.protein_sequence }}"
                                            id="ProteinSequence"
                                            class="d-none">
-                                    <a href="{% url 'download-fasta' identifier=gene.protrend_id locus_tag=gene.locus_tag name=gene.name sequence=gene.sequence %}"
+                                    <a href="{% url 'download-fasta' identifier=gene.protrend_id locus_tag=gene.locus_tag name=gene.name sequence=gene.protein_sequence %}"
                                        class="btn btn-outline-primary text-uppercase">Download</a>
                                 {% endif %}
                             </div>

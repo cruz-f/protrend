@@ -40,7 +40,7 @@ class GeneDetail(views.APIRetrieveView, generics.GenericAPIView):
     model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
               'function', 'description', 'ncbi_gene', 'ncbi_protein',
-              'genbank_accession', 'refseq_accession', 'sequence', 'strand', 'start', 'stop']
+              'genbank_accession', 'refseq_accession', 'gene_sequence', 'protein_sequence', 'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id'],
                'operon': ['protrend_id'],
