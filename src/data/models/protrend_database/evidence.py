@@ -7,9 +7,9 @@ from .relationships import BASE_REL_TYPE, BaseRelationship
 
 class Evidence(BaseNode):
     # properties
-    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.required_name)
-    description = StringProperty(help_text=help_text.generic_description)
+    name = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.evidence_name)
+    name_factor = StringProperty(required=True, unique_index=True, max_length=250, help_text=help_text.evidence_name)
+    description = StringProperty(help_text=help_text.evidence_description)
 
     # relationships
     regulator = RelationshipTo('.regulator.Regulator', BASE_REL_TYPE, model=BaseRelationship)

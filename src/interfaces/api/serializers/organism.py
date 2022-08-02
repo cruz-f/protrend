@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text
-from data import Organism
+from data.models import Organism
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import SourceField, URLField
 from interfaces.serializers.relationship import RelationshipSerializer, SourceRelationshipSerializer
@@ -73,3 +73,9 @@ class OrganismDetailSerializer(OrganismListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
+    motif = RelationshipSerializer(read_only=True,
+                                   child=serializers.HyperlinkedRelatedField(
+                                       read_only=True,
+                                       view_name='motifs-detail',
+                                       lookup_field='protrend_id',
+                                       lookup_url_kwarg='protrend_id'))

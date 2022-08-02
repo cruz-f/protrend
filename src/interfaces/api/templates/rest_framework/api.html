@@ -22,11 +22,6 @@
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right pe-5 text-uppercase">
-                    {% block userlinks %}
-                        {{ block.super }}
-                    {% endblock %}
-                </ul>
                 <ul class="nav navbar-nav navbar-right pe-5">
                     <li class="text-uppercase"><a href="{% url 'api' %}">Index</a></li>
                     <li class="text-uppercase"><a href="{% url 'organisms-list' %}">Organisms</a></li>
@@ -44,8 +39,7 @@
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li class="text-uppercase"><a href="{% url 'trns-list' %}">TRNs</a></li>
-                            <li class="text-uppercase"><a href="{% url 'organisms-binding-sites-list' %}">Organisms Binding Sites</a></li>
-                            <li class="text-uppercase"><a href="{% url 'regulators-binding-sites-list' %}">Regulators Binding Sites</a></li>
+                            <li class="text-uppercase"><a href="{% url 'motifs-list' %}">Motifs</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -78,6 +72,13 @@
                             <li class="text-uppercase"><a href="{% url 'schema-redoc' %}">Redoc</a></li>
                             <li class="text-uppercase"><a href="{% url 'best-practices' %}">Best practices</a></li>
                         </ul>
+                    </li>
+                    <li>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'logout' %}" class="text-uppercase">Logout</a>
+                        {% else %}
+                            <a href="{% url 'sign-in' %}" class="text-uppercase">Sign In</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>

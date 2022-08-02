@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text, choices
-from data import Regulator
+from data.models import Regulator
 from interfaces.validation import validate_protein_sequence
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField
@@ -31,7 +31,8 @@ class RegulatorListSerializer(BaseSerializer):
                                               help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, write_only=True, max_length=50,
                                              help_text=help_text.refseq_accession)
-    sequence = serializers.CharField(required=False, write_only=True, help_text=help_text.sequence)
+    gene_sequence = serializers.CharField(required=False, write_only=True, help_text=help_text.gene_sequence)
+    protein_sequence = serializers.CharField(required=False, write_only=True, help_text=help_text.protein_sequence)
     strand = serializers.ChoiceField(required=False, write_only=True, choices=choices.strand,
                                      help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, write_only=True, help_text=help_text.start)
@@ -60,7 +61,8 @@ class RegulatorDetailSerializer(RegulatorListSerializer):
     ncbi_protein = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_protein)
     genbank_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.genbank_accession)
     refseq_accession = serializers.CharField(required=False, max_length=50, help_text=help_text.refseq_accession)
-    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
+    gene_sequence = serializers.CharField(required=False, help_text=help_text.gene_sequence)
+    protein_sequence = serializers.CharField(required=False, help_text=help_text.protein_sequence)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
@@ -98,3 +100,9 @@ class RegulatorDetailSerializer(RegulatorListSerializer):
                                                         view_name='interactions-detail',
                                                         lookup_field='protrend_id',
                                                         lookup_url_kwarg='protrend_id'))
+    motif = RelationshipSerializer(read_only=True,
+                                   child=serializers.HyperlinkedRelatedField(
+                                       read_only=True,
+                                       view_name='motifs-detail',
+                                       lookup_field='protrend_id',
+                                       lookup_url_kwarg='protrend_id'))

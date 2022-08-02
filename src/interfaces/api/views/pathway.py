@@ -1,4 +1,3 @@
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -6,7 +5,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class PathwayList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class PathwayList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -19,12 +18,12 @@ class PathwayList(views.APIListView, views.APICreateView, generics.GenericAPIVie
     Note that, we only provide the pathway name and potential associated KEGG Pathways. We are working on improving the information provided for each pathway.
     """
     serializer_class = serializers.PathwayListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Pathway
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Pathway
     fields = ['protrend_id', 'name', 'kegg_pathways']
 
 
-class PathwayDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class PathwayDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -37,8 +36,8 @@ class PathwayDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.
     Note that, we only provide the pathway name and potential associated KEGG Pathways. We are working on improving the information provided for each pathway.
     """
     serializer_class = serializers.PathwayDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Pathway
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Pathway
     fields = ['protrend_id', 'name', 'kegg_pathways']
     targets = {'data_source': ['name', 'url'],
                'regulator': ['protrend_id'],

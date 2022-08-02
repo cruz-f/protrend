@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text
-from data import Organism
+from data.models import Organism
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import SourceField, URLField
 from interfaces.serializers.relationship import SourceRelationshipSerializer
@@ -44,5 +44,3 @@ class OrganismSerializer(OrganismsSerializer):
 
     data_source = SourceRelationshipSerializer(read_only=True,
                                                child=SourceField(read_only=True))
-
-

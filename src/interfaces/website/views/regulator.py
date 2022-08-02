@@ -22,7 +22,7 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
 
     active_page = 'regulators'
     serializer = serializers.RegulatorsSerializer
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'name', 'mechanism',
               'uniprot_accession', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession']
 
@@ -33,12 +33,12 @@ class RegulatorsView(views.WebsiteListView, generic.ListView):
                                            fields=['protrend_id'],
                                            target='gene',
                                            target_fields=['protrend_id'])
-        genes_counts = genes_queryset.group_by_count()
-        rfams_queryset = NeoLinkedQuerySet(source=data.RegulatoryFamily,
+        genes_counts = genes_queryset.group_by_count(field='locus_tag')
+        rfams_queryset = NeoLinkedQuerySet(source=data.models.RegulatoryFamily,
                                            fields=['name'],
                                            target='regulator',
                                            target_fields=['protrend_id'])
-        rfams_counts = rfams_queryset.group_by_count()
+        rfams_counts = rfams_queryset.group_by_count(field='name')
         return [charts.RegulatorsGenesChart(objects=genes_counts),
                 charts.RegulatorsGenesTopChart(objects=genes_counts),
                 charts.RegulatoryFamiliesRegulatorsTopChart(objects=rfams_counts),
@@ -53,9 +53,10 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
 
     active_page = 'regulators'
     serializer = serializers.RegulatorSerializer
-    model = data.Regulator
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'function', 'description',
-              'mechanism', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence',
+              'mechanism', 'ncbi_gene', 'ncbi_protein', 'genbank_accession', 'refseq_accession', 'gene_sequence',
+              'protein_sequence',
               'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id', 'name', 'species', 'strain', 'ncbi_taxonomy'],
@@ -80,14 +81,15 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
     @staticmethod
     def get_binding_motif(binding_sites: List[Dict]):
         sequences = [tfbs.get('sequence', '') for tfbs in binding_sites]
-        pwm = make_pwm(sequences)
+        pwm, aligned_sequences = make_pwm(sequences)
         logo = make_motif_logo(pwm)
         img = make_motif_img(logo)
         img = img.replace('height="180pt"', '').replace('width="720pt"', '')
 
         # split sequences
         sequences = np.array_split(sequences, 4)
-        return pwm, sequences, img
+        aligned_sequences = np.array_split(aligned_sequences, 4)
+        return pwm, sequences, aligned_sequences, img
 
     def get_context_data(self, **kwargs):
         context = super(RegulatorView, self).get_context_data(**kwargs)
@@ -95,10 +97,11 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
         binding_sites = context[self.context_object_name].get('tfbs', [])
 
         if binding_sites:
-            pwm, sequences, img = self.get_binding_motif(binding_sites)
+            pwm, sequences, aligned_sequences, img = self.get_binding_motif(binding_sites)
 
             context['pwm'] = pwm
             context['motif_sequences'] = sequences
+            context['motif_aligned_sequences'] = aligned_sequences
             context['motif'] = img
 
         else:

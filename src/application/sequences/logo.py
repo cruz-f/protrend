@@ -1,5 +1,5 @@
 from io import StringIO
-from typing import List
+from typing import List, Tuple
 
 import logomaker as lm
 import pandas as pd
@@ -7,7 +7,7 @@ import pandas as pd
 from application.sequences.lasagna import Align
 
 
-def lasagna_alignment(sequences: List[str]) -> str:
+def lasagna_alignment(sequences: List[str]) -> List[str]:
     to_align = {'sequences': [], 'headers': []}
     for i, seq in enumerate(sequences):
         to_align['sequences'].append(seq.upper())
@@ -22,13 +22,13 @@ def relative_frequency(*args, **kwargs):
     return pd.value_counts(*args, **kwargs)
 
 
-def make_pwm(sequences: List[str]) -> pd.DataFrame:
+def make_pwm(sequences: List[str]) -> Tuple[pd.DataFrame, List[str]]:
     aligned_sequences = lasagna_alignment(sequences)
     df = pd.DataFrame([list(seq) for seq in aligned_sequences])
     pwm = df.apply(relative_frequency)
     pwm = pwm.fillna(0)
     pwm = pwm.transpose()
-    return pwm
+    return pwm, aligned_sequences
 
 
 def make_motif_logo(pwm: pd.DataFrame) -> lm.Logo:

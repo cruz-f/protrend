@@ -32,6 +32,8 @@ ALLOWED_HOSTS = Configuration.allowed_hosts
 # Application definition
 
 INSTALLED_APPS = [
+    'material',
+    'material.frontend',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +45,8 @@ INSTALLED_APPS = [
     'django_neomodel',
     'drf_yasg',
     'data',
-    'interfaces'
+    'interfaces',
+    'community.apps.CommunityConfig'
 ]
 
 # do not change middleware order
@@ -64,7 +67,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'interfaces', 'api', 'templates'),
-            os.path.join(BASE_DIR, 'interfaces', 'website', 'templates')
+            os.path.join(BASE_DIR, 'interfaces', 'website', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -85,12 +88,12 @@ WSGI_APPLICATION = 'protrend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': Configuration.users_db_engine,
-        'NAME': Configuration.users_db_name,
-        'USER': Configuration.users_db_user,
-        'PASSWORD': Configuration.users_db_password,
-        'HOST': Configuration.users_db_ip,
-        'PORT': Configuration.users_db_port,
+        'ENGINE': Configuration.community_db_engine,
+        'NAME': Configuration.community_db_name,
+        'USER': Configuration.community_db_user,
+        'PASSWORD': Configuration.community_db_password,
+        'HOST': Configuration.community_db_ip,
+        'PORT': Configuration.community_db_port,
     }
 }
 
@@ -132,7 +135,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'interfaces', 'api', 'static'),
-    os.path.join(BASE_DIR, 'interfaces', 'website', 'static')
+    os.path.join(BASE_DIR, 'interfaces', 'website', 'static'),
 ]
 
 # the static root should be only used in production.
@@ -142,6 +145,27 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Email settings
+EMAIL_BACKEND = Configuration.email_backend
+EMAIL_HOST = Configuration.email_host
+EMAIL_PORT = Configuration.email_port
+EMAIL_HOST_USER = Configuration.email_host_user
+EMAIL_HOST_PASSWORD = Configuration.email_host_password
+EMAIL_USE_TLS = Configuration.email_use_tls
+
+DEFAULT_FROM_EMAIL = Configuration.email_default
+
+ACCOUNT_EMAIL_VERIFICATION = Configuration.email_verification
+
+# Custom user
+AUTH_USER_MODEL = 'community.CommunityUser'
+
+# Login/Logout
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'sign-in'
 
 # django-rest framework settings
 REST_FRAMEWORK = {

@@ -19,13 +19,15 @@ class OrganismField(NestedField):
 class EffectorField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.effector_name)
+    kegg_compounds = serializers.ListField(read_only=True, required=False, child=serializers.CharField(required=False),
+                                           help_text=help_text.kegg_compounds)
 
 
 class PathwayField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.pathway_name)
     kegg_pathways = serializers.ListField(required=False, child=serializers.CharField(required=False),
                                           help_text=help_text.kegg_pathways)
 
@@ -37,6 +39,8 @@ class RegulatorField(NestedField):
     name = serializers.CharField(read_only=True, max_length=50, help_text=help_text.gene_name)
     uniprot_accession = serializers.CharField(read_only=True, max_length=50, help_text=help_text.uniprot_accession)
     ncbi_gene = serializers.IntegerField(required=False, min_value=0, help_text=help_text.ncbi_gene)
+    mechanism = serializers.ChoiceField(required=False, choices=choices.mechanism,
+                                        help_text=help_text.mechanism)
 
 
 class GeneField(NestedField):
@@ -72,9 +76,40 @@ class RegulatoryInteractionField(NestedField):
 class RegulatoryFamilyField(NestedField):
     # properties
     protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
-    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.required_name)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.rfam_name)
     mechanism = serializers.ChoiceField(required=False,
                                         choices=choices.mechanism,
                                         help_text=help_text.mechanism)
     rfam = serializers.CharField(required=False, max_length=100, help_text=help_text.rfam)
-    description = serializers.CharField(required=False, help_text=help_text.generic_description)
+    description = serializers.CharField(required=False, help_text=help_text.rfam_description)
+
+
+class EvidenceField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    name = serializers.CharField(read_only=True, max_length=250, help_text=help_text.evidence_name)
+    description = serializers.CharField(read_only=True, help_text=help_text.evidence_description)
+
+
+class PublicationField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    pmid = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.pmid)
+    doi = serializers.CharField(required=False, max_length=250, help_text=help_text.doi)
+    title = serializers.CharField(required=False, max_length=500, help_text=help_text.title)
+    author = serializers.CharField(required=False, max_length=250, help_text=help_text.author)
+    year = serializers.IntegerField(required=False, min_value=0, help_text=help_text.year)
+
+
+class OperonField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    operon_db_id = serializers.CharField(required=True, max_length=50, help_text=help_text.operon_db_id)
+    name = serializers.CharField(required=False, max_length=50, help_text=help_text.operon_name)
+    function = serializers.CharField(read_only=True, help_text=help_text.operon_function)
+    genes = serializers.ListField(read_only=True,
+                                  child=serializers.CharField(required=False),
+                                  help_text=help_text.operon_genes)
+    strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)

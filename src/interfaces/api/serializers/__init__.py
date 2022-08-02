@@ -1,15 +1,13 @@
-from .datasets import (OrganismBindingSitesDetailSerializer,
-                       OrganismBindingSitesListSerializer,
-                       RegulatorBindingSitesDetailSerializer,
-                       RegulatorBindingSitesListSerializer,
-                       TRNDetailSerializer,
-                       TRNListSerializer)
+from .trn import (TRNDetailSerializer,
+                  TRNListSerializer)
 from .effector import (EffectorDetailSerializer,
                        EffectorListSerializer)
 from .evidence import (EvidenceDetailSerializer,
                        EvidenceListSerializer)
 from .gene import (GeneDetailSerializer,
                    GeneListSerializer)
+from .motif import (MotifDetailSerializer,
+                    MotifListSerializer)
 from .operon import (OperonDetailSerializer,
                      OperonListSerializer)
 from .organism import (OrganismDetailSerializer,

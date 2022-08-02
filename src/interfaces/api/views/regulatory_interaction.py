@@ -1,6 +1,5 @@
 from typing import Union
 
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -9,7 +8,7 @@ from interfaces.api import serializers
 from utils import get_header
 
 
-class InteractionsList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class InteractionsList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -27,12 +26,12 @@ class InteractionsList(views.APIListView, views.APICreateView, generics.GenericA
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
     serializer_class = serializers.RegulatoryInteractionListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryInteraction
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.RegulatoryInteraction
     fields = ['protrend_id', 'organism', 'regulator', 'gene', 'tfbs', 'effector', 'regulatory_effect']
 
 
-class InteractionDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class InteractionDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -50,8 +49,8 @@ class InteractionDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
      - the regulatory effect which consists of the outcome of the interaction between the regulator and the target gene, namely target gene activation, inactivation, dual or unknown behavior
     """
     serializer_class = serializers.RegulatoryInteractionDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryInteraction
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.RegulatoryInteraction
     fields = ['protrend_id', 'regulatory_effect']
     targets = {'data_source': ['name', 'url'],
                'evidence': ['protrend_id'],
@@ -63,7 +62,7 @@ class InteractionDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
                'data_tfbs': ['protrend_id', 'sequence', 'strand', 'start', 'stop', ]}
     relationships = {'data_source': ['url']}
 
-    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 

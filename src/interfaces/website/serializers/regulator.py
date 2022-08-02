@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text, choices
-from data import Regulator
+from data.models import Regulator
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField
 from interfaces.serializers.relationship import SourceRelationshipSerializer
@@ -37,7 +37,8 @@ class RegulatorSerializer(RegulatorsSerializer):
                                      help_text=help_text.synonyms)
     function = serializers.CharField(required=False, help_text=help_text.function)
     description = serializers.CharField(required=False, help_text=help_text.description)
-    sequence = serializers.CharField(required=False, help_text=help_text.sequence)
+    gene_sequence = serializers.CharField(required=False, help_text=help_text.gene_sequence)
+    protein_sequence = serializers.CharField(required=False, help_text=help_text.protein_sequence)
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)

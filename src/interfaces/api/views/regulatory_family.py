@@ -6,7 +6,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class RegulatoryFamilyList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class RegulatoryFamilyList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -18,12 +18,12 @@ class RegulatoryFamilyList(views.APIListView, views.APICreateView, generics.Gene
     Note that, we only provide the rfam name and sometimes the rfam identifiers. We are working on improving the information provided for each regulatory family.
     """
     serializer_class = serializers.RegulatoryFamilyListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryFamily
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.RegulatoryFamily
     fields = ['protrend_id', 'name', 'mechanism']
 
 
-class RegulatoryFamilyDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class RegulatoryFamilyDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -35,8 +35,8 @@ class RegulatoryFamilyDetail(views.APIRetrieveView, views.APIUpdateDestroyView, 
     Note that, we only provide the rfam name and sometimes the rfam identifiers. We are working on improving the information provided for each regulatory family.
     """
     serializer_class = serializers.RegulatoryFamilyDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.RegulatoryFamily
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.RegulatoryFamily
     fields = ['protrend_id', 'name', 'mechanism', 'rfam', 'description']
     targets = {'data_source': ['name', 'url'],
                'regulator': ['protrend_id']}

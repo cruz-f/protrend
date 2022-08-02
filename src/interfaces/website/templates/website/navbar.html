@@ -39,6 +39,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-uppercase"
+                           href="{% url 'community:index' %}">
+                            Community
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-uppercase"
                            target="_blank"
                            href="{% url 'api' %}">
                             API
@@ -46,16 +52,35 @@
                     </li>
                 </ul>
                 {% if active_page != 'home' and active_page != 'search' %}
-                    <form class="d-flex" method="GET" action="{% url 'search' %}">
-                        {% csrf_token %}
-                        <input class="form-control me-2"
-                               type="text" placeholder="lexA" aria-label="Search" name="q">
-                        <button class="btn btn-outline-success text-uppercase me-5" type="submit">Search</button>
-                    </form>
+                    <a class="btn btn-outline-success text-uppercase me-4"
+                       href="{% url 'search' %}">Search</a>
                 {% endif %}
-{#                <form class="d-flex">#}
-{#                    <button class="btn btn-outline-primary text-uppercase" type="submit">Log In</button>#}
-{#                </form>#}
+                <form class="d-flex">
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary text-uppercase dropdown-toggle me-5"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle">  {{ user.username }}</i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'password_reset' %}">Reset Password</a></li>
+                                <li><a class="dropdown-item" href="{% url 'sign-in' %}">Switch Account</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a class="btn btn-outline-primary text-uppercase me-3"
+                           type="submit"
+                           href="{% url 'sign-in' %}">
+                            Sign In
+                        </a>
+                        <a class="btn btn-outline-success text-uppercase"
+                           type="submit"
+                           href="{% url 'sign-up' %}">
+                            Sign Up
+                        </a>
+                    {% endif %}
+                </form>
             </div>
         </div>
     </nav>

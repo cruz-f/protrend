@@ -14,7 +14,7 @@ class OrganismsView(views.WebsiteListView, generic.ListView):
 
     active_page = 'organisms'
     serializer = serializers.OrganismsSerializer
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy',
               'species', 'refseq_accession', 'genbank_accession', 'assembly_accession']
 
@@ -28,7 +28,7 @@ class OrganismsView(views.WebsiteListView, generic.ListView):
                                      fields=['protrend_id'],
                                      target='regulator',
                                      target_fields=['protrend_id'])
-        counts = queryset.group_by_count()
+        counts = queryset.group_by_count(field='name')
         return [charts.OrganismsRegulatorsChart(objects=counts),
                 charts.OrganismsRegulatorsTopChart(objects=counts),
                 charts.OrganismsTaxaChart(objects=objects),
@@ -42,7 +42,7 @@ class OrganismView(views.WebsiteDetailView, generic.DetailView):
 
     active_page = 'organisms'
     serializer = serializers.OrganismSerializer
-    model = data.Organism
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain',
               'refseq_accession', 'refseq_ftp', 'genbank_accession',
               'genbank_ftp', 'ncbi_assembly', 'assembly_accession']

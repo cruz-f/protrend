@@ -1,4 +1,3 @@
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -6,7 +5,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class OrganismList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class OrganismList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -19,12 +18,12 @@ class OrganismList(views.APIListView, views.APICreateView, generics.GenericAPIVi
     Note that the list of organisms available at ProTReND might contain redundant species due to the ambiguous scientific name found in the collected data sources and NCBI taxonomy misannotations.
     """
     serializer_class = serializers.OrganismListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Organism
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain']
 
 
-class OrganismDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class OrganismDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -37,13 +36,14 @@ class OrganismDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics
     Note that the list of organisms available at ProTReND might contain redundant species due to the ambiguous scientific name found in the collected data sources and NCBI taxonomy misannotations.
     """
     serializer_class = serializers.OrganismDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Organism
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Organism
     fields = ['protrend_id', 'name', 'ncbi_taxonomy', 'species', 'strain', 'refseq_accession', 'refseq_ftp',
               'genbank_accession', 'genbank_ftp', 'ncbi_assembly', 'assembly_accession']
     targets = {'data_source': ['name', 'url'],
                'regulator': ['protrend_id'],
                'gene': ['protrend_id'],
                'tfbs': ['protrend_id'],
-               'regulatory_interaction': ['protrend_id']}
+               'regulatory_interaction': ['protrend_id'],
+               'motif': ['protrend_id']}
     relationships = {'data_source': ['url']}

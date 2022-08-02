@@ -1,0 +1,11 @@
+{% autoescape off %}
+    Dear {{ username }},
+
+    Thank you for registering on the ProTReND database.
+    Please click on the link to confirm your registration,
+
+    {{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+    Sincerely,
+    The ProTReND Team
+{% endautoescape %}

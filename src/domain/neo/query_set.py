@@ -316,10 +316,13 @@ class NeoLinkedQuerySet(NeoQuerySet):
             nodes[protrend_id] = count
         return nodes
 
-    def group_by_count(self) -> Dict[str, int]:
+    def group_by_count(self, field: str = None) -> Dict[str, int]:
+        if not field:
+            field = self.fields[0]
+
         query = f'MATCH {self.source_clause} ' \
                 f'OPTIONAL MATCH ({self.source_variable})-[]->{self.target_clause} ' \
-                f'RETURN {self.source_variable}.protrend_id, {self.count_target}'
+                f'RETURN {self.source_variable}.{field}, {self.count_target}'
         return self._group_by_count(query)
 
     def filter(self, **kwargs):

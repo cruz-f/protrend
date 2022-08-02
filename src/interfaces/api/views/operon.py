@@ -1,6 +1,5 @@
 from typing import Union
 
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -9,7 +8,7 @@ from interfaces.api import serializers
 from utils import get_header
 
 
-class OperonList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class OperonList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -24,12 +23,12 @@ class OperonList(views.APIListView, views.APICreateView, generics.GenericAPIView
     We advise you to consult OperonDB for more details.
     """
     serializer_class = serializers.OperonListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Operon
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Operon
     fields = ['protrend_id', 'operon_db_id', 'name', 'function', 'genes']
 
 
-class OperonDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class OperonDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -44,15 +43,15 @@ class OperonDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.G
     We advise you to consult OperonDB for more details.
     """
     serializer_class = serializers.OperonDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Operon
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Operon
     fields = ['protrend_id', 'operon_db_id', 'name', 'function', 'genes', 'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id'],
                'gene': ['protrend_id', 'locus_tag', 'uniprot_accession', 'name']}
     relationships = {'data_source': ['url']}
 
-    def get_renderer_context(self: Union['views.APIListView, views.APICreateView', generics.GenericAPIView]):
+    def get_renderer_context(self: Union['views.APIListView', generics.GenericAPIView]):
         # noinspection PyUnresolvedReferences
         context = super().get_renderer_context()
 

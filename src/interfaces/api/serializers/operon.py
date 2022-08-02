@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from constants import help_text, choices
-from data import Operon
+from data.models import Operon
 from interfaces.api.serializers.fields import GeneField
 from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField

@@ -1,4 +1,3 @@
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -6,7 +5,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class GeneList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class GeneList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -19,12 +18,12 @@ class GeneList(views.APIListView, views.APICreateView, generics.GenericAPIView):
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
     serializer_class = serializers.GeneListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Gene
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms']
 
 
-class GeneDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class GeneDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -37,11 +36,11 @@ class GeneDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.Gen
     Most genes are referenced to widely known databases, such as UniProt, NCBI protein and NCBI gene, by the corresponding identifiers
     """
     serializer_class = serializers.GeneDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Gene
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
               'function', 'description', 'ncbi_gene', 'ncbi_protein',
-              'genbank_accession', 'refseq_accession', 'sequence', 'strand', 'start', 'stop']
+              'genbank_accession', 'refseq_accession', 'gene_sequence', 'protein_sequence', 'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id'],
                'operon': ['protrend_id'],

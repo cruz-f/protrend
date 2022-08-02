@@ -60,7 +60,8 @@ class OrganismsRegulatorsTopChart(Chart):
                      'backgroundColor': Colors.get_color('yellow', muted=True),
                      'data': [self.objects[label] for label in labels]}]
 
-        data = {'data': {'labels': labels, 'datasets': datasets}}
+        data = {'data': {'labels': [f'{label[:10]}...' for label in labels],
+                         'datasets': datasets}}
         return data
 
 

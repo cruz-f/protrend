@@ -1,4 +1,3 @@
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -6,7 +5,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class PublicationList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class PublicationList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -17,12 +16,12 @@ class PublicationList(views.APIListView, views.APICreateView, generics.GenericAP
     Note that, we only provide the main details of each publication. The publication can then be consulted using the DOI or PMID.
     """
     serializer_class = serializers.PublicationListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Publication
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Publication
     fields = ['protrend_id', 'pmid', 'doi', 'title', 'author', 'year']
 
 
-class PublicationDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class PublicationDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -33,8 +32,8 @@ class PublicationDetail(views.APIRetrieveView, views.APIUpdateDestroyView, gener
     Note that, we only provide the main details of each publication. The publication can then be consulted using the DOI or PMID.
     """
     serializer_class = serializers.PublicationDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Publication
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Publication
     fields = ['protrend_id', 'pmid', 'doi', 'title', 'author', 'year']
     targets = {'tfbs': ['protrend_id'],
                'regulatory_interaction': ['protrend_id']}

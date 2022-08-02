@@ -1,8 +1,6 @@
-import abc
-
 from rest_framework import serializers
 
-from constants import help_text
+from constants import help_text, choices
 
 
 class NestedField(serializers.Serializer):
@@ -37,15 +35,13 @@ class URLField(serializers.HyperlinkedIdentityField):
 # ----------------------------------------------------------
 class SourceField(serializers.Serializer):
     # properties
-    name = serializers.CharField(read_only=True, max_length=100, help_text=help_text.required_name)
-    url = serializers.CharField(read_only=True, help_text=help_text.url)
-    external_identifier = serializers.CharField(read_only=True, help_text=help_text.url)
+    name = serializers.CharField(read_only=True, max_length=100, help_text=help_text.source_name)
+    url = serializers.CharField(read_only=True, help_text=help_text.source_url)
+    external_identifier = serializers.CharField(read_only=True, help_text=help_text.source_external_identifier)
 
-    @abc.abstractmethod
     def create(self, validated_data):
         pass
 
-    @abc.abstractmethod
     def update(self, instance, validated_data):
         pass
 
@@ -59,3 +55,31 @@ class SourceField(serializers.Serializer):
             if external_id:
                 setattr(instance, 'external_identifier', external_id)
         return super(SourceField, self).to_representation(instance)
+
+
+# ----------------------------------------------------------
+# MotifTFBSField Field
+# ----------------------------------------------------------
+class MotifTFBSField(serializers.Serializer):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    sequence = serializers.CharField(read_only=True, help_text=help_text.tfbs_sequence)
+    strand = serializers.ChoiceField(read_only=True, choices=choices.strand, help_text=help_text.strand)
+    start = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.start)
+    stop = serializers.IntegerField(read_only=True, min_value=0, help_text=help_text.stop)
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+    def to_representation(self, instance):
+        if hasattr(instance, 'relationship_'):
+
+            for _field in ('sequence', 'strand', 'start', 'stop'):
+                val = getattr(instance.relationship_, _field, None)
+                if val:
+                    setattr(instance, _field, val)
+
+        return super(MotifTFBSField, self).to_representation(instance)

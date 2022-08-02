@@ -1,4 +1,3 @@
-import rest_framework.permissions as drf_permissions
 from rest_framework import generics
 
 import data
@@ -6,7 +5,7 @@ from interfaces import views, permissions
 from interfaces.api import serializers
 
 
-class RegulatorList(views.APIListView, views.APICreateView, generics.GenericAPIView):
+class RegulatorList(views.APIListView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -20,12 +19,12 @@ class RegulatorList(views.APIListView, views.APICreateView, generics.GenericAPIV
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
     serializer_class = serializers.RegulatorListSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Regulator
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism']
 
 
-class RegulatorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generics.GenericAPIView):
+class RegulatorDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     ProTReND database REST API.
 
@@ -39,15 +38,17 @@ class RegulatorDetail(views.APIRetrieveView, views.APIUpdateDestroyView, generic
     Finally, the mechanism of control of the gene expression is available for each regulator.
     """
     serializer_class = serializers.RegulatorDetailSerializer
-    permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly, permissions.SuperUserOrReadOnly]
-    model = data.Regulator
+    permission_classes = [permissions.SuperUserOrReadOnly]
+    model = data.models.Regulator
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms', 'mechanism',
               'function', 'description', 'ncbi_gene',
-              'ncbi_protein', 'genbank_accession', 'refseq_accession', 'sequence', 'strand', 'start', 'stop']
+              'ncbi_protein', 'genbank_accession', 'refseq_accession', 'gene_sequence', 'protein_sequence',
+              'strand', 'start', 'stop']
     targets = {'data_source': ['name', 'url'],
                'organism': ['protrend_id'],
                'effector': ['protrend_id'],
                'gene': ['protrend_id'],
                'tfbs': ['protrend_id'],
-               'regulatory_interaction': ['protrend_id']}
+               'regulatory_interaction': ['protrend_id'],
+               'motif': ['protrend_id']}
     relationships = {'data_source': ['url']}
