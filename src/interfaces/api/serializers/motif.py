@@ -38,12 +38,12 @@ class MotifDetailSerializer(MotifListSerializer):
                                       child=MotifTFBSField(read_only=True),
                                       help_text=help_text.tfbs_id)
 
-    data_organism = RelationshipSerializer(read_only=True,
-                                           child=serializers.HyperlinkedRelatedField(
-                                               read_only=True,
-                                               view_name='organisms-detail',
-                                               lookup_field='protrend_id',
-                                               lookup_url_kwarg='protrend_id'))
+    organism = RelationshipSerializer(read_only=True,
+                                      child=serializers.HyperlinkedRelatedField(
+                                          read_only=True,
+                                          view_name='organisms-detail',
+                                          lookup_field='protrend_id',
+                                          lookup_url_kwarg='protrend_id'))
     data_regulator = RelationshipSerializer(read_only=True,
                                             child=serializers.HyperlinkedRelatedField(
                                                 read_only=True,

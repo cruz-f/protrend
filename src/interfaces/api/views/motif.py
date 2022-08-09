@@ -46,7 +46,7 @@ class MotifDetail(views.APIRetrieveView, generics.GenericAPIView):
     renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
     model = data.models.Motif
     fields = ['protrend_id', 'sequences', 'consensus_sequence']
-    targets = {'data_organism': ['protrend_id', 'name', 'ncbi_taxonomy'],
+    targets = {'organism': ['protrend_id', 'name', 'ncbi_taxonomy'],
                'data_regulator': ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'mechanism'],
                'data_tfbs': ['protrend_id']}
     relationships = {'data_tfbs': ['sequence', 'strand', 'start', 'stop']}
