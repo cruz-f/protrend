@@ -113,3 +113,13 @@ class OperonField(NestedField):
     strand = serializers.ChoiceField(required=False, choices=choices.strand, help_text=help_text.strand)
     start = serializers.IntegerField(required=False, min_value=0, help_text=help_text.start)
     stop = serializers.IntegerField(required=False, min_value=0, help_text=help_text.stop)
+
+
+class MotifField(NestedField):
+    # properties
+    protrend_id = serializers.CharField(read_only=True, help_text=help_text.protrend_id)
+    regulator = serializers.CharField(read_only=True, help_text=help_text.regulator_id)
+    consensus_sequence = serializers.CharField(read_only=True, help_text=help_text.consensus_sequence)
+    sequences = serializers.ListField(read_only=True,
+                                      child=serializers.CharField(required=False),
+                                      help_text=help_text.aligned_sequence)

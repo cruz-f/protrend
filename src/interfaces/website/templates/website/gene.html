@@ -266,14 +266,14 @@
                                         {% include 'website/gene_box.html' with strand=gene.strand start='NA' stop='NA' %}
                                     {% endif %}
                                 </p>
-                                <p class="card-text text-uppercase text-justify">
+                                <p class="card-text text-uppercase">
                                     {% if gene.gene_sequence %}
                                         DNA SEQUENCE: {{ gene.gene_sequence }}
                                     {% else %}
                                         DNA SEQUENCE: NA
                                     {% endif %}
                                 </p>
-                                <p class="card-text text-uppercase text-justify">
+                                <p class="card-text text-uppercase">
                                     {% if gene.protein_sequence %}
                                         AMINO ACID SEQUENCE: {{ gene.protein_sequence }}
                                     {% else %}

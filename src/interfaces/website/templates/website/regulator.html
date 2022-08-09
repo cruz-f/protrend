@@ -340,14 +340,14 @@
                                         {% include 'website/gene_box.html' with strand=regulator.strand start='NA' stop='NA' %}
                                     {% endif %}
                                 </p>
-                                <p class="card-text text-uppercase text-justify">
+                                <p class="card-text text-uppercase">
                                     {% if regulator.gene_sequence %}
                                         DNA SEQUENCE: {{ regulator.gene_sequence }}
                                     {% else %}
                                         DNA SEQUENCE: NA
                                     {% endif %}
                                 </p>
-                                <p class="card-text text-uppercase text-justify">
+                                <p class="card-text text-uppercase">
                                     {% if regulator.protein_sequence %}
                                         AMINO ACID SEQUENCE: {{ regulator.protein_sequence }}
                                     {% else %}
@@ -626,6 +626,12 @@
                                             aria-selected="true">
                                         motif
                                     </button>
+                                    <button class="nav-link text-uppercase" id="v-pills-consensus-tab"
+                                            data-bs-toggle="pill" data-bs-target="#v-pills-consensus"
+                                            type="button" role="tab" aria-controls="v-pills-consensus"
+                                            aria-selected="false">
+                                        consensus sequence
+                                    </button>
                                     <button class="nav-link text-uppercase" id="v-pills-pwm-tab"
                                             data-bs-toggle="pill" data-bs-target="#v-pills-pwm"
                                             type="button" role="tab" aria-controls="v-pills-pwm"
@@ -651,6 +657,24 @@
                                          role="tabpanel"
                                          aria-labelledby="v-pills-motif-tab">
                                         <div id="motif-img" class="motif-container"></div>
+                                    </div>
+                                    <div class="tab-pane fade show active"
+                                         id="v-pills-consensus"
+                                         role="tabpanel"
+                                         aria-labelledby="v-pills-consensus-tab">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <p class="text-uppercase">
+                                                        {% if consensus_sequence %}
+                                                            {{ consensus_sequence }}
+                                                        {% else %}
+                                                            Not available
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="tab-pane fade"
                                          id="v-pills-pwm"
@@ -690,7 +714,7 @@
                                                     <div class="col-3">
                                                         <ul class="list-group list-group-flush">
                                                             {% for sequence in sequences %}
-                                                                <li class="list-group-item flex-fill text-uppercase">
+                                                                <li class="list-group-item flex-fill text-uppercase" style="overflow-wrap: break-word;">
                                                                     {{ sequence }}
                                                                 </li>
                                                             {% endfor %}
@@ -710,7 +734,7 @@
                                                     <div class="col-3">
                                                         <ul class="list-group list-group-flush">
                                                             {% for aligned_sequence in aligned_sequences %}
-                                                                <li class="list-group-item flex-fill text-uppercase">
+                                                                <li class="list-group-item flex-fill text-uppercase" style="overflow-wrap: break-word;">
                                                                     {{ aligned_sequence }}
                                                                 </li>
                                                             {% endfor %}

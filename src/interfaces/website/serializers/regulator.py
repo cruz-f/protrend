@@ -6,7 +6,8 @@ from interfaces.serializers.base import BaseSerializer
 from interfaces.serializers.fields import URLField, SourceField
 from interfaces.serializers.relationship import SourceRelationshipSerializer
 from interfaces.website.serializers.fields import (OrganismField, EffectorField, GeneField, TFBSField,
-                                                   RegulatoryInteractionField, RegulatoryFamilyField, PathwayField)
+                                                   RegulatoryInteractionField, RegulatoryFamilyField, PathwayField,
+                                                   MotifField)
 
 
 class RegulatorsSerializer(BaseSerializer):
@@ -51,6 +52,7 @@ class RegulatorSerializer(RegulatorsSerializer):
     tfbs = TFBSField(read_only=True, many=True)
     regulatory_interaction = RegulatoryInteractionField(read_only=True, many=True)
     regulatory_family = RegulatoryFamilyField(read_only=True, many=True)
+    motif = MotifField(read_only=True, many=True)
 
     data_source = SourceRelationshipSerializer(read_only=True,
                                                child=SourceField(read_only=True))

@@ -65,7 +65,8 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
                'gene': ['protrend_id', 'locus_tag', 'name', 'uniprot_accession', 'ncbi_gene'],
                'tfbs': ['protrend_id', 'sequence', 'start', 'stop', 'strand'],
                'regulatory_interaction': ['protrend_id', 'organism', 'regulator', 'gene', 'regulatory_effect'],
-               'regulatory_family': ['protrend_id', 'name', 'mechanism', 'rfam', 'description']}
+               'regulatory_family': ['protrend_id', 'name', 'mechanism', 'rfam', 'description'],
+               'motif': ['protrend_id', 'sequences', 'consensus_sequence']}
     relationships = {'data_source': ['external_identifier', 'url']}
 
     def get_tables(self, objects: Union[List[DjangoNode], List[NeoNode]]) -> List[Table]:
@@ -79,26 +80,32 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
                 charts.RegulatorRegulatoryEffectChart(objects=objects)]
 
     @staticmethod
-    def get_binding_motif(binding_sites: List[Dict]):
-        sequences = [tfbs.get('sequence', '') for tfbs in binding_sites]
-        pwm, aligned_sequences = make_pwm(sequences)
+    def get_binding_motif(aligned_sequences: List[str]):
+        pwm = make_pwm(aligned_sequences)
         logo = make_motif_logo(pwm)
         img = make_motif_img(logo)
         img = img.replace('height="180pt"', '').replace('width="720pt"', '')
 
-        # split sequences
-        sequences = np.array_split(sequences, 4)
+        # split aligned sequences
         aligned_sequences = np.array_split(aligned_sequences, 4)
-        return pwm, sequences, aligned_sequences, img
+        return pwm, aligned_sequences, img
 
     def get_context_data(self, **kwargs):
         context = super(RegulatorView, self).get_context_data(**kwargs)
 
-        binding_sites = context[self.context_object_name].get('tfbs', [])
+        motif = context[self.context_object_name].get('motif')
 
-        if binding_sites:
-            pwm, sequences, aligned_sequences, img = self.get_binding_motif(binding_sites)
+        if motif:
+            motif = motif[0]
+            aligned_sequences = motif.get('sequences', [])
+            pwm, aligned_sequences, img = self.get_binding_motif(aligned_sequences)
 
+            # split sequences
+            binding_sites = context[self.context_object_name].get('tfbs', [])
+            sequences = [tfbs.get('sequence', '') for tfbs in binding_sites]
+            sequences = np.array_split(sequences, 4)
+
+            context['consensus_sequence'] = motif.get('consensus_sequence', '')
             context['pwm'] = pwm
             context['motif_sequences'] = sequences
             context['motif_aligned_sequences'] = aligned_sequences
