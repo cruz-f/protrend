@@ -10,6 +10,7 @@ class ExportFileMixin:
     """
 
     json_filename = "protrend_data.json"
+    xml_filename = "protrend_data.xml"
     excel_filename = "protrend_data.xlsx"
     csv_filename = "protrend_data.csv"
     nucleotide_fasta_filename = "protrend_data.fna"
@@ -20,6 +21,18 @@ class ExportFileMixin:
     motif_transfac_filename = "protrend_data.dat"
     xlsx_ignore_headers = []
 
+    def get_renderers(self: Union['ExportFileMixin', generics.GenericAPIView], *args, **kwargs):
+        """
+        Return the list of renderers that can be used to render the response.
+        """
+        # noinspection PyUnresolvedReferences
+        renderers = super().get_renderers(*args, **kwargs)
+
+        if 'format' in self.request.query_params:
+            return [renderer for renderer in renderers if renderer.format == self.request.query_params['format']]
+
+        return [renderer for renderer in renderers if renderer.format == 'api']
+
     def finalize_response(self: Union['ExportFileMixin', generics.GenericAPIView], request, response, *args, **kwargs):
         """
         Return the response with the proper content disposition and the customized
@@ -29,6 +42,10 @@ class ExportFileMixin:
 
         if response.accepted_renderer.format == 'json':
             filename = self.json_filename
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'xml':
+            filename = self.xml_filename
             response["content-disposition"] = f"attachment; filename={filename}"
 
         elif response.accepted_renderer.format == 'xlsx':

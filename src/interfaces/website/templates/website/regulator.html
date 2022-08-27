@@ -156,8 +156,14 @@
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
-                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=fasta">
-                            motif-fasta
+                           href="{% url 'motifs-detail' motif_object.protrend_id %}?format=jaspar">
+                            motif-jaspar
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'motifs-detail' motif_object.protrend_id %}?format=transfac">
+                            motif-transfac
                         </a>
                     </li>
                 </ul>

@@ -183,6 +183,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_csv.renderers.CSVRenderer',
         'drf_renderer_xlsx.renderers.XLSXRenderer',
+        'rest_framework_xml.renderers.XMLRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
 }

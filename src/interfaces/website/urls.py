@@ -31,6 +31,4 @@ urlpatterns = [
 
     # utils
     path(r'paginate-regulators', website_views.regulators_page, name='paginate-regulators'),
-    path('utils/download-fasta/<str:identifier>/<str:locus_tag>/<str:name>/<str:sequence>',
-         website_views.download_fasta, name='download-fasta')
 ]
