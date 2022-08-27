@@ -4,6 +4,7 @@ neomodel==4.0.8
 Django==3.2.12
 django-neomodel==0.0.7
 djangorestframework==3.13.1
+djangorestframework-xml==2.0.0
 drf-renderer-xlsx==0.4.5
 djangorestframework-csv==2.1.1
 drf-yasg==1.20.0
