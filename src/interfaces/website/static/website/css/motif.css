@@ -4,13 +4,13 @@
 
 @media (min-width: 576px) {
     .motif-container {
-        width: 450px!important;
+        width: 576px!important;
     }
 }
 
 @media (min-width: 768px) {
     .motif-container {
-        width: 600px!important;
+        width: 768px!important;
     }
 }
 

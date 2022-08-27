@@ -86,9 +86,7 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
         img = make_motif_img(logo)
         img = img.replace('height="180pt"', '').replace('width="720pt"', '')
 
-        # split aligned sequences
-        aligned_sequences = np.array_split(aligned_sequences, 4)
-        return pwm, aligned_sequences, img
+        return pwm, img
 
     def get_context_data(self, **kwargs):
         context = super(RegulatorView, self).get_context_data(**kwargs)
@@ -98,22 +96,24 @@ class RegulatorView(views.WebsiteDetailView, generic.DetailView):
         if motif:
             motif = motif[0]
             aligned_sequences = motif.get('sequences', [])
-            pwm, aligned_sequences, img = self.get_binding_motif(aligned_sequences)
+            pwm, img = self.get_binding_motif(aligned_sequences)
 
             # split sequences
             binding_sites = context[self.context_object_name].get('tfbs', [])
             sequences = [tfbs.get('sequence', '') for tfbs in binding_sites]
-            sequences = np.array_split(sequences, 4)
 
             context['consensus_sequence'] = motif.get('consensus_sequence', '')
+            context['gc'] = (context['consensus_sequence'].count('G') + context['consensus_sequence'].count('C')) / len(context['consensus_sequence'])
             context['pwm'] = pwm
             context['motif_sequences'] = sequences
             context['motif_aligned_sequences'] = aligned_sequences
             context['motif'] = img
+            context['motif_object'] = motif
 
         else:
             context['pwm'] = pd.DataFrame()
             context['motif_sequences'] = []
-            context['motif'] = '<svg height="30" width="200"><text x="0" y="15" fill="black">There is no motif available</text></svg>'
+            context['motif'] = '<svg height="30" width="175"><text x="0" y="15" fill="black">There is no motif available</text></svg>'
+            context['motif_object'] = motif
 
         return context

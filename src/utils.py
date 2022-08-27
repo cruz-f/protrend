@@ -16,6 +16,8 @@ class ExportFileMixin:
     amino_acid_fasta_filename = "protrend_data.faa"
     nucleotide_gnb_filename = "protrend_data.gbff"
     amino_acid_gnb_filename = "protrend_data.gpff"
+    motif_jaspar_filename = "protrend_data.jaspar"
+    motif_transfac_filename = "protrend_data.dat"
     xlsx_ignore_headers = []
 
     def finalize_response(self: Union['ExportFileMixin', generics.GenericAPIView], request, response, *args, **kwargs):
@@ -51,6 +53,14 @@ class ExportFileMixin:
 
         elif response.accepted_renderer.format == 'gpff':
             filename = self.amino_acid_gnb_filename
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'jaspar':
+            filename = self.motif_jaspar_filename
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'transfac':
+            filename = self.motif_transfac_filename
             response["content-disposition"] = f"attachment; filename={filename}"
 
         return response

@@ -21,6 +21,10 @@
 
     <link rel="stylesheet"
           type="text/css"
+          href="{% static 'website/css/scroll_box.css' %}">
+
+    <link rel="stylesheet"
+          type="text/css"
           href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
 {% endblock %}
 {% block content %}
@@ -701,11 +705,11 @@
                                             aria-selected="true">
                                         motif
                                     </button>
-                                    <button class="nav-link text-uppercase" id="v-pills-consensus-tab"
-                                            data-bs-toggle="pill" data-bs-target="#v-pills-consensus"
-                                            type="button" role="tab" aria-controls="v-pills-consensus"
+                                    <button class="nav-link text-uppercase" id="v-pills-logo-tab"
+                                            data-bs-toggle="pill" data-bs-target="#v-pills-logo"
+                                            type="button" role="tab" aria-controls="v-pills-logo"
                                             aria-selected="false">
-                                        consensus sequence
+                                        motif logo
                                     </button>
                                     <button class="nav-link text-uppercase" id="v-pills-pwm-tab"
                                             data-bs-toggle="pill" data-bs-target="#v-pills-pwm"
@@ -731,22 +735,53 @@
                                          id="v-pills-motif"
                                          role="tabpanel"
                                          aria-labelledby="v-pills-motif-tab">
-                                        <div id="motif-img" class="motif-container"></div>
+                                        <div class="scroll-box">
+                                            <h5 class="card-title">{{ motif_object.protrend_id }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">Motif</h6>
+                                            <p class="text-uppercase card-text py-2">
+                                                {% if consensus_sequence %}
+                                                    CONSENSUS SEQUENCE: {{ consensus_sequence }}
+                                                {% else %}
+                                                    CONSENSUS SEQUENCE: Not available
+                                                {% endif %}
+                                            </p>
+                                            <p class="text-uppercase card-text py-2">
+                                                {% if consensus_sequence %}
+                                                    GC CONTENT: {{ gc }}
+                                                {% else %}
+                                                    GC CONTENT: Not available
+                                                {% endif %}
+                                            </p>
+                                            <p class="text-uppercase card-text py-2">
+                                                {% if consensus_sequence %}
+                                                    BINDING SEQUENCES: {{ motif_sequences|length }}
+                                                {% else %}
+                                                    BINDING SEQUENCES: Not available
+                                                {% endif %}
+                                            </p>
+                                            {% if consensus_sequence %}
+                                                <p class="text-uppercase card-text pt-2">
+                                                    DOWNLOAD MOTIF:
+                                                </p>
+                                                <p class="text-uppercase card-text pb-2">
+                                                    <a href="{% url 'motifs-detail' motif_object.protrend_id %}?format=jaspar"
+                                                       class="btn btn-primary text-uppercase">jaspar</a>
+                                                    <a href="{% url 'motifs-detail' motif_object.protrend_id %}?format=transfac"
+                                                       class="btn btn-success text-uppercase">transfac</a>
+                                                </p>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    <div class="tab-pane fade show active"
-                                         id="v-pills-consensus"
+                                    <div class="tab-pane fade"
+                                         id="v-pills-logo"
                                          role="tabpanel"
-                                         aria-labelledby="v-pills-consensus-tab">
+                                         aria-labelledby="v-pills-logo-tab">
                                         <div class="container">
                                             <div class="row">
                                                 <div class="col">
-                                                    <p class="text-uppercase">
-                                                        {% if consensus_sequence %}
-                                                            {{ consensus_sequence }}
-                                                        {% else %}
-                                                            Not available
-                                                        {% endif %}
-                                                    </p>
+                                                    <div class="scroll-box">
+                                                        <div id="motif-img" class="motif-container"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -755,28 +790,31 @@
                                          id="v-pills-pwm"
                                          role="tabpanel"
                                          aria-labelledby="v-pills-pwm-tab">
-                                        <div class="table-responsive">
-                                            <table class="table pandas-table">
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col">#</th>
-                                                    {% for col in pwm.columns %}
-                                                        <th scope="col">{{ col }}</th>
-                                                    {% endfor %}
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% for i, row in pwm.iterrows %}
+                                        <div class="scroll-box">
+                                            <div class="table-responsive">
+                                                <table class="table pandas-table">
+                                                    <thead>
                                                     <tr>
-                                                        <td class="fw-bold">{{ i }}</td>
-                                                        <td>{{ row.0 }}</td>
-                                                        <td>{{ row.1 }}</td>
-                                                        <td>{{ row.2 }}</td>
-                                                        <td>{{ row.3 }}</td>
+                                                        <th scope="col">#</th>
+                                                        {% for col in pwm.columns %}
+                                                            <th scope="col">{{ col }}</th>
+                                                        {% endfor %}
                                                     </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for i, row in pwm.iterrows %}
+                                                        <tr>
+                                                            <td class="fw-bold">{{ i }}</td>
+                                                            <td>{{ row.0 }}</td>
+                                                            <td>{{ row.1 }}</td>
+                                                            <td>{{ row.2 }}</td>
+                                                            <td>{{ row.3 }}</td>
+                                                            <td>{{ row.4 }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="tab-pane fade"
@@ -785,17 +823,17 @@
                                          aria-labelledby="v-pills-sequences-tab">
                                         <div class="container">
                                             <div class="row">
-                                                {% for sequences in motif_sequences %}
-                                                    <div class="col-3">
+                                                <div class="col">
+                                                    <div class="scroll-box">
                                                         <ul class="list-group list-group-flush">
-                                                            {% for sequence in sequences %}
-                                                                <li class="list-group-item flex-fill text-uppercase" style="overflow-wrap: break-word;">
+                                                            {% for sequence in motif_sequences %}
+                                                                <li class="list-group-item text-uppercase">
                                                                     {{ sequence }}
                                                                 </li>
                                                             {% endfor %}
                                                         </ul>
                                                     </div>
-                                                {% endfor %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -805,17 +843,17 @@
                                          aria-labelledby="v-pills-aligned-sequences-tab">
                                         <div class="container">
                                             <div class="row">
-                                                {% for aligned_sequences in motif_aligned_sequences %}
-                                                    <div class="col-3">
+                                                <div class="col">
+                                                    <div class="scroll-box">
                                                         <ul class="list-group list-group-flush">
-                                                            {% for aligned_sequence in aligned_sequences %}
-                                                                <li class="list-group-item flex-fill text-uppercase" style="overflow-wrap: break-word;">
+                                                            {% for aligned_sequence in motif_aligned_sequences %}
+                                                                <li class="list-group-item text-uppercase">
                                                                     {{ aligned_sequence }}
                                                                 </li>
                                                             {% endfor %}
                                                         </ul>
                                                     </div>
-                                                {% endfor %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
