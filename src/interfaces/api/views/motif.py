@@ -5,7 +5,7 @@ from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework_csv.renderers import CSVRenderer
 
 import data
-from interfaces import views, renderers
+from interfaces import views
 from interfaces.api import serializers
 
 
@@ -43,7 +43,7 @@ class MotifDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.MotifDetailSerializer
     permission_classes = [drf_permissions.IsAuthenticatedOrReadOnly]
-    renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, renderers.FastaRenderer, BrowsableAPIRenderer)
+    renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer, BrowsableAPIRenderer)
     model = data.models.Motif
     fields = ['protrend_id', 'sequences', 'consensus_sequence']
     targets = {'organism': ['protrend_id', 'name', 'ncbi_taxonomy'],

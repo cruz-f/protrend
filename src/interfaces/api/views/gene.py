@@ -1,8 +1,13 @@
 from rest_framework import generics
+from drf_renderer_xlsx.renderers import XLSXRenderer
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework_csv.renderers import CSVRenderer
 
 import data
 from interfaces import views, permissions
 from interfaces.api import serializers
+from interfaces.renderers import NucleotideFastaRenderer, AminoAcidFastaRenderer, \
+    NucleotideGenBankRenderer, AminoAcidGenBankRenderer
 
 
 class GeneList(views.APIListView, generics.GenericAPIView):
@@ -37,6 +42,10 @@ class GeneDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.GeneDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
+    renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer,
+                        NucleotideFastaRenderer, AminoAcidFastaRenderer,
+                        NucleotideGenBankRenderer, AminoAcidGenBankRenderer,
+                        BrowsableAPIRenderer)
     model = data.models.Gene
     fields = ['protrend_id', 'locus_tag', 'uniprot_accession', 'name', 'synonyms',
               'function', 'description', 'ncbi_gene', 'ncbi_protein',

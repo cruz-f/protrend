@@ -1,1 +1,2 @@
-from .fasta import FastaRenderer
+from .fasta import NucleotideFastaRenderer, AminoAcidFastaRenderer
+from .genbank import NucleotideGenBankRenderer, AminoAcidGenBankRenderer

@@ -1,5 +1,4 @@
 from io import StringIO
-from typing import List
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -7,84 +6,69 @@ from Bio.SeqRecord import SeqRecord
 from rest_framework import renderers
 
 
-class FastaRenderer(renderers.BaseRenderer):
+class NucleotideFastaRenderer(renderers.BaseRenderer):
     media_type = 'text/fasta'
-    format = 'fasta'
-    filename = 'protrend_data.fasta'
+    format = 'fna'
+    filename = 'protrend_data.fna'
 
     @staticmethod
-    def build_regulator_records(sites: List[dict],
-                                protrend_id: str,
-                                locus_tag: str,
-                                uniprot_acc: str) -> List[SeqRecord]:
-        records = []
-        for site in sites:
-            site_protrend_id = site.get('protrend_id', '')
-            sequence = site.get('sequence', '')
-            strand = site.get('strand', '')
-            start = site.get('start', '')
-            stop = site.get('stop', '')
+    def build_regulator_record(data: dict) -> list:
+        """
+        It builds regulator fna record
+        """
+        protrend_id = data.get('protrend_id', '')
+        locus_tag = data.get('locus_tag', '')
+        name = data.get('name', '')
+        uniprot_acc = data.get('uniprot_acc', '')
+        mechanism = data.get('mechanism', '')
 
-            if not sequence:
-                continue
+        sequence = data.get('gene_sequence', '')
+        if not sequence:
+            sequence = ''
+        sequence = Seq(sequence)
 
-            description = 'ProTReND binding-site sequence of regulator ' \
-                          f'{protrend_id}-{locus_tag}-{uniprot_acc} and genomic coordinates: {strand}-{start}-{stop}'
+        description = f'Regulator {protrend_id}-{locus_tag}-{name}-{uniprot_acc}-{mechanism}'
 
-            seq = Seq(sequence)
-            record = SeqRecord(seq=seq,
-                               id=site_protrend_id,
-                               name=site_protrend_id,
-                               description=description)
-            records.append(record)
-
-        return records
+        record = SeqRecord(seq=sequence,
+                           id=protrend_id,
+                           name=protrend_id,
+                           description=description)
+        return [record]
 
     @staticmethod
-    def build_organism_records(sites: List[dict],
-                               protrend_id: str,
-                               name: str,
-                               ncbi_taxonomy: str) -> List[SeqRecord]:
-        records = []
-        for site in sites:
-            site_protrend_id = site.get('protrend_id', '')
-            sequence = site.get('sequence', '')
-            strand = site.get('strand', '')
-            start = site.get('start', '')
-            stop = site.get('stop', '')
+    def build_gene_record(data: dict) -> list:
+        """
+        It builds gene fna record
+        """
+        protrend_id = data.get('protrend_id', '')
+        locus_tag = data.get('locus_tag', '')
+        name = data.get('name', '')
+        uniprot_acc = data.get('uniprot_acc', '')
 
-            if not sequence:
-                continue
+        sequence = data.get('gene_sequence', '')
+        if not sequence:
+            sequence = ''
+        sequence = Seq(sequence)
 
-            description = 'ProTReND binding-site sequence of organism ' \
-                          f'{protrend_id}-{name}-{ncbi_taxonomy} and genomic coordinates: {strand}-{start}-{stop}'
+        description = f'Gene {protrend_id}-{locus_tag}-{name}-{uniprot_acc}'
 
-            seq = Seq(sequence)
-            record = SeqRecord(seq=seq,
-                               id=site_protrend_id,
-                               name=site_protrend_id,
-                               description=description)
-            records.append(record)
-
-        return records
+        record = SeqRecord(seq=sequence,
+                           id=protrend_id,
+                           name=protrend_id,
+                           description=description)
+        return [record]
 
     def render(self, data, media_type=None, renderer_context=None):
         if not data:
             return ''
 
-        sites = data.get('tfbs', [])
+        protrend_id = data.get('protrend_id', '')
 
-        if 'ncbi_taxonomy' in data:
-            protrend_id = data.get('protrend_id', '')
-            name = data.get('name', '')
-            ncbi_taxonomy = data.get('ncbi_taxonomy', '')
-            records = self.build_organism_records(sites, protrend_id, name, ncbi_taxonomy)
+        if protrend_id.startswith('PRT.REG.'):
+            records = self.build_regulator_record(data)
 
-        elif 'mechanism' in data:
-            protrend_id = data.get('protrend_id', '')
-            locus_tag = data.get('locus_tag', '')
-            uniprot_acc = data.get('uniprot_acc', '')
-            records = self.build_regulator_records(sites, protrend_id, locus_tag, uniprot_acc)
+        elif protrend_id.startswith('PRT.GEN.'):
+            records = self.build_gene_record(data)
 
         else:
             records = []
@@ -92,3 +76,56 @@ class FastaRenderer(renderers.BaseRenderer):
         buffer = StringIO()
         SeqIO.write(records, buffer, "fasta")
         return buffer.getvalue()
+
+
+class AminoAcidFastaRenderer(NucleotideFastaRenderer):
+    media_type = 'text/fasta'
+    format = 'faa'
+    filename = 'protrend_data.faa'
+
+    @staticmethod
+    def build_regulator_record(data: dict) -> list:
+        """
+        It builds regulator faa record
+        """
+        protrend_id = data.get('protrend_id', '')
+        locus_tag = data.get('locus_tag', '')
+        name = data.get('name', '')
+        uniprot_acc = data.get('uniprot_acc', '')
+        mechanism = data.get('mechanism', '')
+
+        sequence = data.get('protein_sequence', '')
+        if not sequence:
+            sequence = 'NA'
+        sequence = Seq(sequence)
+
+        description = f'Regulator {protrend_id}-{locus_tag}-{name}-{uniprot_acc}-{mechanism}'
+
+        record = SeqRecord(seq=sequence,
+                           id=protrend_id,
+                           name=protrend_id,
+                           description=description)
+        return [record]
+
+    @staticmethod
+    def build_gene_record(data: dict) -> list:
+        """
+        It builds gene faa record
+        """
+        protrend_id = data.get('protrend_id', '')
+        locus_tag = data.get('locus_tag', '')
+        name = data.get('name', '')
+        uniprot_acc = data.get('uniprot_acc', '')
+
+        sequence = data.get('protein_sequence', '')
+        if not sequence:
+            sequence = 'NA'
+        sequence = Seq(sequence)
+
+        description = f'Gene {protrend_id}-{locus_tag}-{name}-{uniprot_acc}'
+
+        record = SeqRecord(seq=sequence,
+                           id=protrend_id,
+                           name=protrend_id,
+                           description=description)
+        return [record]

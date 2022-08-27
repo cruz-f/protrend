@@ -12,32 +12,11 @@ class ExportFileMixin:
     json_filename = "protrend_data.json"
     excel_filename = "protrend_data.xlsx"
     csv_filename = "protrend_data.csv"
-    fasta_filename = "protrend_data.fasta"
+    nucleotide_fasta_filename = "protrend_data.fna"
+    amino_acid_fasta_filename = "protrend_data.faa"
+    nucleotide_gnb_filename = "protrend_data.gbff"
+    amino_acid_gnb_filename = "protrend_data.gpff"
     xlsx_ignore_headers = []
-
-    def get_json_filename(self):
-        """
-        Returns a custom filename for the json file.
-        """
-        return self.json_filename
-
-    def get_excel_filename(self):
-        """
-        Returns a custom filename for the spreadsheet.
-        """
-        return self.excel_filename
-
-    def get_csv_filename(self):
-        """
-        Returns a custom filename for the csv.
-        """
-        return self.csv_filename
-
-    def get_fasta_filename(self):
-        """
-        Returns a custom filename for the fasta.
-        """
-        return self.fasta_filename
 
     def finalize_response(self: Union['ExportFileMixin', generics.GenericAPIView], request, response, *args, **kwargs):
         """
@@ -47,19 +26,31 @@ class ExportFileMixin:
         response = super(ExportFileMixin, self).finalize_response(request, response, *args, **kwargs)
 
         if response.accepted_renderer.format == 'json':
-            filename = self.get_json_filename()
+            filename = self.json_filename
             response["content-disposition"] = f"attachment; filename={filename}"
 
         elif response.accepted_renderer.format == 'xlsx':
-            filename = self.get_excel_filename()
+            filename = self.excel_filename
             response["content-disposition"] = f"attachment; filename={filename}"
 
         elif response.accepted_renderer.format == 'csv':
-            filename = self.get_csv_filename()
+            filename = self.csv_filename
             response["content-disposition"] = f"attachment; filename={filename}"
 
-        elif response.accepted_renderer.format == 'fasta':
-            filename = self.get_fasta_filename()
+        elif response.accepted_renderer.format == 'fna':
+            filename = self.nucleotide_fasta_filename
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'faa':
+            filename = self.amino_acid_fasta_filename
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'gbff':
+            filename = self.nucleotide_gnb_filename
+            response["content-disposition"] = f"attachment; filename={filename}"
+
+        elif response.accepted_renderer.format == 'gpff':
+            filename = self.amino_acid_gnb_filename
             response["content-disposition"] = f"attachment; filename={filename}"
 
         return response

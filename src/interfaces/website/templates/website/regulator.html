@@ -110,6 +110,30 @@
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=fna">
+                            fna
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=faa">
+                            faa
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=gbff">
+                            gbff
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=gpff">
+                            gpff
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
                            href="{% url 'motifs-detail' regulator.protrend_id %}?format=json">
                             motif-json
                         </a>
@@ -340,31 +364,82 @@
                                         {% include 'website/gene_box.html' with strand=regulator.strand start='NA' stop='NA' %}
                                     {% endif %}
                                 </p>
-                                <p class="card-text text-uppercase">
-                                    {% if regulator.gene_sequence %}
-                                        DNA SEQUENCE: {{ regulator.gene_sequence }}
-                                    {% else %}
-                                        DNA SEQUENCE: NA
-                                    {% endif %}
-                                </p>
-                                <p class="card-text text-uppercase">
-                                    {% if regulator.protein_sequence %}
-                                        AMINO ACID SEQUENCE: {{ regulator.protein_sequence }}
-                                    {% else %}
-                                        AMINO ACID SEQUENCE: NA
-                                    {% endif %}
-                                </p>
-                                {% if regulator.protein_sequence %}
-                                    <button onclick="copySequence()"
-                                            class="btn btn-outline-primary text-uppercase">Copy</button>
-                                    <label for="ProteinSequence"></label>
-                                    <input type="text"
-                                           value="{{ regulator.protein_sequence }}"
-                                           id="ProteinSequence"
-                                           class="d-none">
-                                    <a href="{% url 'download-fasta' identifier=regulator.protrend_id locus_tag=regulator.locus_tag name=regulator.name sequence=regulator.protein_sequence %}"
-                                       class="btn btn-outline-primary text-uppercase">Download</a>
-                                {% endif %}
+                                <div class="card-text text-uppercase pt-5 pb-2">
+                                    <button type="button" class="btn btn-primary text-uppercase"
+                                            data-bs-toggle="modal" data-bs-target="#aminoAcidModal">
+                                        Amino Acid Sequence
+                                    </button>
+                                    <div class="modal fade" id="aminoAcidModal" tabindex="-1" aria-labelledby="aminoAcidModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="aminoAcidModalLabel">Amino Acid Sequence</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-justify">
+                                                    {% if regulator.protein_sequence %}
+                                                        {{ regulator.protein_sequence }}
+                                                    {% else %}
+                                                        NA
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="AminoAcidSequenceBtn"
+                                                            type="button"
+                                                            class="btn btn-primary text-uppercase" onclick="copyAminoAcidSequence()">Copy</button>
+                                                    <label for="AminoAcidSequence"></label>
+                                                    <input type="text"
+                                                           value="{{ regulator.protein_sequence }}"
+                                                           id="AminoAcidSequence"
+                                                           class="d-none">
+                                                    <a href="{% url 'regulators-detail' regulator.protrend_id %}?format=faa"
+                                                       class="btn btn-primary text-uppercase">FASTA</a>
+                                                    <a href="{% url 'regulators-detail' regulator.protrend_id %}?format=gpff"
+                                                       class="btn btn-primary text-uppercase">GENBANK</a>
+                                                    <button type="button" class="btn btn-secondary text-uppercase" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-text text-uppercase py-2">
+                                    <button type="button" class="btn btn-success text-uppercase"
+                                            data-bs-toggle="modal" data-bs-target="#nucleotideModal">
+                                        Nucleotide Sequence
+                                    </button>
+                                    <div class="modal fade" id="nucleotideModal" tabindex="-1" aria-labelledby="nucleotideModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="nucleotideModalLabel">Nucleotide Sequence</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-justify">
+                                                    {% if regulator.gene_sequence %}
+                                                        {{ regulator.gene_sequence }}
+                                                    {% else %}
+                                                        NA
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="NucleotideSequenceBtn"
+                                                            type="button"
+                                                            class="btn btn-primary text-uppercase" onclick="copyNucleotideSequence()">Copy</button>
+                                                    <label for="NucleotideSequence"></label>
+                                                    <input type="text"
+                                                           value="{{ regulator.gene_sequence }}"
+                                                           id="NucleotideSequence"
+                                                           class="d-none">
+                                                    <a href="{% url 'regulators-detail' regulator.protrend_id %}?format=fna"
+                                                       class="btn btn-primary text-uppercase">FASTA</a>
+                                                    <a href="{% url 'regulators-detail' regulator.protrend_id %}?format=gbff"
+                                                       class="btn btn-primary text-uppercase">GENBANK</a>
+                                                    <button type="button" class="btn btn-secondary text-uppercase" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -854,9 +929,23 @@
     <script src="{% static 'website/js/getChart.js' %}">
     </script>
     <script>
-        const copySequence = function () {
-            const text = document.getElementById('ProteinSequence').value;
-            return copySequenceToClipBoard(text);
+        const copyAminoAcidSequence = function () {
+            const text = document.getElementById('AminoAcidSequence').value;
+            copySequenceToClipBoard(text, 'aminoAcidModal');
+
+            const aminoAcidSequenceBtn = document.getElementById('AminoAcidSequenceBtn');
+            aminoAcidSequenceBtn.innerHTML = 'COPIED!';
+            aminoAcidSequenceBtn.className = 'btn btn-outline-success';
+        }
+    </script>
+    <script>
+        const copyNucleotideSequence = function () {
+            const text = document.getElementById('NucleotideSequence').value;
+            copySequenceToClipBoard(text, 'nucleotideModal');
+
+            const nucleotideSequenceBtn = document.getElementById('NucleotideSequenceBtn');
+            nucleotideSequenceBtn.innerHTML = 'COPIED!';
+            nucleotideSequenceBtn.className = 'btn btn-outline-success';
         }
     </script>
     {{ motif|json_script:'motifSVG' }}
