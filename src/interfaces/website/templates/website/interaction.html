@@ -100,6 +100,12 @@
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
+                           href="{% url 'interactions-detail' interaction.protrend_id %}?format=xml">
+                            xml
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
                            href="{% url 'interactions-detail' interaction.protrend_id %}?format=csv">
                             csv
                         </a>

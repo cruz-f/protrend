@@ -2,6 +2,7 @@ from rest_framework import generics
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework_csv.renderers import CSVRenderer
+from rest_framework_xml.renderers import XMLRenderer
 
 import data
 from interfaces import views, permissions
@@ -42,7 +43,7 @@ class GeneDetail(views.APIRetrieveView, generics.GenericAPIView):
     """
     serializer_class = serializers.GeneDetailSerializer
     permission_classes = [permissions.SuperUserOrReadOnly]
-    renderer_classes = (JSONRenderer, CSVRenderer, XLSXRenderer,
+    renderer_classes = (JSONRenderer, XMLRenderer, CSVRenderer, XLSXRenderer,
                         NucleotideFastaRenderer, AminoAcidFastaRenderer,
                         NucleotideGenBankRenderer, AminoAcidGenBankRenderer,
                         BrowsableAPIRenderer)

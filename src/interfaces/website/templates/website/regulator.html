@@ -102,6 +102,12 @@
                     </li>
                     <li>
                         <a class="dropdown-item text-uppercase"
+                           href="{% url 'regulators-detail' regulator.protrend_id %}?format=xml">
+                            xml
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-uppercase"
                            href="{% url 'regulators-detail' regulator.protrend_id %}?format=csv">
                             csv
                         </a>
@@ -136,36 +142,44 @@
                             gpff
                         </a>
                     </li>
-                    <li>
-                        <a class="dropdown-item text-uppercase"
-                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=json">
-                            motif-json
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item text-uppercase"
-                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=csv">
-                            motif-csv
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item text-uppercase"
-                           href="{% url 'motifs-detail' regulator.protrend_id %}?format=xlsx">
-                            motif-xlsx
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item text-uppercase"
-                           href="{% url 'motifs-detail' motif_object.protrend_id %}?format=jaspar">
-                            motif-jaspar
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item text-uppercase"
-                           href="{% url 'motifs-detail' motif_object.protrend_id %}?format=transfac">
-                            motif-transfac
-                        </a>
-                    </li>
+                    {% if consensus_sequence %}
+                        <li>
+                            <a class="dropdown-item text-uppercase"
+                               href="{% url 'motifs-detail' motif_object.protrend_id %}?format=json">
+                                motif-json
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-uppercase"
+                               href="{% url 'motifs-detail' motif_object.protrend_id %}?format=xml">
+                                motif-xml
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-uppercase"
+                               href="{% url 'motifs-detail' motif_object.protrend_id %}?format=csv">
+                                motif-csv
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-uppercase"
+                               href="{% url 'motifs-detail' motif_object.protrend_id %}?format=xlsx">
+                                motif-xlsx
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-uppercase"
+                               href="{% url 'motifs-detail' motif_object.protrend_id %}?format=jaspar">
+                                motif-jaspar
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-uppercase"
+                               href="{% url 'motifs-detail' motif_object.protrend_id %}?format=transfac">
+                                motif-transfac
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="col-lg-2 py-2 py-lg-0 align-self-center">
@@ -786,7 +800,13 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="scroll-box">
-                                                        <div id="motif-img" class="motif-container"></div>
+                                                        {% if consensus_sequence %}
+                                                            <div id="motif-img" class="motif-container"></div>
+                                                        {% else %}
+                                                            <p class="text-uppercase card-text py-2">
+                                                                MOTIF LOGO: Not available
+                                                            </p>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
@@ -797,30 +817,36 @@
                                          role="tabpanel"
                                          aria-labelledby="v-pills-pwm-tab">
                                         <div class="scroll-box">
-                                            <div class="table-responsive">
-                                                <table class="table pandas-table">
-                                                    <thead>
-                                                    <tr>
-                                                        <th scope="col">#</th>
-                                                        {% for col in pwm.columns %}
-                                                            <th scope="col">{{ col }}</th>
-                                                        {% endfor %}
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {% for i, row in pwm.iterrows %}
+                                            {% if consensus_sequence %}
+                                                <div class="table-responsive">
+                                                    <table class="table pandas-table">
+                                                        <thead>
                                                         <tr>
-                                                            <td class="fw-bold">{{ i }}</td>
-                                                            <td>{{ row.0 }}</td>
-                                                            <td>{{ row.1 }}</td>
-                                                            <td>{{ row.2 }}</td>
-                                                            <td>{{ row.3 }}</td>
-                                                            <td>{{ row.4 }}</td>
+                                                            <th scope="col">#</th>
+                                                            {% for col in pwm.columns %}
+                                                                <th scope="col">{{ col }}</th>
+                                                            {% endfor %}
                                                         </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for i, row in pwm.iterrows %}
+                                                            <tr>
+                                                                <td class="fw-bold">{{ i }}</td>
+                                                                <td>{{ row.0 }}</td>
+                                                                <td>{{ row.1 }}</td>
+                                                                <td>{{ row.2 }}</td>
+                                                                <td>{{ row.3 }}</td>
+                                                                <td>{{ row.4 }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% else %}
+                                                <p class="text-uppercase card-text py-2">
+                                                    PWM: Not available
+                                                </p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="tab-pane fade"
@@ -831,13 +857,19 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="scroll-box">
-                                                        <ul class="list-group list-group-flush">
-                                                            {% for sequence in motif_sequences %}
-                                                                <li class="list-group-item text-uppercase">
-                                                                    {{ sequence }}
-                                                                </li>
-                                                            {% endfor %}
-                                                        </ul>
+                                                        {% if consensus_sequence %}
+                                                            <ul class="list-group list-group-flush">
+                                                                {% for sequence in motif_sequences %}
+                                                                    <li class="list-group-item text-uppercase">
+                                                                        {{ sequence }}
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        {% else %}
+                                                            <p class="text-uppercase card-text py-2">
+                                                                Sequences: Not available
+                                                            </p>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
@@ -851,13 +883,19 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="scroll-box">
-                                                        <ul class="list-group list-group-flush">
-                                                            {% for aligned_sequence in motif_aligned_sequences %}
-                                                                <li class="list-group-item text-uppercase">
-                                                                    {{ aligned_sequence }}
-                                                                </li>
-                                                            {% endfor %}
-                                                        </ul>
+                                                        {% if consensus_sequence %}
+                                                            <ul class="list-group list-group-flush">
+                                                                {% for aligned_sequence in motif_aligned_sequences %}
+                                                                    <li class="list-group-item text-uppercase">
+                                                                        {{ aligned_sequence }}
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        {% else %}
+                                                            <p class="text-uppercase card-text py-2">
+                                                                Aligned Sequences: Not available
+                                                            </p>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
