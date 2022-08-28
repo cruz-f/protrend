@@ -26,12 +26,15 @@ def regulators_page(request):
             "totalNotFiltered": 0,
             'rows': []
         }
+
+        visited_ids = set()
+
         for field in fields:
             kwargs = {f'{field}__contains': str(search)}
             query_set = dpi.filter_objects(cls=Regulator, fields=fields, **kwargs)
 
             for object_ in query_set:
-                if object_ not in data['rows']:
+                if object_.protrend_id not in visited_ids:
                     regulator_url = regulator_base_url.replace('regulator_id', object_.protrend_id)
                     data['rows'].append({
                         'protrend_id': object_.protrend_id,
@@ -41,13 +44,16 @@ def regulators_page(request):
                         'detail': f'<a role="button" class="btn rounded-pill btn-outline-success" href="{regulator_url}"><i class="bi bi-journal-plus pe-2"></i>detail</a>'
                     })
 
+                visited_ids.add(object_.protrend_id)
+
         data['total'] = len(data['rows'])
         data['totalNotFiltered'] = len(data['rows'])
+
+        data['rows'] = sorted(data['rows'], reverse=reversed, key=lambda k: k[sort])
 
         if data['total'] > limit:
             data['rows'] = data['rows'][offset:offset + limit]
 
-        data['rows'] = sorted(data['rows'], reverse=reversed,  key=lambda k: k[sort])
         return JsonResponse(data)
 
     query_set = dpi.get_objects(cls=Regulator,
