@@ -56,8 +56,9 @@ def regulators_page(request):
 
         return JsonResponse(data)
 
-    query_set = dpi.get_objects(cls=Regulator,
-                                fields=fields)
+    # special case using the order by of neo4j cypher query
+    query_set = dpi.get_query_set(cls=Regulator, fields=fields)
+    query_set.order_by(sort, ascending=not reversed, key=slice(offset, offset + limit))
 
     data = {
         'total': query_set.count(),
@@ -65,7 +66,7 @@ def regulators_page(request):
         'rows': []
     }
 
-    for object_ in query_set[offset:offset + limit]:
+    for object_ in query_set:
         regulator_url = regulator_base_url.replace('regulator_id', object_.protrend_id)
         data['rows'].append({
             'protrend_id': object_.protrend_id,
@@ -75,5 +76,4 @@ def regulators_page(request):
             'detail': f'<a role="button" class="btn rounded-pill btn-outline-success" href="{regulator_url}"><i class="bi bi-journal-plus pe-2"></i>detail</a>'
         })
 
-    data['rows'] = sorted(data['rows'], reverse=reversed, key=lambda k: k[sort])
     return JsonResponse(data)

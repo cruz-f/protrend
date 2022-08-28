@@ -171,6 +171,22 @@ class NeoQuerySet:
         self._data = []
         return self
 
+    def order_by(self, *args, ascending=True, key=None):
+        order_clause = ', '.join(f'{self.source_variable}.{field}' for field in args)
+
+        if ascending:
+            self._query = f'MATCH {self.source_clause} RETURN {self.source_return} ORDER BY {order_clause} ASC'
+
+        else:
+            self._query = f'MATCH {self.source_clause} RETURN {self.source_return} ORDER BY {order_clause} DESC'
+
+        if key:
+            self._set_item(key)
+            self._query += f' SKIP {self.skip} LIMIT {self.limit}'
+
+        self._data = []
+        return self
+
     def count(self) -> int:
         count_query = f'MATCH {self.source_clause} RETURN {self.count_source}'
         results, _ = query_db(count_query)
